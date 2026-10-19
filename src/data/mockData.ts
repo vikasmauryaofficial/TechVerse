@@ -735,6 +735,7 @@ export const navDropdowns: Record<string, { emoji: string; label: string; to?: s
     { emoji: '⚡', label: 'Daily Contest', to: '/arena' },
   ],
   Notes: [
+    { emoji: '🧪', label: 'Subjects', to: '/subjects' },
     { emoji: '📄', label: 'Chapter-wise PDFs', to: '/notes' },
     { emoji: '📋', label: 'Cheat Sheets', to: '/notes' },
     { emoji: '✏️', label: 'Practice Sets', to: '/notes' },

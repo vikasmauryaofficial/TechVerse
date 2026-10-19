@@ -4,6 +4,8 @@ import { Layout } from '@/components/Layout';
 import { HomePage } from '@/pages/HomePage';
 import { CoursesPage } from '@/pages/CoursesPage';
 import { CourseDetailPage } from '@/pages/CourseDetailPage';
+import { SubjectsPage } from '@/pages/SubjectsPage';
+import { InteractiveSubjectPage } from '@/pages/InteractiveSubjectPage';
 import { VideoPlayerPage } from '@/pages/VideoPlayerPage';
 import { ArenaPage } from '@/pages/ArenaPage';
 import { LivePage } from '@/pages/LivePage';
@@ -26,6 +28,8 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/courses" element={<CoursesPage />} />
             <Route path="/courses/:id" element={<CourseDetailPage />} />
+            <Route path="/subjects" element={<SubjectsPage />} />
+            <Route path="/subjects/:slug" element={<InteractiveSubjectPage />} />
             <Route path="/learn/:courseId/:lessonId" element={<VideoPlayerPage />} />
             <Route path="/arena" element={<ArenaPage />} />
             <Route path="/live" element={<LivePage />} />

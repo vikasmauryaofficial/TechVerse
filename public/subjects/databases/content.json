@@ -1,0 +1,1305 @@
+{
+ "sql": {
+  "title": "SQL",
+  "engine": "sql",
+  "accent": "#0b6e99",
+  "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY,name TEXT,city TEXT,marks INTEGER);INSERT INTO students VALUES(1,'Aman','Noida',82),(2,'Riya','Delhi',91),(3,'Karan','Noida',67),(4,'Sana','Lucknow',74),(5,'Dev','Delhi',55);CREATE TABLE courses(cid INTEGER PRIMARY KEY,cname TEXT,fee INTEGER);INSERT INTO courses VALUES(1,'SQL',3000),(2,'MongoDB',3500),(3,'Python',4000);CREATE TABLE enrol(sid INTEGER,cid INTEGER);INSERT INTO enrol VALUES(1,1),(1,2),(2,1),(3,3);",
+  "topics": [
+   {
+    "title": "SELECT, DISTINCT, ORDER BY",
+    "subs": [
+     {
+      "title": "SELECT basics: columns, * and expressions",
+      "theory": "<h3>What it is</h3><p>SELECT chooses which columns a query returns. FROM names the table. The result is a new temporary table; the stored data does not change.</p><h3>Syntax</h3><pre>SELECT column1, column2 FROM table_name;\nSELECT * FROM table_name;</pre><h3>How it works</h3><ul><li><code>*</code> returns every column, fine for learning but avoid it in real apps (slow, fragile).</li><li>You can calculate: <code>marks*1.1</code>, or join text with <code>||</code>.</li><li><code>AS</code> renames a result column (alias).</li></ul><h3>Common mistakes</h3><ul><li>Forgetting the comma between column names.</li><li>Using SELECT * on huge tables.</li><li>Writing the alias in quotes only when it has spaces.</li></ul>",
+      "task": "Show each student's name and marks, with marks out of 100 shown as 'percent'.",
+      "starter": "SELECT name, marks AS percent FROM students;",
+      "demo": [
+       {
+        "say": "All columns, all rows.",
+        "code": "SELECT * FROM students;"
+       },
+       {
+        "say": "Only two columns.",
+        "code": "SELECT name, marks FROM students;"
+       },
+       {
+        "say": "A calculated column with an alias.",
+        "code": "SELECT name, marks+5 AS marks_with_bonus FROM students;"
+       },
+       {
+        "say": "Join text.",
+        "code": "SELECT name || ' lives in ' || city AS info FROM students;"
+       }
+      ]
+     },
+     {
+      "title": "DISTINCT: remove duplicates",
+      "theory": "<h3>What it is</h3><p>DISTINCT keeps only one copy of each repeated row in the result. It looks at the whole row of selected columns, not one column.</p><h3>Syntax</h3><pre>SELECT DISTINCT column1 FROM table_name;\nSELECT DISTINCT column1, column2 FROM table_name;</pre><h3>How it works</h3><ul><li>Without DISTINCT the city 'Noida' appears once per student.</li><li>With two columns, a row is a duplicate only if both values match.</li><li><code>COUNT(DISTINCT city)</code> counts unique cities.</li></ul><h3>Common mistakes</h3><ul><li>Thinking DISTINCT applies only to the first column.</li><li>Using DISTINCT to hide a bad join instead of fixing it.</li></ul>",
+      "task": "Count how many different cities the students come from.",
+      "starter": "SELECT COUNT(DISTINCT city) AS cities FROM students;",
+      "demo": [
+       {
+        "say": "Cities repeat.",
+        "code": "SELECT city FROM students;"
+       },
+       {
+        "say": "Unique cities.",
+        "code": "SELECT DISTINCT city FROM students;"
+       },
+       {
+        "say": "Unique city and marks pairs.",
+        "code": "SELECT DISTINCT city, marks FROM students;"
+       },
+       {
+        "say": "Count unique cities.",
+        "code": "SELECT COUNT(DISTINCT city) FROM students;"
+       }
+      ]
+     },
+     {
+      "title": "ORDER BY and LIMIT",
+      "theory": "<h3>What it is</h3><p>ORDER BY sorts the result. ASC (smallest first) is the default, DESC is largest first. LIMIT returns only the first n rows, so ORDER BY + LIMIT gives 'top n'.</p><h3>Syntax</h3><pre>SELECT cols FROM t ORDER BY col1 DESC, col2 ASC LIMIT 3;</pre><h3>How it works</h3><ul><li>Sorting by several columns: ties in the first are broken by the next.</li><li>Text sorts alphabetically, numbers numerically.</li><li>ORDER BY runs near the end, so it can use column aliases.</li></ul><h3>Common mistakes</h3><ul><li>Using LIMIT without ORDER BY and expecting the 'best' rows.</li><li>Forgetting DESC when asked for highest first.</li></ul>",
+      "task": "Show the top 3 students by marks.",
+      "starter": "SELECT name, marks FROM students ORDER BY marks DESC LIMIT 3;",
+      "demo": [
+       {
+        "say": "Lowest first (default).",
+        "code": "SELECT name, marks FROM students ORDER BY marks;"
+       },
+       {
+        "say": "Highest first.",
+        "code": "SELECT name, marks FROM students ORDER BY marks DESC;"
+       },
+       {
+        "say": "Sort by city, then marks.",
+        "code": "SELECT city, name, marks FROM students ORDER BY city ASC, marks DESC;"
+       },
+       {
+        "say": "Top 3.",
+        "code": "SELECT name, marks FROM students ORDER BY marks DESC LIMIT 3;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "WHERE, AND, OR, NOT, LIKE, IN, BETWEEN",
+    "subs": [
+     {
+      "title": "WHERE and comparison operators",
+      "theory": "<h3>What it is</h3><p>WHERE keeps only the rows for which a condition is true. It runs before grouping and sorting.</p><h3>Syntax</h3><pre>SELECT cols FROM t WHERE column operator value;</pre><h3>How it works</h3><ul><li>Operators: <code>=  &lt;&gt;  &gt;  &lt;  &gt;=  &lt;=</code>.</li><li>Text values go in single quotes, numbers do not.</li><li>Use <code>&lt;&gt;</code> (or !=) for 'not equal'.</li></ul><h3>Common mistakes</h3><ul><li>Using == instead of =.</li><li>Writing text without quotes.</li><li>Putting aggregate functions in WHERE (use HAVING).</li></ul>",
+      "task": "Find students with marks of 75 or more.",
+      "starter": "SELECT * FROM students WHERE marks>=75;",
+      "demo": [
+       {
+        "say": "Equal to text.",
+        "code": "SELECT * FROM students WHERE city='Delhi';"
+       },
+       {
+        "say": "Greater than.",
+        "code": "SELECT * FROM students WHERE marks>70;"
+       },
+       {
+        "say": "Not equal.",
+        "code": "SELECT * FROM students WHERE city<>'Noida';"
+       }
+      ]
+     },
+     {
+      "title": "AND, OR, NOT",
+      "theory": "<h3>What it is</h3><p>AND needs both conditions true, OR needs at least one, NOT reverses a condition. AND is evaluated before OR, so use brackets to be clear.</p><h3>Syntax</h3><pre>WHERE cond1 AND cond2\nWHERE cond1 OR cond2\nWHERE NOT cond</pre><h3>How it works</h3><ul><li>Brackets decide order: <code>A AND (B OR C)</code>.</li><li>NOT works with other operators: NOT IN, NOT LIKE, IS NOT NULL.</li></ul><h3>Common mistakes</h3><ul><li>Mixing AND and OR without brackets and getting unexpected rows.</li></ul>",
+      "task": "Find Noida students with marks above 60, or any student with marks above 90.",
+      "starter": "SELECT * FROM students WHERE (city='Noida' AND marks>60) OR marks>90;",
+      "demo": [
+       {
+        "say": "AND: both true.",
+        "code": "SELECT * FROM students WHERE city='Noida' AND marks>70;"
+       },
+       {
+        "say": "OR: either true.",
+        "code": "SELECT * FROM students WHERE city='Delhi' OR marks<60;"
+       },
+       {
+        "say": "NOT.",
+        "code": "SELECT * FROM students WHERE NOT city='Noida';"
+       },
+       {
+        "say": "Brackets change the answer.",
+        "code": "SELECT * FROM students WHERE (city='Noida' AND marks>60) OR marks>90;"
+       }
+      ]
+     },
+     {
+      "title": "LIKE and wildcards",
+      "theory": "<h3>What it is</h3><p>LIKE searches text by pattern. % means any number of characters, _ means exactly one character.</p><h3>Syntax</h3><pre>WHERE column LIKE 'pattern'</pre><h3>How it works</h3><ul><li><code>'A%'</code> starts with A; <code>'%a'</code> ends with a; <code>'%an%'</code> contains an.</li><li><code>'_i%'</code> second letter is i.</li><li>Case rules depend on the database (PostgreSQL has ILIKE for case-insensitive).</li></ul><h3>Common mistakes</h3><ul><li>Using = with wildcards (= does not understand %).</li><li>Forgetting the quotes around the pattern.</li></ul>",
+      "task": "Find students whose name has exactly 4 letters.",
+      "starter": "SELECT * FROM students WHERE name LIKE '____';",
+      "demo": [
+       {
+        "say": "Starts with A.",
+        "code": "SELECT * FROM students WHERE name LIKE 'A%';"
+       },
+       {
+        "say": "Contains 'an'.",
+        "code": "SELECT * FROM students WHERE name LIKE '%an%';"
+       },
+       {
+        "say": "Second letter is 'i'.",
+        "code": "SELECT * FROM students WHERE name LIKE '_i%';"
+       }
+      ]
+     },
+     {
+      "title": "IN and BETWEEN",
+      "theory": "<h3>What it is</h3><p>IN checks if a value is in a list (a short form of many ORs). BETWEEN checks an inclusive range (both ends included).</p><h3>Syntax</h3><pre>WHERE col IN (v1, v2)\nWHERE col BETWEEN low AND high</pre><h3>How it works</h3><ul><li>BETWEEN 60 AND 80 includes 60 and 80.</li><li>NOT IN and NOT BETWEEN reverse them.</li><li>IN also accepts a subquery.</li></ul><h3>Common mistakes</h3><ul><li>Writing BETWEEN 80 AND 60 (low value must come first).</li><li>Using NOT IN with a list that contains NULL (returns nothing).</li></ul>",
+      "task": "Find students from Delhi or Lucknow with marks between 70 and 95.",
+      "starter": "SELECT * FROM students WHERE city IN ('Delhi','Lucknow') AND marks BETWEEN 70 AND 95;",
+      "demo": [
+       {
+        "say": "IN list.",
+        "code": "SELECT * FROM students WHERE city IN ('Delhi','Lucknow');"
+       },
+       {
+        "say": "BETWEEN range.",
+        "code": "SELECT * FROM students WHERE marks BETWEEN 60 AND 80;"
+       },
+       {
+        "say": "NOT BETWEEN.",
+        "code": "SELECT * FROM students WHERE marks NOT BETWEEN 60 AND 80;"
+       }
+      ]
+     },
+     {
+      "title": "NULL values",
+      "theory": "<h3>What it is</h3><p>NULL means 'unknown or missing', not zero and not empty text. Any comparison with NULL is unknown, so normal operators fail.</p><h3>Syntax</h3><pre>WHERE col IS NULL\nWHERE col IS NOT NULL\nCOALESCE(col, default)</pre><h3>How it works</h3><ul><li><code>col = NULL</code> never matches; use IS NULL.</li><li>COUNT(col) ignores NULLs, COUNT(*) does not.</li><li>COALESCE replaces NULL with a default.</li></ul><h3>Common mistakes</h3><ul><li>Writing = NULL.</li><li>Forgetting that NULL affects averages and totals.</li></ul>",
+      "task": "Insert a student with no city and find them.",
+      "starter": "INSERT INTO students(name,marks) VALUES('Zoya',88);\nSELECT * FROM students WHERE city IS NULL;",
+      "demo": [
+       {
+        "say": "Insert a row without city.",
+        "code": "INSERT INTO students(name,marks) VALUES('Zoya',88);"
+       },
+       {
+        "say": "Wrong way: returns nothing.",
+        "code": "SELECT * FROM students WHERE city = NULL;"
+       },
+       {
+        "say": "Right way.",
+        "code": "SELECT * FROM students WHERE city IS NULL;"
+       },
+       {
+        "say": "Show a default instead of NULL.",
+        "code": "SELECT name, COALESCE(city,'Unknown') AS city FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "INSERT, UPDATE, DELETE, NULL",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><b>INSERT</b> adds rows, <b>UPDATE ... SET ... WHERE</b> changes rows, <b>DELETE ... WHERE</b> removes rows. Forgetting WHERE affects every row. NULL means unknown: test with <code>IS NULL</code>, never <code>= NULL</code>.</p>",
+      "task": "Add a student with no city, then find students with no city.",
+      "starter": "INSERT INTO students(name,marks) VALUES('Zoya',88);\nSELECT * FROM students WHERE city IS NULL;",
+      "demo": [
+       {
+        "say": "Insert one row (city left empty = NULL).",
+        "code": "INSERT INTO students(name,marks) VALUES('Zoya',88);"
+       },
+       {
+        "say": "Find NULLs correctly.",
+        "code": "SELECT * FROM students WHERE city IS NULL;"
+       },
+       {
+        "say": "Update one row.",
+        "code": "UPDATE students SET city='Noida' WHERE name='Zoya';"
+       },
+       {
+        "say": "Delete one row.",
+        "code": "DELETE FROM students WHERE name='Zoya';"
+       },
+       {
+        "say": "Check the table.",
+        "code": "SELECT * FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Aggregate functions and aliases",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>MIN, MAX, COUNT, SUM, AVG summarise many rows into one value. <b>AS</b> gives a column or table a temporary name. COUNT(*) counts rows, COUNT(col) skips NULLs.</p>",
+      "task": "Show the lowest, highest and average marks.",
+      "starter": "SELECT MIN(marks) AS lowest, MAX(marks) AS highest, AVG(marks) AS average FROM students;",
+      "demo": [
+       {
+        "say": "Count rows.",
+        "code": "SELECT COUNT(*) AS total FROM students;"
+       },
+       {
+        "say": "Sum of all course fees.",
+        "code": "SELECT SUM(fee) AS total_fee FROM courses;"
+       },
+       {
+        "say": "Several aggregates together.",
+        "code": "SELECT MIN(marks), MAX(marks), AVG(marks) FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "JOINs (INNER, LEFT, RIGHT, FULL, SELF, CROSS)",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>A join combines rows of two tables using a condition. <b>INNER</b>: only matches. <b>LEFT</b>: all left rows + matches. <b>RIGHT</b>: all right rows. <b>FULL</b>: everything. <b>SELF</b>: a table joined with itself. <b>CROSS</b>: every combination.</p>",
+      "task": "List every student with their course name, including students with no course.",
+      "starter": "SELECT s.name, c.cname FROM students s LEFT JOIN enrol e ON s.id=e.sid LEFT JOIN courses c ON c.cid=e.cid;",
+      "demo": [
+       {
+        "say": "INNER JOIN: only students who enrolled.",
+        "code": "SELECT s.name, c.cname FROM students s JOIN enrol e ON s.id=e.sid JOIN courses c ON c.cid=e.cid;"
+       },
+       {
+        "say": "LEFT JOIN keeps students with no course (NULL).",
+        "code": "SELECT s.name, c.cname FROM students s LEFT JOIN enrol e ON s.id=e.sid LEFT JOIN courses c ON c.cid=e.cid;"
+       },
+       {
+        "say": "SELF JOIN: pairs of students in the same city.",
+        "code": "SELECT a.name, b.name, a.city FROM students a JOIN students b ON a.city=b.city AND a.id<b.id;"
+       },
+       {
+        "say": "CROSS JOIN: all combinations.",
+        "code": "SELECT s.name, c.cname FROM students s CROSS JOIN courses c LIMIT 6;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "UNION, GROUP BY, HAVING",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><b>UNION</b> merges results and removes duplicates; <b>UNION ALL</b> keeps them. <b>GROUP BY</b> makes groups for aggregates. <b>WHERE</b> filters rows before grouping; <b>HAVING</b> filters groups after.</p>",
+      "task": "Cities where the average marks are above 70.",
+      "starter": "SELECT city, AVG(marks) FROM students GROUP BY city HAVING AVG(marks)>70;",
+      "demo": [
+       {
+        "say": "Students per city.",
+        "code": "SELECT city, COUNT(*) FROM students GROUP BY city;"
+       },
+       {
+        "say": "Only groups with more than one student.",
+        "code": "SELECT city, COUNT(*) AS n FROM students GROUP BY city HAVING n>1;"
+       },
+       {
+        "say": "UNION removes duplicates.",
+        "code": "SELECT city FROM students UNION SELECT cname FROM courses;"
+       },
+       {
+        "say": "UNION ALL keeps them.",
+        "code": "SELECT city FROM students UNION ALL SELECT city FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Subqueries: EXISTS, IN (and CASE)",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>A subquery is a query inside a query. <b>IN</b> checks a list; <b>EXISTS</b> checks that rows exist (stops at first match). <b>Correlated</b> subqueries refer to the outer row. <b>CASE</b> adds if/else logic. ANY/ALL are not in SQLite: practise them in the PostgreSQL tab.</p>",
+      "task": "Find students who are enrolled in at least one course.",
+      "starter": "SELECT name FROM students s WHERE EXISTS (SELECT 1 FROM enrol e WHERE e.sid=s.id);",
+      "demo": [
+       {
+        "say": "IN with a subquery.",
+        "code": "SELECT name FROM students WHERE id IN (SELECT sid FROM enrol);"
+       },
+       {
+        "say": "Correlated EXISTS.",
+        "code": "SELECT name FROM students s WHERE EXISTS (SELECT 1 FROM enrol e WHERE e.sid=s.id);"
+       },
+       {
+        "say": "Above average marks.",
+        "code": "SELECT name, marks FROM students WHERE marks>(SELECT AVG(marks) FROM students);"
+       },
+       {
+        "say": "CASE gives grades.",
+        "code": "SELECT name, CASE WHEN marks>=90 THEN 'A' WHEN marks>=70 THEN 'B' ELSE 'C' END AS grade FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "CREATE, ALTER, DROP and constraints",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>DDL defines structure. Constraints: <b>NOT NULL</b>, <b>UNIQUE</b>, <b>PRIMARY KEY</b>, <b>FOREIGN KEY</b>, <b>CHECK</b>, <b>DEFAULT</b>, AUTO INCREMENT (INTEGER PRIMARY KEY in SQLite, SERIAL in PostgreSQL).</p>",
+      "task": "Create a 'fees' table with a primary key, a foreign key and a CHECK constraint.",
+      "starter": "CREATE TABLE fees(id INTEGER PRIMARY KEY, sid INTEGER NOT NULL, amount INTEGER CHECK(amount>0), paid TEXT DEFAULT 'no', FOREIGN KEY(sid) REFERENCES students(id));\nINSERT INTO fees(sid,amount) VALUES(1,3000);\nSELECT * FROM fees;",
+      "demo": [
+       {
+        "say": "Create a table with constraints.",
+        "code": "CREATE TABLE fees(id INTEGER PRIMARY KEY, sid INTEGER NOT NULL, amount INTEGER CHECK(amount>0), paid TEXT DEFAULT 'no');"
+       },
+       {
+        "say": "A valid row works (paid defaults to 'no').",
+        "code": "INSERT INTO fees(sid,amount) VALUES(1,3000);\nSELECT * FROM fees;"
+       },
+       {
+        "say": "A bad row is rejected by CHECK. Watch the error.",
+        "code": "INSERT INTO fees(sid,amount) VALUES(2,-5);"
+       },
+       {
+        "say": "ALTER adds a column.",
+        "code": "ALTER TABLE fees ADD COLUMN note TEXT;\nSELECT * FROM fees;"
+       },
+       {
+        "say": "DROP removes the table.",
+        "code": "DROP TABLE fees;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Views, indexes and SQL injection",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>A <b>view</b> is a saved query. An <b>index</b> speeds up searches on a column. <b>SQL injection</b>: attacker input changes the query, e.g. <code>' OR '1'='1</code>. Defence: parameterised / prepared statements, never string concatenation.</p>",
+      "task": "Create a view of students scoring above 80.",
+      "starter": "CREATE VIEW toppers AS SELECT name, marks FROM students WHERE marks>80;\nSELECT * FROM toppers;",
+      "demo": [
+       {
+        "say": "Create a view.",
+        "code": "CREATE VIEW toppers AS SELECT name, marks FROM students WHERE marks>80;"
+       },
+       {
+        "say": "Use it like a table.",
+        "code": "SELECT * FROM toppers;"
+       },
+       {
+        "say": "Create an index.",
+        "code": "CREATE INDEX idx_city ON students(city);"
+       },
+       {
+        "say": "Injection in action: this unsafe query returns every row.",
+        "code": "SELECT * FROM students WHERE name='x' OR '1'='1';"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which clause filters groups after GROUP BY?",
+    "options": [
+     "WHERE",
+     "HAVING",
+     "ORDER BY",
+     "LIMIT"
+    ],
+    "answer": 1,
+    "explain": "HAVING filters groups; WHERE filters rows before grouping."
+   },
+   {
+    "q": "Which keyword removes duplicate rows from output?",
+    "options": [
+     "UNIQUE",
+     "DISTINCT",
+     "DIFFERENT",
+     "REMOVE"
+    ],
+    "answer": 1,
+    "explain": "SELECT DISTINCT returns unique rows."
+   }
+  ],
+  "scenarios": [
+   {
+    "q": "The principal wants the topper's name and marks. Write the query.",
+    "starter": "-- write your query\n",
+    "hint": "SELECT name, marks FROM students ORDER BY marks DESC LIMIT 1;"
+   }
+  ]
+ },
+ "dbms": {
+  "title": "DBMS",
+  "engine": "sql",
+  "accent": "#8a4fff",
+  "seed": "CREATE TABLE students(id INTEGER PRIMARY KEY,name TEXT,city TEXT,marks INTEGER);INSERT INTO students VALUES(1,'Aman','Noida',82),(2,'Riya','Delhi',91);",
+  "topics": [
+   {
+    "title": "Module 1: Architecture and design foundations",
+    "subs": [
+     {
+      "title": "File system vs DBMS",
+      "theory": "<h3>What it is</h3><p>A file system stores data in separate files managed by each application. A DBMS keeps data in one organised system with shared rules, so many users and programs can use it safely.</p><h3>Syntax</h3><pre>Flat file: one file per application  vs  DBMS: one database, many applications</pre><h3>How it works</h3><ul><li><b>Redundancy:</b> same data stored many times.</li><li><b>Inconsistency:</b> copies disagree after an update.</li><li><b>Concurrency problems:</b> two users update together and one change is lost.</li><li><b>Isolation and security:</b> hard to control who sees what.</li></ul><h3>Common mistakes</h3><ul><li>Believing a spreadsheet is a DBMS.</li><li>Thinking redundancy is always zero in a DBMS (it is controlled, not removed).</li></ul>",
+      "task": "Create a flat table and show how an update makes data inconsistent.",
+      "starter": "CREATE TABLE flat(student TEXT, city TEXT, course TEXT);\nINSERT INTO flat VALUES('Aman','Noida','SQL'),('Aman','Noida','MongoDB');\nUPDATE flat SET city='Delhi' WHERE course='SQL';\nSELECT * FROM flat;",
+      "demo": [
+       {
+        "say": "Student data is repeated on every row (redundancy). If you see 'already exists', press Reset database.",
+        "code": "CREATE TABLE flat(student TEXT, city TEXT, course TEXT);\nINSERT INTO flat VALUES('Aman','Noida','SQL'),('Aman','Noida','MongoDB');\nSELECT * FROM flat;"
+       },
+       {
+        "say": "Update only one row: Aman now has two cities (inconsistency).",
+        "code": "UPDATE flat SET city='Delhi' WHERE course='SQL';\nSELECT * FROM flat;"
+       }
+      ]
+     },
+     {
+      "title": "Three-schema architecture",
+      "theory": "<h3>What it is</h3><p>The database is described at three levels so that users, designers and storage can change independently.</p><h3>Syntax</h3><pre>External level (views)  <-  Conceptual level (tables)  <-  Internal level (files, indexes)</pre><h3>How it works</h3><ul><li><b>External:</b> what each user sees (views).</li><li><b>Conceptual:</b> the logical design of the whole database (tables, keys).</li><li><b>Internal:</b> how data is physically stored (files, indexes, blocks).</li><li>Mappings connect the levels.</li></ul><h3>Common mistakes</h3><ul><li>Mixing up conceptual and internal levels.</li><li>Thinking a view stores its own data (it stores only a query).</li></ul>",
+      "task": "Create a view that shows only names and cities (hiding marks).",
+      "starter": "CREATE VIEW public_info AS SELECT name, city FROM students;\nSELECT * FROM public_info;",
+      "demo": [
+       {
+        "say": "Conceptual level: the real table.",
+        "code": "SELECT * FROM students;"
+       },
+       {
+        "say": "External level: a view for a limited user.",
+        "code": "CREATE VIEW public_info AS SELECT name, city FROM students;\nSELECT * FROM public_info;"
+       },
+       {
+        "say": "Internal level: the catalog stores the structure.",
+        "code": "SELECT name, type FROM sqlite_master;"
+       }
+      ]
+     },
+     {
+      "title": "Data independence",
+      "theory": "<h3>What it is</h3><p>Data independence means one level can change without breaking the level above it.</p><h3>Syntax</h3><pre>Physical independence: change storage, logical schema stays.\nLogical independence: change schema, user views/apps stay.</pre><h3>How it works</h3><ul><li><b>Physical:</b> adding an index changes how data is stored; queries are unchanged.</li><li><b>Logical:</b> adding a column should not break existing views and programs.</li><li>Logical independence is harder to achieve.</li></ul><h3>Common mistakes</h3><ul><li>Thinking an index changes the query text.</li><li>Expecting all schema changes to be harmless.</li></ul>",
+      "task": "Add an index and a new column, then re-run an old query.",
+      "starter": "CREATE INDEX idx_city ON students(city);\nALTER TABLE students ADD COLUMN email TEXT;\nSELECT name, city FROM students;",
+      "demo": [
+       {
+        "say": "Physical change: add an index.",
+        "code": "CREATE INDEX idx_city ON students(city);"
+       },
+       {
+        "say": "The old query still works unchanged.",
+        "code": "SELECT name, city FROM students WHERE city='Noida';"
+       },
+       {
+        "say": "Logical change: add a column. The view from the previous subtopic keeps working.",
+        "code": "ALTER TABLE students ADD COLUMN email TEXT;\nSELECT name, city FROM students;"
+       }
+      ]
+     },
+     {
+      "title": "DBMS components",
+      "theory": "<h3>What it is</h3><p>A DBMS is built from cooperating parts. Understanding them explains what happens when a query runs.</p><h3>Syntax</h3><pre>Query -> DDL/DML compiler -> optimizer -> execution engine -> storage manager</pre><h3>How it works</h3><ul><li><b>DDL compiler</b> processes CREATE/ALTER; <b>DML compiler</b> processes SELECT/INSERT.</li><li><b>Query optimizer</b> picks the cheapest plan.</li><li><b>Execution engine</b> runs the plan.</li><li><b>Storage and buffer manager</b> read and cache disk blocks.</li><li><b>Transaction and lock managers</b> keep ACID and control concurrency.</li></ul><h3>Common mistakes</h3><ul><li>Thinking the optimizer changes the answer (it only changes the speed).</li></ul>",
+      "task": "View the plan the optimizer chose for a query.",
+      "starter": "EXPLAIN QUERY PLAN SELECT * FROM students WHERE marks>70;",
+      "demo": [
+       {
+        "say": "The data dictionary (catalog) is stored by the DBMS itself.",
+        "code": "SELECT name FROM sqlite_master;"
+       },
+       {
+        "say": "The optimizer's chosen plan.",
+        "code": "EXPLAIN QUERY PLAN SELECT * FROM students WHERE marks>70;"
+       }
+      ]
+     },
+     {
+      "title": "Data models",
+      "theory": "<h3>What it is</h3><p>A data model is the way data and relationships are organised.</p><h3>Syntax</h3><pre>Hierarchical (tree), Network (graph), Relational (tables), Object-oriented (objects)</pre><h3>How it works</h3><ul><li><b>Hierarchical:</b> parent-child tree, one parent per child.</li><li><b>Network:</b> records linked in a graph, many parents allowed.</li><li><b>Relational:</b> tables (rows and columns) joined by keys; the most common model.</li><li><b>Object-oriented:</b> data and behaviour stored as objects.</li></ul><h3>Common mistakes</h3><ul><li>Calling a document database relational (see the MongoDB tab).</li></ul>",
+      "task": "Show a relationship in the relational model using a join.",
+      "starter": "SELECT s.name, e.cid FROM students s JOIN enrol e ON s.id=e.sid;",
+      "demo": [
+       {
+        "say": "Tables are linked by key values.",
+        "code": "SELECT * FROM enrol;"
+       },
+       {
+        "say": "A join rebuilds the relationship.",
+        "code": "SELECT s.name, c.cname FROM students s JOIN enrol e ON s.id=e.sid JOIN courses c ON c.cid=e.cid;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 2: ER and EER modeling",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li>Entities, strong vs weak, attributes: simple, composite, multi-valued, derived.</li><li>Cardinality 1:1, 1:N, M:N. Participation total vs partial. Degree: unary, binary, ternary.</li><li>EER: specialization, generalization, inheritance, aggregation, categorization.</li><li><b>Mapping rules:</b> entity = table; M:N = junction table; multi-valued attribute = own table; weak entity = table with owner's key in its primary key.</li></ul>",
+      "task": "Map a weak entity 'Dependent' of 'Employee' to tables.",
+      "starter": "CREATE TABLE employee(eid INTEGER PRIMARY KEY, ename TEXT);\nCREATE TABLE dependent(eid INTEGER, dname TEXT, PRIMARY KEY(eid,dname), FOREIGN KEY(eid) REFERENCES employee(eid) ON DELETE CASCADE);",
+      "demo": [
+       {
+        "say": "Strong entity becomes a table.",
+        "code": "CREATE TABLE employee(eid INTEGER PRIMARY KEY, ename TEXT);"
+       },
+       {
+        "say": "Weak entity: key = owner key + partial key.",
+        "code": "CREATE TABLE dependent(eid INTEGER, dname TEXT, PRIMARY KEY(eid,dname), FOREIGN KEY(eid) REFERENCES employee(eid) ON DELETE CASCADE);"
+       },
+       {
+        "say": "Multi-valued attribute (phones) gets its own table.",
+        "code": "CREATE TABLE emp_phone(eid INTEGER, phone TEXT, PRIMARY KEY(eid,phone));"
+       },
+       {
+        "say": "M:N relationship becomes a junction table (see 'enrol').",
+        "code": "SELECT * FROM enrol;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 3: Relational model and algebra",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li><b>Constraints:</b> domain, entity integrity (PK not null), referential integrity (FK, ON DELETE CASCADE / SET NULL).</li><li><b>Algebra:</b> selection \u03c3, projection \u03c0, product \u00d7, union \u222a, intersection \u2229, difference \u2212, joins \u22c8, division \u00f7, rename \u03c1.</li><li><b>Calculus:</b> TRC and DRC are non-procedural; safe expressions equal algebra in power.</li></ul>",
+      "task": "Write \u03c3 city='Noida' (students) and \u03c0 name in SQL.",
+      "starter": "SELECT name FROM students WHERE city='Noida';",
+      "demo": [
+       {
+        "say": "\u03c3 selection = WHERE.",
+        "code": "SELECT * FROM students WHERE city='Noida';"
+       },
+       {
+        "say": "\u03c0 projection = column list (DISTINCT, because algebra returns sets).",
+        "code": "SELECT DISTINCT city FROM students;"
+       },
+       {
+        "say": "\u22c8 natural/equi join.",
+        "code": "SELECT s.name, e.cid FROM students s JOIN enrol e ON s.id=e.sid;"
+       },
+       {
+        "say": "\u2212 difference: students NOT enrolled.",
+        "code": "SELECT id FROM students EXCEPT SELECT sid FROM enrol;"
+       },
+       {
+        "say": "\u2229 intersection.",
+        "code": "SELECT id FROM students INTERSECT SELECT sid FROM enrol;"
+       },
+       {
+        "say": "\u00f7 division: students enrolled in ALL courses (needs double NOT EXISTS).",
+        "code": "SELECT name FROM students s WHERE NOT EXISTS (SELECT cid FROM courses c WHERE NOT EXISTS (SELECT 1 FROM enrol e WHERE e.sid=s.id AND e.cid=c.cid));"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 4: SQL (DDL, DML, subqueries, views, triggers)",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li>DDL/DCL: CREATE, ALTER, DROP, TRUNCATE, GRANT, REVOKE.</li><li>DML: INSERT, UPDATE, DELETE, SELECT. Execution order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY.</li><li>Subqueries: independent vs correlated (EXISTS, IN, ALL, ANY).</li><li>Views: updatable vs read-only, materialised. Triggers: row-level vs statement-level. Stored procedures/functions.</li></ul>",
+      "task": "Create a trigger that logs every new student.",
+      "starter": "CREATE TABLE log(msg TEXT);\nCREATE TRIGGER t_new AFTER INSERT ON students BEGIN INSERT INTO log VALUES('added '||NEW.name); END;\nINSERT INTO students VALUES(9,'Neha','Delhi',70);\nSELECT * FROM log;",
+      "demo": [
+       {
+        "say": "Create a log table and a row-level trigger.",
+        "code": "CREATE TABLE log(msg TEXT);\nCREATE TRIGGER t_new AFTER INSERT ON students BEGIN INSERT INTO log VALUES('added '||NEW.name); END;"
+       },
+       {
+        "say": "Fire it with an INSERT.",
+        "code": "INSERT INTO students VALUES(9,'Neha','Delhi',70);"
+       },
+       {
+        "say": "Trigger wrote the log automatically.",
+        "code": "SELECT * FROM log;"
+       },
+       {
+        "say": "Correlated subquery: students above their own city's average.",
+        "code": "SELECT name, city, marks FROM students s WHERE marks>(SELECT AVG(marks) FROM students WHERE city=s.city);"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 5: Dependencies and normalization",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li><b>FD</b> X\u2192Y. Closure X\u207a, canonical cover, Armstrong's axioms (reflexivity, augmentation, transitivity).</li><li><b>Anomalies:</b> insertion, deletion, modification.</li><li><b>1NF</b> atomic values. <b>2NF</b> no partial dependency. <b>3NF</b> X\u2192A needs X superkey or A prime. <b>BCNF</b> X must be a superkey.</li><li><b>4NF</b> (MVDs), <b>5NF</b> (join dependencies). Check decomposition: lossless join and dependency preservation.</li></ul>",
+      "task": "Decompose enrol_flat(sid, sname, cid, cname) into 3 tables and rebuild it by joining.",
+      "starter": "CREATE TABLE s2(sid INTEGER PRIMARY KEY, sname TEXT);\nCREATE TABLE c2(cid INTEGER PRIMARY KEY, cname TEXT);\nINSERT INTO s2 VALUES(1,'Aman');INSERT INTO c2 VALUES(1,'SQL');\nSELECT s2.sname, c2.cname FROM s2, c2;",
+      "demo": [
+       {
+        "say": "Unnormalized table: sname depends only on sid (partial dependency).",
+        "code": "CREATE TABLE enrol_flat(sid INTEGER, sname TEXT, cid INTEGER, cname TEXT, PRIMARY KEY(sid,cid));\nINSERT INTO enrol_flat VALUES(1,'Aman',1,'SQL'),(1,'Aman',2,'MongoDB'),(2,'Riya',1,'SQL');\nSELECT * FROM enrol_flat;"
+       },
+       {
+        "say": "Modification anomaly: change one row, data becomes inconsistent.",
+        "code": "UPDATE enrol_flat SET sname='Aman K' WHERE sid=1 AND cid=1;\nSELECT * FROM enrol_flat;"
+       },
+       {
+        "say": "Decompose into 2NF/3NF tables.",
+        "code": "CREATE TABLE s2 AS SELECT DISTINCT sid, sname FROM enrol_flat;\nCREATE TABLE c2 AS SELECT DISTINCT cid, cname FROM enrol_flat;\nCREATE TABLE e2 AS SELECT sid, cid FROM enrol_flat;"
+       },
+       {
+        "say": "Lossless join: joining back gives the original rows.",
+        "code": "SELECT e2.sid, s2.sname, e2.cid, c2.cname FROM e2 JOIN s2 ON e2.sid=s2.sid JOIN c2 ON e2.cid=c2.cid;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 6: File structures, indexing, hashing",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li>Blocks, blocking factor = floor(block size / record size), fixed vs variable records, spanned vs unspanned.</li><li>Heap, sequential and clustered files.</li><li>Primary, clustering and secondary indexes; multi-level indexes.</li><li><b>B-tree</b> vs <b>B+ tree</b> (all pointers in linked leaves = fast range scans).</li><li>Static hashing, overflow, collisions; dynamic: extendible and linear hashing.</li></ul>",
+      "task": "Create an index and compare the query plan before and after.",
+      "starter": "EXPLAIN QUERY PLAN SELECT * FROM students WHERE city='Noida';",
+      "demo": [
+       {
+        "say": "Without an index: full table scan.",
+        "code": "EXPLAIN QUERY PLAN SELECT * FROM students WHERE city='Noida';"
+       },
+       {
+        "say": "Create an index (SQLite uses a B-tree).",
+        "code": "CREATE INDEX idx_city ON students(city);"
+       },
+       {
+        "say": "Same query now uses the index.",
+        "code": "EXPLAIN QUERY PLAN SELECT * FROM students WHERE city='Noida';"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 7: Transactions and concurrency control",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li><b>ACID:</b> atomicity, consistency, isolation, durability. States: active, partially committed, committed, failed, aborted.</li><li>Schedules: serial, conflict/view serializability (precedence graph).</li><li>Anomalies: dirty read, non-repeatable read, phantom, lost update.</li><li>Locking: shared S, exclusive X; 2PL (basic, conservative, strict, rigorous). Timestamp ordering, Thomas write rule, optimistic control.</li><li>Deadlock: wait-die, wound-wait, wait-for graph, victim selection.</li></ul>",
+      "task": "Move marks between two students inside one transaction and roll it back.",
+      "starter": "BEGIN;\nUPDATE students SET marks=marks-10 WHERE id=1;\nUPDATE students SET marks=marks+10 WHERE id=2;\nROLLBACK;\nSELECT id,marks FROM students WHERE id IN (1,2);",
+      "demo": [
+       {
+        "say": "Start a transaction.",
+        "code": "BEGIN;"
+       },
+       {
+        "say": "Two updates that must succeed together.",
+        "code": "UPDATE students SET marks=marks-10 WHERE id=1;\nUPDATE students SET marks=marks+10 WHERE id=2;"
+       },
+       {
+        "say": "Inside the transaction the change is visible.",
+        "code": "SELECT id,marks FROM students WHERE id IN (1,2);"
+       },
+       {
+        "say": "ROLLBACK undoes everything (atomicity).",
+        "code": "ROLLBACK;"
+       },
+       {
+        "say": "Original values are back.",
+        "code": "SELECT id,marks FROM students WHERE id IN (1,2);"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 8: Recovery and query optimization",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li>Failures: system crash, media failure, transaction error.</li><li><b>WAL</b>: log before data. Log records, undo and redo.</li><li>Deferred update (no-undo/redo), immediate update (undo/redo), checkpoints, ARIES (analysis, redo, undo).</li><li>Pipeline: parse, verify, optimize, generate code.</li><li>Heuristic: push selections and projections down. Cost-based: size estimates, histograms, access-path costs.</li></ul>",
+      "task": "View the plan of a join query.",
+      "starter": "EXPLAIN QUERY PLAN SELECT s.name, c.cname FROM students s JOIN enrol e ON s.id=e.sid JOIN courses c ON c.cid=e.cid WHERE s.city='Noida';",
+      "demo": [
+       {
+        "say": "The optimizer chooses join order and access paths.",
+        "code": "EXPLAIN QUERY PLAN SELECT s.name, c.cname FROM students s JOIN enrol e ON s.id=e.sid JOIN courses c ON c.cid=e.cid WHERE s.city='Noida';"
+       },
+       {
+        "say": "Add an index and watch the plan change.",
+        "code": "CREATE INDEX idx_enrol_sid ON enrol(sid);\nEXPLAIN QUERY PLAN SELECT * FROM enrol WHERE sid=1;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Module 9: Distributed, NoSQL and data warehousing",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<ul><li>Homogeneous vs heterogeneous; fragmentation (horizontal, vertical, hybrid); replication; 2PC.</li><li><b>CAP</b> theorem and <b>BASE</b>; document, key-value, wide-column, graph stores (try the MongoDB tab).</li><li>OLTP vs OLAP; star, snowflake and fact-constellation schemas; ETL.</li></ul>",
+      "task": "Build a tiny star schema and total sales per course.",
+      "starter": "CREATE TABLE fact_sales(cid INTEGER, qty INTEGER, amount INTEGER);\nINSERT INTO fact_sales VALUES(1,2,6000),(2,1,3500),(1,1,3000);\nSELECT c.cname, SUM(amount) FROM fact_sales f JOIN courses c ON c.cid=f.cid GROUP BY c.cname;",
+      "demo": [
+       {
+        "say": "Fact table holds measures; dimension tables (courses) describe them.",
+        "code": "CREATE TABLE fact_sales(cid INTEGER, qty INTEGER, amount INTEGER);\nINSERT INTO fact_sales VALUES(1,2,6000),(2,1,3500),(1,1,3000);"
+       },
+       {
+        "say": "OLAP-style roll-up by dimension.",
+        "code": "SELECT c.cname, SUM(amount) AS total FROM fact_sales f JOIN courses c ON c.cid=f.cid GROUP BY c.cname;"
+       },
+       {
+        "say": "Horizontal fragmentation = split rows by a rule.",
+        "code": "SELECT * FROM students WHERE city='Noida';"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which normal form removes transitive dependency?",
+    "options": [
+     "1NF",
+     "2NF",
+     "3NF",
+     "BCNF only"
+    ],
+    "answer": 2,
+    "explain": "3NF removes transitive dependencies."
+   }
+  ],
+  "scenarios": [
+   {
+    "q": "A library stores book, author and author_city in one table. Which anomaly appears and how do you fix it?",
+    "starter": "-- design your tables here\n",
+    "hint": "Update anomaly (author_city repeated). Split into books and authors tables linked by author_id."
+   }
+  ]
+ },
+ "postgresql": {
+  "title": "PostgreSQL",
+  "engine": "pg",
+  "accent": "#2f6fb5",
+  "seed": "CREATE TABLE students(id SERIAL PRIMARY KEY,name TEXT,city TEXT,marks INT,skills JSONB);INSERT INTO students(name,city,marks,skills) VALUES('Aman','Noida',82,'[\"sql\",\"js\"]'),('Riya','Delhi',91,'[\"python\"]'),('Karan','Noida',67,'[]');CREATE TABLE courses(cid INTEGER PRIMARY KEY,cname TEXT,fee INTEGER);INSERT INTO courses VALUES(1,'SQL',3000),(2,'MongoDB',3500),(3,'Python',4000);CREATE TABLE enrol(sid INTEGER,cid INTEGER);INSERT INTO enrol VALUES(1,1),(1,2),(2,1),(3,3);",
+  "topics": [
+   {
+    "title": "CREATE TABLE, INSERT, fetch data",
+    "subs": [
+     {
+      "title": "Data types and CREATE TABLE",
+      "theory": "<h3>What it is</h3><p>CREATE TABLE defines the structure: columns, data types and rules. Choosing the right type saves space and prevents bad data.</p><h3>Syntax</h3><pre>CREATE TABLE name (\n  col type constraint, ...\n);</pre><h3>How it works</h3><ul><li>INT, BIGINT: whole numbers. <b>SERIAL</b>: auto-increasing id.</li><li>TEXT / VARCHAR(n): text. NUMERIC(p,s): exact decimals.</li><li>BOOLEAN, DATE, TIMESTAMP, JSONB.</li><li>Constraints: PRIMARY KEY, NOT NULL, UNIQUE, DEFAULT, CHECK.</li></ul><h3>Common mistakes</h3><ul><li>Using FLOAT for money (use NUMERIC).</li><li>Forgetting PRIMARY KEY.</li></ul>",
+      "task": "Create a 'books' table with id, title and price.",
+      "starter": "CREATE TABLE books(id SERIAL PRIMARY KEY, title TEXT NOT NULL, price NUMERIC(8,2) CHECK(price>0));",
+      "demo": [
+       {
+        "say": "Create the table.",
+        "code": "CREATE TABLE books(id SERIAL PRIMARY KEY, title TEXT NOT NULL, price NUMERIC(8,2) CHECK(price>0), published DATE DEFAULT CURRENT_DATE);"
+       },
+       {
+        "say": "It is empty at first.",
+        "code": "SELECT * FROM books;"
+       }
+      ]
+     },
+     {
+      "title": "INSERT and RETURNING",
+      "theory": "<h3>What it is</h3><p>INSERT adds rows. PostgreSQL's RETURNING shows the stored row immediately, including generated values like SERIAL ids.</p><h3>Syntax</h3><pre>INSERT INTO t(col1,col2) VALUES (v1,v2), (v3,v4) RETURNING *;</pre><h3>How it works</h3><ul><li>List columns explicitly so the order does not matter.</li><li>Several rows can be inserted in one statement.</li><li>Skipped columns get their DEFAULT or NULL.</li></ul><h3>Common mistakes</h3><ul><li>Inserting text without quotes.</li><li>Breaking a constraint (the whole statement fails).</li></ul>",
+      "task": "Insert two books and see their generated ids.",
+      "starter": "INSERT INTO books(title,price) VALUES('SQL Basics',299.50),('Mongo Guide',399) RETURNING *;",
+      "demo": [
+       {
+        "say": "Run Subtopic 1.1 first. Then insert and get rows back.",
+        "code": "INSERT INTO books(title,price) VALUES('SQL Basics',299.50),('Mongo Guide',399) RETURNING *;"
+       },
+       {
+        "say": "A rule violation is rejected. Watch the error.",
+        "code": "INSERT INTO books(title,price) VALUES('Free book',-1);"
+       }
+      ]
+     },
+     {
+      "title": "Fetching data: ORDER BY, LIMIT, OFFSET",
+      "theory": "<h3>What it is</h3><p>SELECT reads data. ORDER BY sorts, LIMIT restricts the number of rows and OFFSET skips rows, which is how pagination works.</p><h3>Syntax</h3><pre>SELECT cols FROM t ORDER BY col DESC LIMIT 5 OFFSET 10;</pre><h3>How it works</h3><ul><li>Page n of size k: <code>LIMIT k OFFSET (n-1)*k</code>.</li><li>Always use ORDER BY with LIMIT so results are predictable.</li><li>DISTINCT ON(col) keeps the first row per value (PostgreSQL feature).</li></ul><h3>Common mistakes</h3><ul><li>Using OFFSET on very large tables (it gets slow).</li></ul>",
+      "task": "Show page 2 of students with 2 students per page, sorted by name.",
+      "starter": "SELECT * FROM students ORDER BY name LIMIT 2 OFFSET 2;",
+      "demo": [
+       {
+        "say": "Page 1.",
+        "code": "SELECT * FROM students ORDER BY name LIMIT 2 OFFSET 0;"
+       },
+       {
+        "say": "Page 2.",
+        "code": "SELECT * FROM students ORDER BY name LIMIT 2 OFFSET 2;"
+       },
+       {
+        "say": "One row per city (highest marks).",
+        "code": "SELECT DISTINCT ON (city) city, name, marks FROM students ORDER BY city, marks DESC;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "ALTER, UPDATE, DELETE, DROP",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><b>ALTER TABLE</b> with ADD COLUMN, ALTER COLUMN (TYPE, SET DEFAULT, SET NOT NULL), DROP COLUMN. UPDATE and DELETE need WHERE. DROP TABLE removes it (CASCADE for dependants).</p>",
+      "task": "Add a 'grade' column to students and fill it.",
+      "starter": "ALTER TABLE students ADD COLUMN grade TEXT;\nUPDATE students SET grade='A' WHERE marks>=90;\nSELECT name, marks, grade FROM students;",
+      "demo": [
+       {
+        "say": "Add a column.",
+        "code": "ALTER TABLE students ADD COLUMN grade TEXT;"
+       },
+       {
+        "say": "Update some rows.",
+        "code": "UPDATE students SET grade='A' WHERE marks>=90;\nSELECT name, marks, grade FROM students;"
+       },
+       {
+        "say": "Change a column type.",
+        "code": "ALTER TABLE students ALTER COLUMN grade TYPE VARCHAR(2);"
+       },
+       {
+        "say": "Drop the column.",
+        "code": "ALTER TABLE students DROP COLUMN grade;\nSELECT * FROM students;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Operators, WHERE, LIKE/ILIKE, IN, BETWEEN",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>Comparison (=, &lt;&gt;, &lt;, &gt;), logical (AND, OR, NOT), <b>LIKE</b> (case sensitive) vs <b>ILIKE</b> (case-insensitive, PostgreSQL only), IN, BETWEEN, IS NULL, <code>||</code> concatenation.</p>",
+      "task": "Find names containing 'AN' regardless of case.",
+      "starter": "SELECT * FROM students WHERE name ILIKE '%an%';",
+      "demo": [
+       {
+        "say": "Basic filter.",
+        "code": "SELECT * FROM students WHERE marks>70 AND city<>'Delhi';"
+       },
+       {
+        "say": "ILIKE ignores case.",
+        "code": "SELECT * FROM students WHERE name ILIKE '%AN%';"
+       },
+       {
+        "say": "Concatenate text.",
+        "code": "SELECT name || ' from ' || city AS info FROM students;"
+       },
+       {
+        "say": "IN and BETWEEN.",
+        "code": "SELECT * FROM students WHERE city IN ('Noida','Delhi') AND marks BETWEEN 60 AND 90;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Aggregates: MIN, MAX, COUNT, SUM, AVG",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>Aggregates collapse rows. Use <b>FILTER (WHERE ...)</b> for conditional aggregates and <b>ROUND()</b> for neat output.</p>",
+      "task": "Show count and average marks per city, rounded to 1 decimal.",
+      "starter": "SELECT city, COUNT(*), ROUND(AVG(marks),1) FROM students GROUP BY city;",
+      "demo": [
+       {
+        "say": "Basic aggregates.",
+        "code": "SELECT MIN(marks), MAX(marks), ROUND(AVG(marks),2) FROM students;"
+       },
+       {
+        "say": "Conditional count with FILTER.",
+        "code": "SELECT COUNT(*) AS total, COUNT(*) FILTER (WHERE marks>=70) AS passed FROM students;"
+       },
+       {
+        "say": "Per group.",
+        "code": "SELECT city, COUNT(*), ROUND(AVG(marks),1) FROM students GROUP BY city;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Joins: INNER, LEFT, RIGHT, FULL, CROSS",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>Same join family as SQL. PostgreSQL supports FULL JOIN natively. Use table aliases. <b>USING(col)</b> is a short form when both tables have the same column name.</p>",
+      "task": "List all courses with the number of students enrolled (include empty courses).",
+      "starter": "SELECT c.cname, COUNT(e.sid) FROM courses c LEFT JOIN enrol e ON c.cid=e.cid GROUP BY c.cname;",
+      "demo": [
+       {
+        "say": "INNER JOIN.",
+        "code": "SELECT s.name, c.cname FROM students s JOIN enrol e ON s.id=e.sid JOIN courses c ON c.cid=e.cid;"
+       },
+       {
+        "say": "LEFT JOIN: all students.",
+        "code": "SELECT s.name, c.cname FROM students s LEFT JOIN enrol e ON s.id=e.sid LEFT JOIN courses c ON c.cid=e.cid;"
+       },
+       {
+        "say": "FULL JOIN: unmatched rows from both sides.",
+        "code": "SELECT s.name, e.cid FROM students s FULL JOIN enrol e ON s.id=e.sid;"
+       },
+       {
+        "say": "CROSS JOIN.",
+        "code": "SELECT s.name, c.cname FROM students s CROSS JOIN courses c LIMIT 5;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "UNION, GROUP BY, HAVING, EXISTS, ANY, ALL, CASE",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>UNION merges results. HAVING filters groups. <b>ANY</b>: true if any value matches; <b>ALL</b>: true if all match. EXISTS checks for rows. CASE is if/else inside SQL.</p>",
+      "task": "Find students whose marks are higher than ALL Noida students.",
+      "starter": "SELECT name, marks FROM students WHERE marks > ALL (SELECT marks FROM students WHERE city='Noida');",
+      "demo": [
+       {
+        "say": "ANY: higher than at least one Noida student.",
+        "code": "SELECT name, marks FROM students WHERE marks > ANY (SELECT marks FROM students WHERE city='Noida');"
+       },
+       {
+        "say": "ALL: higher than every Noida student.",
+        "code": "SELECT name, marks FROM students WHERE marks > ALL (SELECT marks FROM students WHERE city='Noida');"
+       },
+       {
+        "say": "EXISTS.",
+        "code": "SELECT name FROM students s WHERE EXISTS (SELECT 1 FROM enrol e WHERE e.sid=s.id);"
+       },
+       {
+        "say": "CASE.",
+        "code": "SELECT name, CASE WHEN marks>=90 THEN 'A' WHEN marks>=70 THEN 'B' ELSE 'C' END AS grade FROM students;"
+       },
+       {
+        "say": "HAVING.",
+        "code": "SELECT city, COUNT(*) FROM students GROUP BY city HAVING COUNT(*)>1;"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "JSONB & RETURNING",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>PostgreSQL stores JSON as <b>JSONB</b> (binary, indexable). Operators: <code>-&gt;</code> returns JSON, <code>-&gt;&gt;</code> returns text, <code>@&gt;</code> contains. <b>RETURNING</b> gives back rows changed by INSERT/UPDATE/DELETE.</p>",
+      "task": "Insert a student and return the new row.",
+      "starter": "INSERT INTO students(name,city,marks,skills) VALUES('Sana','Lucknow',74,'[\"sql\"]') RETURNING *;",
+      "demo": []
+     }
+    ]
+   },
+   {
+    "title": "Window functions",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>Window functions calculate across related rows without collapsing them: <code>RANK() OVER (ORDER BY marks DESC)</code>, <code>ROW_NUMBER()</code>, <code>SUM() OVER (PARTITION BY city)</code>.</p>",
+      "task": "Rank students by marks within each city.",
+      "starter": "SELECT name, city, marks, RANK() OVER (PARTITION BY city ORDER BY marks DESC) AS city_rank FROM students;",
+      "demo": []
+     }
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "Which PostgreSQL type is best for indexed JSON?",
+    "options": [
+     "JSON",
+     "JSONB",
+     "TEXT",
+     "XML"
+    ],
+    "answer": 1,
+    "explain": "JSONB is binary, supports GIN indexes."
+   }
+  ],
+  "scenarios": [
+   {
+    "q": "Find the second highest marks using a window function.",
+    "starter": "-- write your query\n",
+    "hint": "SELECT * FROM (SELECT name, marks, DENSE_RANK() OVER (ORDER BY marks DESC) r FROM students) t WHERE r=2;"
+   }
+  ]
+ },
+ "mongodb": {
+  "title": "MongoDB",
+  "engine": "mongo",
+  "accent": "#1a8a4a",
+  "seed": "db.students.insertMany([{name:'Aman',city:'Noida',marks:82},{name:'Riya',city:'Delhi',marks:91},{name:'Karan',city:'Noida',marks:67}])",
+  "topics": [
+   {
+    "title": "Intro, databases and collections",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>MongoDB stores <b>documents</b> (JSON-like) in <b>collections</b> inside a <b>database</b>. No fixed schema. Every document has a unique <code>_id</code>. In real mongosh: <code>use school</code> creates a database, <code>db.createCollection('students')</code> a collection. Here, collections are created automatically.</p>",
+      "task": "List all students.",
+      "starter": "db.students.find()",
+      "demo": [
+       {
+        "say": "Show every document.",
+        "code": "db.students.find()"
+       },
+       {
+        "say": "Count documents.",
+        "code": "db.students.countDocuments({})"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Insert documents",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><code>insertOne(doc)</code> and <code>insertMany([docs])</code>. Documents in one collection can have different fields, and fields can be arrays or nested objects.</p>",
+      "task": "Insert a student with a skills array and an address object.",
+      "starter": "db.students.insertOne({name:'Sana',city:'Lucknow',marks:74,skills:['sql','js'],address:{pin:226001}})\ndb.students.find({name:'Sana'})",
+      "demo": [
+       {
+        "say": "insertOne.",
+        "code": "db.students.insertOne({name:'Sana',city:'Lucknow',marks:74,skills:['sql','js']})"
+       },
+       {
+        "say": "insertMany.",
+        "code": "db.students.insertMany([{name:'Dev',city:'Delhi',marks:55},{name:'Zoya',city:'Noida',marks:88}])"
+       },
+       {
+        "say": "Check.",
+        "code": "db.students.find()"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Find, projection, sort, limit",
+    "subs": [
+     {
+      "title": "find() and filters",
+      "theory": "<h3>What it is</h3><p>find() returns documents that match a filter object. An empty filter {} matches everything. Several fields in one filter mean AND.</p><h3>Syntax</h3><pre>db.collection.find(filter)</pre><h3>How it works</h3><ul><li>Filter by equality: <code>{city:'Noida'}</code>.</li><li>Several conditions: <code>{city:'Noida', marks:{$gt:70}}</code>.</li><li>Find inside arrays: <code>{skills:'sql'}</code>.</li></ul><h3>Common mistakes</h3><ul><li>Forgetting quotes around text values.</li><li>Expecting SQL-style case-insensitive matching (MongoDB is case sensitive).</li></ul>",
+      "task": "Find students in Noida with marks above 70.",
+      "starter": "db.students.find({city:'Noida', marks:{$gt:70}})",
+      "demo": [
+       {
+        "say": "All documents.",
+        "code": "db.students.find()"
+       },
+       {
+        "say": "One condition.",
+        "code": "db.students.find({city:'Noida'})"
+       },
+       {
+        "say": "Two conditions (AND).",
+        "code": "db.students.find({city:'Noida', marks:{$gt:70}})"
+       }
+      ]
+     },
+     {
+      "title": "Projection: choose fields",
+      "theory": "<h3>What it is</h3><p>The second argument of find() lists which fields to return. 1 includes a field, 0 hides it. _id is returned unless hidden.</p><h3>Syntax</h3><pre>db.collection.find(filter, {field:1, _id:0})</pre><h3>How it works</h3><ul><li>Use all 1s to include, or all 0s to exclude. Do not mix (except _id).</li><li>Smaller results are faster and cleaner.</li></ul><h3>Common mistakes</h3><ul><li>Mixing 1 and 0 for normal fields.</li></ul>",
+      "task": "Show only names of students from Delhi.",
+      "starter": "db.students.find({city:'Delhi'}, {name:1, _id:0})",
+      "demo": [
+       {
+        "say": "Include fields.",
+        "code": "db.students.find({}, {name:1, marks:1})"
+       },
+       {
+        "say": "Hide _id.",
+        "code": "db.students.find({}, {name:1, marks:1, _id:0})"
+       },
+       {
+        "say": "Exclude a field.",
+        "code": "db.students.find({}, {city:0})"
+       }
+      ]
+     },
+     {
+      "title": "sort(), limit() and counting",
+      "theory": "<h3>What it is</h3><p>sort() orders results (1 ascending, -1 descending). limit() caps the number returned. countDocuments() counts matches.</p><h3>Syntax</h3><pre>db.collection.find().sort({field:-1}).limit(n)\ndb.collection.countDocuments(filter)</pre><h3>How it works</h3><ul><li>Sort and limit together give 'top n'.</li><li>countDocuments({}) counts all documents.</li></ul><h3>Common mistakes</h3><ul><li>Writing sort({marks:'desc'}); use -1.</li></ul>",
+      "task": "Show the top 2 students by marks.",
+      "starter": "db.students.find({}, {name:1, marks:1, _id:0}).sort({marks:-1}).limit(2)",
+      "demo": [
+       {
+        "say": "Highest marks first.",
+        "code": "db.students.find({}, {name:1, marks:1, _id:0}).sort({marks:-1})"
+       },
+       {
+        "say": "Top 2.",
+        "code": "db.students.find({}, {name:1, marks:1, _id:0}).sort({marks:-1}).limit(2)"
+       },
+       {
+        "say": "Count.",
+        "code": "db.students.countDocuments({city:'Noida'})"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Query operators",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>Comparison: <code>$eq $ne $gt $gte $lt $lte $in $nin</code>. Logical: <code>$and $or</code>. Element: <code>$exists</code>.</p>",
+      "task": "Students from Noida or with marks above 90.",
+      "starter": "db.students.find({$or:[{city:'Noida'},{marks:{$gt:90}}]})",
+      "demo": [
+       {
+        "say": "$gt.",
+        "code": "db.students.find({marks:{$gt:70}})"
+       },
+       {
+        "say": "$in.",
+        "code": "db.students.find({city:{$in:['Delhi','Noida']}})"
+       },
+       {
+        "say": "$and.",
+        "code": "db.students.find({$and:[{city:'Noida'},{marks:{$gte:70}}]})"
+       },
+       {
+        "say": "$or.",
+        "code": "db.students.find({$or:[{city:'Noida'},{marks:{$gt:90}}]})"
+       },
+       {
+        "say": "$exists.",
+        "code": "db.students.find({skills:{$exists:true}})"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Update documents and update operators",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><code>updateOne(filter, update)</code>, <code>updateMany</code>. Operators: <b>$set</b> sets a field, <b>$inc</b> adds to a number. Always include an update operator.</p>",
+      "task": "Add 5 marks to every student in Delhi.",
+      "starter": "db.students.updateMany({city:'Delhi'},{$inc:{marks:5}})\ndb.students.find({city:'Delhi'})",
+      "demo": [
+       {
+        "say": "$set on one document.",
+        "code": "db.students.updateOne({name:'Aman'},{$set:{city:'Delhi'}})"
+       },
+       {
+        "say": "$inc on many.",
+        "code": "db.students.updateMany({city:'Delhi'},{$inc:{marks:5}})"
+       },
+       {
+        "say": "Verify.",
+        "code": "db.students.find({city:'Delhi'})"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Delete documents",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><code>deleteOne(filter)</code> removes the first match, <code>deleteMany(filter)</code> removes all matches. An empty filter <code>{}</code> deletes everything.</p>",
+      "task": "Delete students with marks below 60.",
+      "starter": "db.students.deleteMany({marks:{$lt:60}})\ndb.students.find()",
+      "demo": [
+       {
+        "say": "Delete one.",
+        "code": "db.students.deleteOne({name:'Karan'})"
+       },
+       {
+        "say": "Delete many.",
+        "code": "db.students.deleteMany({marks:{$lt:60}})"
+       },
+       {
+        "say": "Check.",
+        "code": "db.students.find()"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Aggregation pipeline",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p>A pipeline passes documents through stages: <code>$match</code> (filter), <code>$group</code> (group with $sum, $avg, $max, $min), <code>$sort</code>, <code>$limit</code>. This is MongoDB's GROUP BY.</p>",
+      "task": "Average marks per city, highest first.",
+      "starter": "db.students.aggregate([{$group:{_id:'$city', avg:{$avg:'$marks'}, total:{$sum:1}}},{$sort:{avg:-1}}])",
+      "demo": [
+       {
+        "say": "Group and count.",
+        "code": "db.students.aggregate([{$group:{_id:'$city', total:{$sum:1}}}])"
+       },
+       {
+        "say": "Average per city, sorted.",
+        "code": "db.students.aggregate([{$group:{_id:'$city', avg:{$avg:'$marks'}}},{$sort:{avg:-1}}])"
+       },
+       {
+        "say": "$match before $group.",
+        "code": "db.students.aggregate([{$match:{marks:{$gt:60}}},{$group:{_id:'$city', best:{$max:'$marks'}}}])"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "title": "Indexing, validation, drivers (concept)",
+    "subs": [
+     {
+      "title": "Overview",
+      "theory": "<p><b>Index:</b> <code>createIndex({city:1})</code> speeds up queries. <b>Validation:</b> <code>$jsonSchema</code> rules on a collection. <b>Node.js driver:</b> <pre>const {MongoClient}=require('mongodb');\nconst c=new MongoClient('mongodb://localhost:27017');\nawait c.connect();\nconst docs=await c.db('school').collection('students').find().toArray();</pre>Index, validation and drivers need a real MongoDB; install it and use mongosh to practise.</p>",
+      "task": "Run a find that an index on city would speed up.",
+      "starter": "db.students.find({city:'Noida'})",
+      "demo": [
+       {
+        "say": "This is the query an index on city would serve.",
+        "code": "db.students.find({city:'Noida'})"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "quiz": [
+   {
+    "q": "In MongoDB, a table is called a ...",
+    "options": [
+     "Document",
+     "Collection",
+     "Field",
+     "Schema"
+    ],
+    "answer": 1,
+    "explain": "A collection groups documents, like a table groups rows."
+   }
+  ],
+  "scenarios": [
+   {
+    "q": "List the top 2 students by marks.",
+    "starter": "// write your query\n",
+    "hint": "db.students.find().sort({marks:-1}).limit(2)"
+   }
+  ]
+ }
+}

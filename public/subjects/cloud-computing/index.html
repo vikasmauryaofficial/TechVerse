@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cloud Computing: Learn by Doing</title>
+<style>
+:root{--bg:#eaf1f8;--card:#fff;--ink:#10243e;--mu:#51647f;--line:#c9d8e8;--you:#e8590c;--prov:#0e7c93;--ok:#168a45;--no:#c92a2a;--ac:#10243e}
+@media(prefers-color-scheme:dark){:root{--bg:#0c1726;--card:#14243a;--ink:#e6eef9;--mu:#9bb0cc;--line:#27405f;--you:#ff8a4c;--prov:#3cc3dc;--ok:#4cd088;--no:#ff7b7b;--ac:#3cc3dc}}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.55 system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;background-attachment:fixed}
+header{padding:34px 18px 18px;max-width:1000px;margin:auto}
+h1{font:700 2.3rem/1.1 Georgia,"Times New Roman",serif;margin:0 0 8px}
+header p{margin:0;color:var(--mu);max-width:60ch}
+.cloud{display:inline-block;width:64px;height:34px;position:relative;margin-bottom:10px;animation:drift 5s ease-in-out infinite}
+.cloud i{position:absolute;background:var(--prov);border-radius:50%}
+.cloud i:nth-child(1){width:44px;height:22px;left:8px;bottom:0;border-radius:12px}
+.cloud i:nth-child(2){width:26px;height:26px;left:12px;bottom:6px}
+.cloud i:nth-child(3){width:20px;height:20px;left:32px;bottom:8px}
+@keyframes drift{50%{transform:translateX(18px)}}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--ac);padding:10px 18px}
+nav div{max-width:1000px;margin:auto;display:flex;gap:8px;overflow-x:auto}
+button,select,input{font:inherit;color:var(--ink)}
+button{background:var(--card);border:1.5px solid var(--ink);padding:7px 14px;border-radius:6px;cursor:pointer;white-space:nowrap}
+button:hover{background:var(--line)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--you);outline-offset:2px}
+button.on{background:var(--ink);color:var(--bg)}
+select,input[type=text]{background:var(--card);border:1.5px solid var(--line);padding:7px;border-radius:6px}
+main{max-width:1000px;margin:auto;padding:18px}
+h2{font:700 1.6rem Georgia,serif;margin:0 0 4px}
+h3{font:700 1.15rem Georgia,serif;margin:0 0 10px}
+h4{margin:16px 0 8px;font-size:1rem}
+.mu{color:var(--mu);font-size:.92rem}
+.box{background:var(--card);border:1.5px solid var(--ink);border-radius:4px 14px 4px 14px;padding:16px;margin:16px 0}
+.tag{display:inline-block;font-size:.85rem;padding:1px 9px;border-radius:99px;border:1.5px solid var(--ink);margin-bottom:6px}
+details{border-top:1px solid var(--line);padding:8px 2px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:6px 0 2px;max-width:70ch;color:var(--mu)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.tl{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tl span{padding:5px 11px;border:1.5px solid var(--prov);border-radius:6px;animation:lit 10s infinite}
+@keyframes lit{0%,16%{background:var(--prov);color:#fff}24%,100%{background:transparent;color:var(--ink)}}
+.ly{display:flex;justify-content:space-between;gap:10px;padding:6px 12px;margin:2px 0;color:#fff;font-weight:600;transition:background .5s,transform .5s;border-radius:4px}
+.ly.you{background:#c2410c;transform:translateX(0)}.ly.prov{background:#0b6679;transform:translateX(14px)}
+.ly span{font-weight:400}
+.vm{border:1.5px dashed var(--mu);border-radius:8px;padding:10px 12px;min-height:50px}
+.bar{height:6px;background:var(--line);border-radius:4px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width 2s linear}
+.srv{display:flex;gap:8px;flex-wrap:wrap;min-height:46px}
+.srv b{width:70px;padding:8px 0;text-align:center;background:var(--prov);color:#fff;border-radius:6px;animation:pop .35s}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.msg{padding:8px 12px;border-left:5px solid var(--mu);background:var(--bg);margin:8px 0;min-height:42px}
+.msg.ok{border-color:var(--ok)}.msg.no{border-color:var(--no)}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--ink);font-size:12px}
+.vp{fill:none;stroke:var(--ink);stroke-width:2}
+.pub{fill:var(--prov);fill-opacity:.14;stroke:var(--prov);stroke-width:2}
+.prv{fill:var(--you);fill-opacity:.14;stroke:var(--you);stroke-width:2}
+.nd{fill:var(--card);stroke:var(--ink);stroke-width:2}
+.lbs{display:flex;gap:10px;margin:8px 0}
+.lbs div{flex:1;text-align:center;border:2px solid var(--prov);border-radius:8px;padding:8px;transition:background .25s}
+.lbs div.hit{background:var(--prov);color:#fff}.lbs div.down{border-color:var(--no);opacity:.5}
+ul.obj{list-style:none;padding:0;margin:6px 0}
+ul.obj li{padding:5px 8px;border-bottom:1px solid var(--line);animation:pop .3s}
+.chk{display:flex;gap:10px;padding:5px 0;cursor:pointer}
+.chk input{margin-top:5px}
+.chk input:checked+span{text-decoration:line-through;color:var(--mu)}
+.pg{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 10px}
+.pg i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+pre{background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto;font-size:.85rem;margin:6px 0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><div class="cloud" aria-hidden="true"><i></i><i></i><i></i></div>
+<h1>Cloud Computing: Learn by Doing</h1>
+<p>Five units. Read the idea, play with the live demo, then follow the lab. Everything runs in your browser, so no AWS account is needed to explore the demos.</p></header>
+<nav><div id="nav"></div></nav>
+<main id="app"></main>
+<script>
+const $=(r,s)=>r.querySelector(s),$$=(r,s)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(f=>setTimeout(f,ms));
+const rid=()=>Math.random().toString(16).slice(2,10);
+
+/* ---------- Unit 1 ---------- */
+function w1(r){
+ const L=['Applications','Data','Runtime','Middleware','OS','Virtualization','Servers','Storage','Networking'];
+ const M={'On-premises':[9,'Your own data centre. You buy and run everything.'],IaaS:[5,'Example: Amazon EC2. You rent machines and manage the OS and above.'],PaaS:[2,'Example: AWS Elastic Beanstalk. You bring code and data only.'],SaaS:[0,'Example: Gmail, Google Docs. You just use the software.']};
+ r.innerHTML=`<span class="tag">Try it</span><h3>Who manages what? Pick a service model</h3>
+ <div class="tl" aria-label="Evolution of computing"><span style="animation-delay:0s">Mainframe</span><span style="animation-delay:2s">Personal computer</span><span style="animation-delay:4s">Client-server</span><span style="animation-delay:6s">Grid / utility</span><span style="animation-delay:8s">Cloud</span></div>
+ <div class="row">${Object.keys(M).map(k=>`<button data-k="${k}">${k}</button>`).join('')}</div>
+ <div>${L.map(l=>`<div class="ly">${l}<span></span></div>`).join('')}</div>
+ <p class="mu" id="s1"></p>`;
+ const set=k=>{$$(r,'.ly').forEach((e,i)=>{const y=i<M[k][0];e.className='ly '+(y?'you':'prov');e.lastChild.textContent=y?'You manage':'Provider manages';e.style.transitionDelay=i*40+'ms'});
+  $$(r,'.row button').forEach(b=>b.classList.toggle('on',b.dataset.k==k));$(r,'#s1').textContent=M[k][1]};
+ $$(r,'.row button').forEach(b=>b.onclick=()=>set(b.dataset.k));set('IaaS');
+}
+
+/* ---------- Unit 2 ---------- */
+function w2(r){
+ r.innerHTML=`<span class="tag">Try it</span><h3>Launch a virtual machine (EC2 simulator)</h3>
+ <div class="row"><select id="am" aria-label="Machine image"><option>Amazon Linux 2023</option><option>Ubuntu 22.04</option><option>Windows Server 2022</option></select>
+ <select id="it" aria-label="Instance type"><option value="0.0104">t3.micro: 2 vCPU, 1 GB</option><option value="0.0416">t3.medium: 2 vCPU, 4 GB</option><option value="0.096">m5.large: 2 vCPU, 8 GB</option></select>
+ <button id="ln">Launch instance</button></div>
+ <div class="vm" id="vm">No instance yet. Choose an image and a size, then launch.</div>
+ <p class="mu">Prices are approximate on-demand rates per hour. Always stop or terminate lab instances.</p>
+ <h3 style="margin-top:20px">Elasticity: drag the user load</h3>
+ <input type="range" id="ld" min="0" max="100" value="20" style="width:100%" aria-label="User load">
+ <div class="srv" id="sv"></div><p class="mu" id="sl"></p>`;
+ const vm=$(r,'#vm');let id,ip,busy=false;
+ const show=(s,extra='')=>vm.innerHTML=`<b>i-${id}</b> | ${$(r,'#am').value} | ${$(r,'#it').selectedOptions[0].text.split(':')[0]}<br>State: <b style="color:var(--${s=='running'?'ok':s=='terminated'?'no':'mu'})">${s}</b> ${extra}`;
+ $(r,'#ln').onclick=async()=>{if(busy)return;busy=true;id=rid();ip='13.'+[1,2,3].map(()=>Math.floor(Math.random()*250)+1).join('.');
+  show('pending','<div class="bar"><i></i></div>');await sleep(50);$(r,'.bar i').style.width='100%';await sleep(2000);
+  show('running',`<br>Public IP: ${ip} | Cost: ~$${$(r,'#it').value}/hour<div class="row"><button id="st">Stop</button><button id="tm">Terminate</button></div>`);
+  $(r,'#st').onclick=()=>{show('stopped','<br>Compute billing stops. The disk (EBS) still costs a little.')};
+  $(r,'#tm').onclick=()=>{show('terminated','<br>Instance and its root disk are deleted.');busy=false};};
+ const ld=$(r,'#ld'),draw=()=>{const n=Math.max(1,Math.ceil(ld.value/25));const sv=$(r,'#sv');while(sv.children.length<n)sv.insertAdjacentHTML('beforeend','<b>Server</b>');while(sv.children.length>n)sv.lastChild.remove();
+  $(r,'#sl').textContent=`Load ${ld.value}%: ${n} server${n>1?'s':''} running. Each server handles about 25% load. Servers are added and removed automatically.`};
+ ld.oninput=draw;draw();
+}
+
+/* ---------- Unit 3 ---------- */
+function fly(svg,pts,ms,done){const c=$(svg,'#dot');c.style.display='';const seg=pts.length-1,t0=performance.now();
+ (function f(t){const p=Math.min(1,(t-t0)/ms)*seg,i=Math.min(seg-1,Math.floor(p)),k=p-i;
+  c.setAttribute('cx',pts[i][0]+(pts[i+1][0]-pts[i][0])*k);c.setAttribute('cy',pts[i][1]+(pts[i+1][1]-pts[i][1])*k);
+  p<seg?requestAnimationFrame(f):done()})(t0)}
+function w3(r){
+ const P={
+  a:[[[45,140],[130,140],[255,140]],1,'Allowed. The public subnet route table sends 0.0.0.0/0 to the Internet Gateway, and the web server security group allows port 80.'],
+  b:[[[255,140],[520,140]],1,'Allowed. The built-in "local" route connects every subnet in the VPC. The database security group allows port 3306 from the web server only.'],
+  c:[[[520,140],[520,207],[335,207],[130,140],[45,140]],1,'Allowed through the NAT gateway. The private route table sends 0.0.0.0/0 to the NAT, which lives in the public subnet. Outside users still cannot start a connection to the database.'],
+  d:[[[45,140],[130,140],[172,140]],0,'Blocked. The private subnet has no route to the Internet Gateway and the database has no public IP.']};
+ r.innerHTML=`<span class="tag">Try it</span><h3>Follow a packet through a VPC</h3>
+ <div class="row"><button data-p="a">User to web server</button><button data-p="b">Web server to database</button><button data-p="c">Database to internet (updates)</button><button data-p="d">User to database</button></div>
+ <svg viewBox="0 0 640 260" role="img" aria-label="VPC diagram with public and private subnets">
+ <rect class="vp" x="150" y="8" width="484" height="244" rx="12"/><text x="160" y="26">VPC 10.0.0.0/16</text>
+ <rect class="pub" x="175" y="38" width="220" height="200" rx="8"/><text x="185" y="56">Public subnet 10.0.1.0/24</text>
+ <rect class="prv" x="420" y="38" width="200" height="200" rx="8"/><text x="430" y="56">Private subnet 10.0.2.0/24</text>
+ <rect class="nd" x="5" y="120" width="80" height="40" rx="6"/><text x="22" y="144">Internet</text>
+ <rect class="nd" x="108" y="120" width="44" height="40" rx="6"/><text x="115" y="144">IGW</text>
+ <rect class="nd" x="200" y="120" width="110" height="40" rx="6"/><text x="214" y="144">Web server</text>
+ <rect class="nd" x="285" y="190" width="100" height="34" rx="6"/><text x="300" y="211">NAT gateway</text>
+ <rect class="nd" x="470" y="120" width="100" height="40" rx="6"/><text x="492" y="144">Database</text>
+ <circle id="dot" r="8" fill="#e8590c" style="display:none"/></svg>
+ <div class="msg" id="m3">Choose a path above to send a packet.</div>
+ <h3 style="margin-top:20px">Load balancer</h3>
+ <div class="row"><button id="req">Send request</button><button id="fail">Fail server 2</button></div>
+ <div class="lbs" id="lbs"></div><p class="mu" id="ll">Requests rotate across healthy servers. A failed server is skipped.</p>`;
+ let busy=false;$$(r,'[data-p]').forEach(b=>b.onclick=()=>{if(busy)return;busy=true;const [pts,ok,t]=P[b.dataset.p];const m=$(r,'#m3');m.className='msg';m.textContent='Sending...';
+  fly($(r,'svg'),pts,1800,()=>{m.className='msg '+(ok?'ok':'no');m.textContent=t;if(!ok){const [x,y]=pts[pts.length-1];$(r,'svg').insertAdjacentHTML('beforeend',`<text x="${x}" y="${y+5}" font-size="22" style="fill:var(--no)" id="x">&#10005;</text>`);setTimeout(()=>$(r,'#x')?.remove(),1500)}busy=false})});
+ const cnt=[0,0,0],dn=[0,0,0];let nx=0;const lbs=$(r,'#lbs'),dr=()=>lbs.innerHTML=cnt.map((c,i)=>`<div class="${dn[i]?'down':''}">Server ${i+1}<br><b>${dn[i]?'down':c+' requests'}</b></div>`).join('');dr();
+ $(r,'#req').onclick=()=>{let t=0;while(dn[nx%3]&&t++<3)nx++;if(t>=3)return;const i=nx%3;nx++;cnt[i]++;dr();lbs.children[i].classList.add('hit');setTimeout(()=>lbs.children[i].classList.remove('hit'),250)};
+ $(r,'#fail').onclick=e=>{dn[1]^=1;e.target.textContent=dn[1]?'Recover server 2':'Fail server 2';dr()};
+}
+
+/* ---------- Unit 4 ---------- */
+function w4(r){
+ r.innerHTML=`<span class="tag">Try it</span><h3>Object storage: an S3 bucket</h3>
+ <div class="row"><input type="text" id="bn" placeholder="bucket name, e.g. abes-cloud-lab-01" size="30" aria-label="Bucket name"><button id="cb">Create bucket</button></div>
+ <div class="msg" id="m4">Bucket names must be 3 to 63 characters: lowercase letters, numbers and hyphens, and globally unique.</div>
+ <div id="bk" hidden>
+ <div class="row"><button id="up">Upload file</button><label><input type="checkbox" id="vr"> Versioning</label><label><input type="checkbox" id="bp" checked> Block public access</label><button id="pu">Open public URL</button></div>
+ <ul class="obj" id="ol"></ul></div>`;
+ const F=['report.pdf','photo.jpg','notes.txt'];let name,objs={},k=0;const m=$(r,'#m4'),say=(t,c='')=>{m.className='msg '+c;m.textContent=t};
+ const dr=()=>$(r,'#ol').innerHTML=Object.entries(objs).map(([f,v])=>`<li>${f}: ${v.length} version${v.length>1?'s':''}, latest ${v.at(-1)} KB <button data-f="${f}">Delete</button></li>`).join('')||'<li class="mu">Bucket is empty.</li>';
+ $(r,'#cb').onclick=()=>{const n=$(r,'#bn').value.trim();if(!/^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/.test(n))return say('Invalid name. Use 3 to 63 lowercase letters, numbers or hyphens, starting and ending with a letter or number.','no');
+  name=n;objs={};$(r,'#bk').hidden=false;say(`Bucket "${n}" created. Public access is blocked by default.`,'ok');dr()};
+ $(r,'#up').onclick=()=>{const f=F[k++%3],s=Math.floor(Math.random()*900)+50;if(objs[f]&&!$(r,'#vr').checked)objs[f]=[s];else(objs[f]=objs[f]||[]).push(s);say(`Uploaded ${f}.`+(objs[f].length>1?' Versioning kept the older copy.':''),'ok');dr()};
+ $(r,'#ol').onclick=e=>{const f=e.target.dataset.f;if(!f)return;if($(r,'#vr').checked){say(`${f} got a delete marker. With versioning on, you can restore it. This is how backup and recovery works in S3.`,'ok')}else say(`${f} is permanently gone. Without versioning there is no way back.`,'no');delete objs[f];dr()};
+ $(r,'#pu').onclick=()=>$(r,'#bp').checked?say('403 AccessDenied. Block Public Access is on.','no'):say('200 OK. Anyone on the internet can read objects here. Make sure that is what you want.','ok');
+}
+
+/* ---------- Unit 5 ---------- */
+function w5(r){
+ r.innerHTML=`<span class="tag">Try it</span><h3>IAM: is this request allowed?</h3>
+ <div class="row"><select id="pr"><option value="s">student-user</option><option value="a">admin-user</option></select>
+ <select id="ac"><option>s3:GetObject</option><option>s3:PutObject</option><option>ec2:TerminateInstances</option></select>
+ <button id="ev">Evaluate</button></div>
+ <pre>student-user policy:
+ Allow  s3:GetObject on course-notes/*
+ Deny   ec2:TerminateInstances on *
+admin-user policy:
+ Allow  *  on  *</pre>
+ <div class="msg" id="m5">Rule order: explicit Deny wins, then explicit Allow, otherwise the default is Deny.</div>
+ <h3 style="margin-top:20px">Encryption: scramble and unscramble</h3>
+ <div class="row"><input type="text" id="pt" value="Marks sheet 2026" aria-label="Text to encrypt"><label>Key <input type="number" id="ky" value="7" min="1" max="25" style="width:64px"></label><label>Decrypt with <input type="number" id="dk" value="3" min="1" max="25" style="width:64px"></label></div>
+ <pre id="en"></pre><p class="mu">This simple letter-shift cipher only shows the idea of a key. Real systems use AES-256 with keys held in a service such as AWS KMS.</p>`;
+ $(r,'#ev').onclick=()=>{const p=$(r,'#pr').value,a=$(r,'#ac').value,m=$(r,'#m5');let ok,t;
+  if(p=='s'&&a=='ec2:TerminateInstances'){ok=0;t='Denied by an explicit Deny. This wins even if another policy allowed it.'}
+  else if(p=='a'){ok=1;t='Allowed by the admin policy. In real life, admins should still use MFA and least privilege.'}
+  else if(a=='s3:GetObject'){ok=1;t='Allowed: the student policy allows reading course notes.'}
+  else{ok=0;t='Denied by default. No policy allows this action, so IAM says no.'}
+  m.className='msg '+(ok?'ok':'no');m.textContent=(ok?'ALLOW: ':'DENY: ')+t};
+ const sh=(s,k)=>s.replace(/[a-z]/gi,c=>{const b=c<'a'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+k+26)%26+b)});
+ const up=()=>{const k=+$(r,'#ky').value,d=+$(r,'#dk').value,c=sh($(r,'#pt').value,k);$(r,'#en').textContent=`Encrypted: ${c}\nDecrypted with key ${d}: ${sh(c,-d)}`+(d==k?'   (correct key)':'   (wrong key gives garbage)')};
+ ['pt','ky','dk'].forEach(i=>$(r,'#'+i).oninput=up);up();
+}
+
+/* ---------- Content ---------- */
+const U=[
+{t:'Introduction to Cloud Computing',w:w1,topics:[
+['Evolution of computing','Mainframes, then PCs, then client-server, then grid and utility computing, then cloud. Each step moved computing further from the user and shared it among more people.'],
+['What is cloud computing?','On-demand delivery of computing, storage and software over the internet, with pay-as-you-go pricing.'],
+['Characteristics and benefits','NIST lists on-demand self-service, broad network access, resource pooling, rapid elasticity and measured service. Benefits: low upfront cost, speed, global reach, scalability, reliability.'],
+['Service models: IaaS, PaaS, SaaS','IaaS rents infrastructure (EC2). PaaS rents a platform to run your code (Elastic Beanstalk). SaaS is a finished application (Gmail). Use the layer demo above.'],
+['Deployment models','Public: shared, owned by the provider. Private: used by one organisation. Hybrid: private plus public, connected. Community: shared by organisations with common needs.'],
+['Infrastructure components','Compute (VMs, containers, functions), storage (object, block, file) and networking (VPC, DNS, load balancers).'],
+['Major cloud providers','AWS, Microsoft Azure and Google Cloud lead the market. Oracle, IBM and Alibaba Cloud are also widely used.'],
+['Applications of cloud computing','Video streaming, e-learning, ERP and web hosting, big data and AI training, disaster recovery, IoT.']]},
+{t:'Virtualization and Cloud Management',w:w2,topics:[
+['Virtualization','One physical machine is split into many isolated virtual machines, so hardware is shared safely.'],
+['Types of virtualization','Server, desktop, storage, network and application virtualization.'],
+['Hypervisors','Type 1 runs directly on hardware (KVM, Xen, VMware ESXi, AWS Nitro). Type 2 runs on top of an OS (VirtualBox, VMware Workstation).'],
+['Virtual machines','Each VM has its own guest OS plus virtual CPU, RAM and disk. Strong isolation, but gigabytes in size and minutes to boot.'],
+['Containerization','Containers share the host kernel and package only the app and its libraries. Megabytes in size, start in seconds. Docker builds them, Kubernetes manages them.'],
+['Resource pooling','The provider pools CPU, memory and storage and assigns them dynamically to many customers (multi-tenancy).'],
+['Elasticity and scalability','Scalability is the ability to grow (bigger machine, or more machines). Elasticity is growing and shrinking automatically with demand. Try the load slider.'],
+['Cloud resource provisioning','Resources are created through a console, CLI or API in minutes: static, dynamic or self-service provisioning.'],
+['Cloud compute services','EC2 gives virtual machines, Lambda runs functions without servers, ECS and EKS run containers.'],
+['Amazon EC2','Choose an image (AMI), instance type, key pair, network and security group, then launch. States: pending, running, stopped, terminated.'],
+['Cost models and pricing','On-demand (pay per second), Reserved and Savings Plans (commit for a discount), Spot (spare capacity, cheapest), and the Free Tier for learning.'],
+['Case study: cloud adoption','Netflix moved from its own data centres to AWS after a major database outage in 2008, so it could scale streaming worldwide. Discuss: what did they gain and what risks remain?']],
+lab:['Lab: Create and manage EC2 instances',['Sign in to the AWS Console and pick a Region.','Open EC2, then choose Launch instance. Give it a name.','Pick the Amazon Linux AMI and the t3.micro (Free Tier) type.','Create a key pair and download the .pem file.','Security group: allow SSH (port 22) from My IP, and HTTP (port 80) if you will run a web server.','Click Launch and wait until the state is running.','Connect with EC2 Instance Connect or SSH. Run: sudo dnf install -y httpd && sudo systemctl start httpd','Open the public IP in a browser to see the web server.','Stop the instance, then start it again. Notice the public IP changes.','Terminate the instance to avoid charges.']]},
+{t:'Cloud Networking and Compute Services',w:w3,topics:[
+['Basics of cloud networking','A VPC is your own logically isolated virtual network inside the provider.'],
+['Public and private networks','A public subnet has a route to an Internet Gateway. A private subnet does not, so it is hidden from the internet.'],
+['IP addressing and subnetting','CIDR 10.0.0.0/16 holds 65,536 addresses. A /24 subnet holds 256 (AWS reserves 5 in each subnet).'],
+['Routing','Route tables decide where traffic goes: local inside the VPC, 0.0.0.0/0 to an Internet Gateway or NAT.'],
+['Firewalls','Security groups are stateful and attach to instances (allow rules only). Network ACLs are stateless and attach to subnets.'],
+['Domain Name System (DNS)','DNS turns names like example.com into IP addresses. AWS offers Route 53.'],
+['Virtual compute resources','Instances, containers and serverless functions run inside your subnets.'],
+['Load balancing','A load balancer spreads requests across healthy servers (ALB for web traffic, NLB for fast TCP). Try the demo.'],
+['Auto Scaling concepts','An Auto Scaling group adds or removes instances by policy, for example add one when CPU is above 60%.'],
+['Cloud monitoring','CloudWatch collects metrics and logs and triggers alarms, which can in turn trigger scaling.']],
+lab:['Lab: Build an Amazon VPC with public and private subnets',['Open VPC, then Create VPC. Name it, set CIDR 10.0.0.0/16.','Create a public subnet 10.0.1.0/24 and a private subnet 10.0.2.0/24 in the same Availability Zone.','Create an Internet Gateway and attach it to the VPC.','Create a public route table: add 0.0.0.0/0 pointing to the Internet Gateway. Associate it with the public subnet.','Enable auto-assign public IPv4 on the public subnet.','Optional (costs money): create a NAT gateway in the public subnet and add 0.0.0.0/0 to it in a private route table.','Launch a web server EC2 in the public subnet and a test EC2 in the private subnet (no public IP).','Test: browse to the web server; try to reach the private instance from the internet and from the web server.','Delete the NAT gateway, instances, subnets and VPC when finished.']]},
+{t:'Cloud Storage and Database Services',w:w4,topics:[
+['Cloud storage fundamentals','Judge storage by durability, availability, speed, and cost per GB.'],
+['Object storage','Files plus metadata kept in buckets and reached through a web API. Best for images, backups and static sites (S3).'],
+['Block storage','Raw volumes attached to one VM, like a hard disk. Best for operating systems and databases (EBS).'],
+['File storage','A shared file system many servers can mount over NFS or SMB (EFS).'],
+['Storage selection criteria','Ask: how is it accessed, how fast must it be, how big, shared or not, and what is the budget?'],
+['Data backup and recovery','Snapshots, versioning and cross-region copies. RPO is how much data you can lose; RTO is how long you can be down.'],
+['Amazon S3','Buckets hold objects named by keys. Storage classes trade price for access speed. Designed for 99.999999999% durability.'],
+['Relational databases','Tables, SQL and ACID transactions (RDS, Aurora). Best for structured data with relationships.'],
+['NoSQL databases','Key-value, document or graph stores with flexible schema that scale out (DynamoDB).'],
+['Data warehousing','A column-oriented store built for large analytic queries (Redshift).']],
+lab:['Lab: S3 buckets, database deployment, backup and recovery',['Open S3 and create a bucket with a globally unique name. Keep Block Public Access on.','Upload a file. Enable versioning, upload the same file name again and view both versions.','Delete the file, then show deleted versions and restore it.','Open RDS and create a MySQL database (Free Tier template, small instance). Place it in a private subnet group.','Connect from the web server instance and create a sample table.','Take a manual snapshot of the database.','Delete the database, then restore a new one from the snapshot. Check your table is back.','Clean up: delete the databases, snapshots and bucket contents.']]},
+{t:'Cloud Security and Best Practices',w:w5,topics:[
+['Cloud security fundamentals','The CIA triad: confidentiality (only the right people see data), integrity (data is not altered), availability (data can be reached).'],
+['Shared responsibility model','The provider secures the cloud itself (buildings, hardware, hypervisor). You secure what you put in it (data, access, configuration). The more managed the service, the less you handle.'],
+['Identity and Access Management','Users, groups, roles and policies decide who can do what. Give the least privilege needed.'],
+['Authentication and authorization','Authentication proves who you are (password plus MFA). Authorization decides what you may do (policies).'],
+['Encryption basics','Encrypt data at rest (AES-256, keys in KMS) and in transit (TLS). Protect the keys as carefully as the data.'],
+['High availability','Run across multiple Availability Zones with redundancy so no single failure takes the service down.'],
+['Cost optimization','Right-size instances, stop idle resources, use Reserved or Spot where suitable, and set budgets and alerts.'],
+['Cloud monitoring','CloudTrail records who did what. CloudWatch watches health. GuardDuty looks for threats.'],
+['Cloud best practices','Enable MFA, apply least privilege, tag resources, back up, automate, and review against the AWS Well-Architected Framework.'],
+['Case studies: security and adoption','Most cloud breaches come from customer misconfiguration (public buckets, over-permissive roles), not provider failure. Discuss: which controls would have prevented it?']]}
+];
+
+/* ---------- Render ---------- */
+const nav=$(document,'#nav'),app=$(document,'#app');
+U.forEach((u,i)=>{const b=document.createElement('button');b.textContent=`Unit ${i+1}`;b.title=u.t;b.onclick=()=>show(i);nav.append(b)});
+function show(i){
+ const u=U[i];$$(nav,'button').forEach((b,j)=>b.classList.toggle('on',i==j));history.replaceState(null,'','#u'+(i+1));
+ app.innerHTML=`<h2>Unit ${i+1}: ${u.t}</h2><p class="mu">Open each topic, then try the demo${u.lab?' and follow the lab':''}.</p>
+ <div class="box"><h3>Theory</h3>${u.topics.map(t=>`<details><summary>${t[0]}</summary><p>${t[1]}</p></details>`).join('')}</div>
+ <div class="box" id="wd"></div>
+ ${u.lab?`<div class="box"><span class="tag">Lab</span><h3>${u.lab[0].replace('Lab: ','')}</h3><div class="pg"><i id="pb"></i></div>${u.lab[1].map(s=>`<label class="chk"><input type="checkbox"><span>${s}</span></label>`).join('')}</div>`:''}
+ <div class="row">${i>0?`<button id="pv">Previous unit</button>`:''}${i<4?`<button id="nx">Next unit</button>`:''}</div>`;
+ u.w($(app,'#wd'));
+ const cs=$$(app,'.chk input'),upd=()=>{const pb=$(app,'#pb');if(pb)pb.style.width=cs.filter(c=>c.checked).length/cs.length*100+'%'};cs.forEach(c=>c.onchange=upd);
+ const p=$(app,'#pv'),n=$(app,'#nx');if(p)p.onclick=()=>{show(i-1);scrollTo(0,0)};if(n)n.onclick=()=>{show(i+1);scrollTo(0,0)};
+}
+show(Math.max(0,Math.min(4,(parseInt(location.hash.slice(2))||1)-1)));
+</script><footer><b>TechVerse</b> - Cloud Computing<br>Created by <b>Vikas Maurya</b> | Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b></footer> </body></html>

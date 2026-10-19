@@ -1,0 +1,151 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TechVerse · Data Analytics Lab</title>
+<style>
+:root{--bg:#0b1f2a;--p:#112b39;--l:#1f4357;--t:#e8f1f2;--m:#9bb5c0;--a:#ffb703;--c:#4cc9f0;--g:#7ae582;--r:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.6 "Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0b1f2add;backdrop-filter:blur(8px);border-bottom:1px solid var(--l);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 20px}
+.logo{font-weight:800;font-size:20px;margin-right:auto}.logo b{color:var(--a)}
+nav button{background:none;border:1px solid var(--l);color:var(--m);padding:6px 14px;border-radius:20px;cursor:pointer;margin:2px;font:inherit}
+nav button.on,nav button:hover{background:var(--a);color:#0b1f2a;border-color:var(--a)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.hero{position:relative;height:300px;overflow:hidden;border-bottom:1px solid var(--l)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero div{position:relative;max-width:900px;margin:0 auto;padding:70px 20px 0}
+h1{font-size:clamp(30px,6vw,56px);line-height:1.1;margin:0 0 10px}h1 span{color:var(--a)}
+.hero p{color:var(--m);max-width:560px;margin:0}
+main{max-width:1100px;margin:0 auto;padding:24px 20px 40px}
+.unit{display:none}.unit.on{display:block;animation:in .5s}
+@keyframes in{from{opacity:0;transform:translateY(12px)}}
+h2{font-size:28px;margin:6px 0 4px}.sub{color:var(--m);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1.25fr;gap:20px}@media(max-width:850px){.grid{grid-template-columns:1fr}}
+.box{background:var(--p);border:1px solid var(--l);border-radius:10px;padding:16px}
+.box h3{margin:0 0 10px;font-size:18px;color:var(--c)}.lab h3{color:var(--a)}
+details{border-top:1px solid var(--l);padding:6px 0}summary{cursor:pointer;font-weight:600}details p{margin:6px 0;color:var(--m);font-size:15px}
+.also{font-size:13px;color:var(--m);margin-top:10px}
+canvas.d{width:100%;background:#0a1923;border:1px solid var(--l);border-radius:8px;display:block;touch-action:none}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.row button,.btn{background:var(--c);color:#0b1f2a;border:0;border-radius:6px;padding:6px 12px;font:600 14px inherit;cursor:pointer}
+.row button.alt{background:var(--l);color:var(--t)}label{font-size:14px;color:var(--m)}
+.out{font:14px/1.5 Consolas,monospace;color:var(--g);min-height:24px}
+.chip{display:inline-block;background:#0a1923;border:1px solid var(--l);border-radius:6px;padding:2px 8px;margin:3px;font:13px Consolas,monospace;animation:pop .4s backwards}
+@keyframes pop{from{opacity:0;transform:scale(.6)}}
+.ph{display:flex;flex-wrap:wrap;gap:6px}.ph button{flex:1;min-width:110px;background:#0a1923;color:var(--m);border:1px solid var(--l);padding:8px 4px;border-radius:6px;cursor:pointer}
+.ph button.on{background:var(--a);color:#0b1f2a;border-color:var(--a);font-weight:700}
+pre{background:#0a1923;border:1px solid var(--l);border-radius:8px;padding:10px;overflow:auto;font-size:13px;color:var(--g)}
+table{border-collapse:collapse;font-size:13px;width:100%}td,th{border:1px solid var(--l);padding:3px 6px;text-align:left}
+footer{border-top:1px solid var(--l);text-align:center;padding:22px 16px;color:var(--m);font-size:14px}footer b{color:var(--a)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<header><div class="logo">Tech<b>Verse</b> · Data Analytics Lab</div><nav id="nav"></nav></header>
+<div class="hero"><canvas id="hc"></canvas><div><h1>Learn Data Analytics<br><span>theory + live practical</span></h1><p>Five units. Every topic has a short explanation and a hands-on demo you can run in your browser.</p></div></div>
+<main>
+
+<section class="unit" id="u1"><h2>Unit I · Introduction &amp; Analytics Lifecycle</h2><p class="sub">Know your data, then follow the six-phase lifecycle.</p><div class="grid">
+<div class="box"><h3>Theory</h3>
+<details open><summary>Sources &amp; classification of data</summary><p>Data comes from sensors, apps, logs, social media and transactions. <b>Structured</b> = tables (SQL). <b>Semi-structured</b> = JSON/XML with tags. <b>Unstructured</b> = text, images, video.</p></details>
+<details><summary>Characteristics &amp; Big Data platform</summary><p>The Vs: Volume, Velocity, Variety, Veracity, Value. Big Data platforms (Hadoop, Spark) spread storage and processing across many machines.</p></details>
+<details><summary>Analysis vs reporting</summary><p>Reporting says <i>what happened</i>; analysis explains <i>why</i> and predicts <i>what next</i>.</p></details>
+<details><summary>Analytic process, tools &amp; applications</summary><p>Tools: R, Python, Excel, Tableau, Power BI, Spark. Used in healthcare, banking, retail, sports, smart cities.</p></details>
+<details><summary>Data Analytics Lifecycle</summary><p>Key roles: business user, project sponsor, data scientist, data engineer, DBA, analyst. Click the phases on the right.</p></details>
+<p class="also">Also covered: need of analytics, evolution of analytic scalability, modern analytic tools.</p></div>
+<div class="box lab"><h3>Practical 1 · Lifecycle explorer</h3><div class="ph" id="ph"></div><p id="phx" style="min-height:70px"></p><div class="row"><button id="play">▶ Play lifecycle</button></div>
+<h3 style="margin-top:14px">Practical 2 · Classify the data</h3><p>What type is: <b id="q"></b></p><div class="row"><button data-a="Structured">Structured</button><button data-a="Semi-structured">Semi-structured</button><button data-a="Unstructured">Unstructured</button></div><div class="out" id="qo"></div></div></div></section>
+
+<section class="unit" id="u2"><h2>Unit II · Data Analysis</h2><p class="sub">From regression to neural networks and fuzzy logic.</p><div class="grid">
+<div class="box"><h3>Theory</h3>
+<details open><summary>Regression modeling</summary><p>Fits a line y = a + bx that minimises squared error (least squares). R² tells how much variation the line explains.</p></details>
+<details><summary>Multivariate &amp; Bayesian modeling</summary><p>Multivariate: many variables at once. Bayes: P(H|D) = P(D|H)·P(H) / P(D). Bayesian networks draw these dependencies as a graph.</p></details>
+<details><summary>SVM &amp; kernel methods</summary><p>Find the widest-margin boundary between classes; kernels lift data into higher dimensions.</p></details>
+<details><summary>Time series</summary><p>Data ordered in time: trend, seasonality, noise. Linear systems and nonlinear dynamics model it.</p></details>
+<details><summary>Neural networks &amp; PCA</summary><p>Learning = adjusting weights; generalisation = working on unseen data. PCA reduces dimensions by keeping directions of maximum variance.</p></details>
+<details><summary>Fuzzy logic</summary><p>Truth is a degree from 0 to 1, e.g. “warm” = 0.7. Fuzzy decision trees use these degrees.</p></details>
+<p class="also">Also covered: rule induction, competitive learning, stochastic search methods.</p></div>
+<div class="box lab"><h3>Practical · Click to add points, see the regression line</h3><canvas class="d" id="rc" width="600" height="320"></canvas><div class="row"><button id="rr">Random data</button><button class="alt" id="rx">Clear</button></div><div class="out" id="ro">Click the canvas to add at least 2 points.</div></div></div></section>
+
+<section class="unit" id="u3"><h2>Unit III · Mining Data Streams</h2><p class="sub">Data that never stops: you see each item once.</p><div class="grid">
+<div class="box"><h3>Theory</h3>
+<details open><summary>Stream model &amp; architecture</summary><p>Items arrive continuously; memory is small, so we keep summaries, not everything.</p></details>
+<details><summary>Sampling &amp; filtering</summary><p>Sample by hashing a key. Filter with a Bloom filter: fast membership test, no false negatives.</p></details>
+<details><summary>Counting distinct elements &amp; moments</summary><p>Flajolet–Martin estimates distinct count using trailing zeros of hashes. AMS estimates the second moment.</p></details>
+<details><summary>Windows: counting ones &amp; decay</summary><p>DGIM counts 1s in the last N bits. A decaying window weights recent items more.</p></details>
+<details><summary>RTAP &amp; case studies</summary><p>Real-time sentiment analysis of tweets; stock price prediction from live ticks.</p></details></div>
+<div class="box lab"><h3>Practical · Live stream, sliding vs decaying window</h3><canvas class="d" id="sc" width="600" height="260"></canvas>
+<div class="row"><label>Window size <input type="range" id="sw" min="5" max="50" value="20"></label><label>Decay c <input type="range" id="sd" min="2" max="40" value="10"></label><button id="sp" class="alt">Pause</button></div>
+<div class="out"><span style="color:#888">■</span> raw stream &nbsp;<span style="color:var(--c)">■</span> sliding-window mean &nbsp;<span style="color:var(--a)">■</span> decaying average</div></div></div></section>
+
+<section class="unit" id="u4"><h2>Unit IV · Frequent Itemsets &amp; Clustering</h2><p class="sub">Find what goes together and what groups together.</p><div class="grid">
+<div class="box"><h3>Theory</h3>
+<details open><summary>Market-basket &amp; Apriori</summary><p>Support = how often an itemset appears. Apriori rule: if an itemset is frequent, all its subsets are frequent, so we prune the rest.</p></details>
+<details><summary>Large data sets &amp; streams</summary><p>PCY, limited-pass and sampling algorithms handle data that does not fit in memory.</p></details>
+<details><summary>Hierarchical &amp; K-means</summary><p>Hierarchical merges nearest clusters step by step. K-means: assign points to the nearest centroid, move centroids, repeat.</p></details>
+<details><summary>High-dimensional clustering</summary><p>CLIQUE (grid-based) and ProCLUS (projected clusters) work in subspaces.</p></details>
+<p class="also">Also covered: frequent-pattern clustering, non-Euclidean space, clustering for streams and parallelism.</p></div>
+<div class="box lab"><h3>Practical 1 · K-means step by step</h3><canvas class="d" id="kc" width="600" height="300"></canvas>
+<div class="row"><label>K <select id="kk"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label><button id="ks">Step</button><button id="ka" class="alt">Auto run</button><button id="kn" class="alt">New data</button><span class="out" id="ko"></span></div>
+<h3 style="margin-top:14px">Practical 2 · Apriori</h3><div class="row"><label>Min support (of 8 baskets): <b id="mv">3</b> <input type="range" id="ms" min="1" max="6" value="3"></label></div><div id="ap"></div></div></div></section>
+
+<section class="unit" id="u5"><h2>Unit V · Frameworks, Visualization &amp; R</h2><p class="sub">Tools that run analytics at scale, and show the result.</p><div class="grid">
+<div class="box"><h3>Theory</h3>
+<details open><summary>MapReduce &amp; Hadoop</summary><p>Map emits (key, value) pairs; shuffle groups by key; reduce combines. HDFS stores big files in replicated blocks.</p></details>
+<details><summary>Pig, Hive, HBase, MapR</summary><p>Pig: scripting. Hive: SQL-like queries. HBase: column store on HDFS. MapR: Hadoop distribution.</p></details>
+<details><summary>NoSQL, sharding &amp; S3</summary><p>NoSQL (document, key-value, column, graph) scales out. Sharding splits data across servers. S3 is object storage.</p></details>
+<details><summary>Visualization techniques</summary><p>Choose the chart for the question: trend → line, compare → bar, relation → scatter, distribution → histogram.</p></details>
+<details><summary>Introduction to R</summary><p>R GUIs (RStudio), data import/export, data types, descriptive statistics, EDA, visualise before you analyse, analytics for unstructured data.</p></details></div>
+<div class="box lab"><h3>Practical 1 · MapReduce word count</h3><textarea id="mt" rows="2" style="width:100%;background:#0a1923;color:var(--t);border:1px solid var(--l);border-radius:6px;padding:6px">big data needs big tools and big ideas</textarea>
+<div class="row"><button id="mr">Run MapReduce</button></div><div id="mo"></div>
+<h3 style="margin-top:14px">Practical 2 · R starter</h3><pre>data &lt;- read.csv("marks.csv")
+str(data)          # attribute and data types
+summary(data)      # descriptive statistics
+hist(data$score)   # visualise before analysis
+boxplot(score ~ branch, data = data)
+write.csv(data, "clean.csv")  # export</pre></div></div></section>
+</main>
+<footer>Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b> · <b>TechVerse</b> tech learning brand · Created by Vikas Maurya</footer>
+<script>
+const $=id=>document.getElementById(id),R=Math.random,COL=['#4cc9f0','#ffb703','#7ae582','#ff6b6b','#c77dff'];
+// tabs
+const names=['I · Intro','II · Analysis','III · Streams','IV · Clustering','V · Frameworks'];
+names.forEach((n,i)=>{const b=document.createElement('button');b.textContent='Unit '+n;b.onclick=()=>show(i+1);$('nav').appendChild(b)});
+function show(n){document.querySelectorAll('.unit').forEach((u,i)=>u.classList.toggle('on',i+1==n));[...$('nav').children].forEach((b,i)=>b.classList.toggle('on',i+1==n));location.hash='u'+n}
+show(+(location.hash.slice(2))||1);
+// hero
+{const c=$('hc'),x=c.getContext('2d');let w,h,P=[];const rs=()=>{w=c.width=c.offsetWidth;h=c.height=c.offsetHeight};rs();onresize=rs;
+for(let i=0;i<110;i++)P.push({x:R()*1e3,y:R()*300,k:i%4});let t=0;
+(function f(){t+=.01;x.clearRect(0,0,w,h);P.forEach(p=>{const tx=w*(.2+.2*p.k)+Math.sin(t+p.k*2)*60,ty=h*(.35+.3*Math.sin(p.k+t*.7));p.x+=(tx-p.x)*.012+Math.sin(t*3+p.y)*.5;p.y+=(ty-p.y)*.012+Math.cos(t*3+p.x)*.5;x.fillStyle=COL[p.k];x.globalAlpha=.55;x.beginPath();x.arc(p.x,p.y,3,0,7);x.fill()});requestAnimationFrame(f)})()}
+// U1
+const PH=[['Discovery','Understand the business problem, set hypotheses, find data sources.'],['Data preparation','Build an analytic sandbox; extract, clean and transform data (ETL).'],['Model planning','Select variables, techniques and tools; explore relationships.'],['Model building','Train, test and tune models on datasets.'],['Communicate results','Compare results with success criteria; tell the story to stakeholders.'],['Operationalize','Deploy to production, monitor performance, deliver final reports.']];
+let pi=0;PH.forEach((p,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+p[0];b.onclick=()=>ph(i);$('ph').appendChild(b)});
+function ph(i){pi=i;[...$('ph').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('phx').textContent=PH[i][1]}ph(0);
+let pt;$('play').onclick=()=>{clearInterval(pt);let i=0;ph(0);pt=setInterval(()=>{if(++i>5)return clearInterval(pt);ph(i)},1400)};
+const Q=[['Excel sheet of student marks','Structured'],['JSON response from a weather API','Semi-structured'],['XML server log','Semi-structured'],['CCTV video','Unstructured'],['A tweet','Unstructured'],['MySQL customer table','Structured']];let qi;
+function nq(){qi=Q[Math.floor(R()*Q.length)];$('q').textContent=qi[0]}nq();
+document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const ok=b.dataset.a==qi[1];$('qo').style.color=ok?'#7ae582':'#ff6b6b';$('qo').textContent=ok?'Correct! '+qi[1]:'Not quite. Answer: '+qi[1];setTimeout(nq,1400)});
+// U2
+{const c=$('rc'),x=c.getContext('2d');let pts=[];
+function dr(){x.clearRect(0,0,600,320);x.strokeStyle='#1f4357';for(let i=0;i<600;i+=50){x.beginPath();x.moveTo(i,0);x.lineTo(i,320);x.stroke()}
+pts.forEach(p=>{x.fillStyle='#4cc9f0';x.beginPath();x.arc(p[0],p[1],5,0,7);x.fill()});
+const n=pts.length;if(n<2)return;const mx=pts.reduce((s,p)=>s+p[0],0)/n,my=pts.reduce((s,p)=>s+p[1],0)/n;let sxy=0,sxx=0,syy=0;pts.forEach(p=>{sxy+=(p[0]-mx)*(p[1]-my);sxx+=(p[0]-mx)**2;syy+=(p[1]-my)**2});if(!sxx)return;
+const b=sxy/sxx,a=my-b*mx,r2=syy?sxy*sxy/(sxx*syy):1;x.strokeStyle='#ffb703';x.lineWidth=3;x.beginPath();x.moveTo(0,a);x.lineTo(600,a+b*600);x.stroke();x.lineWidth=1;
+$('ro').textContent=`y = ${(320-a).toFixed(1)} + ${(-b).toFixed(3)}x   R² = ${r2.toFixed(3)}   n = ${n}`}
+c.onpointerdown=e=>{const r=c.getBoundingClientRect();pts.push([(e.clientX-r.left)*600/r.width,(e.clientY-r.top)*320/r.height]);dr()};
+$('rr').onclick=()=>{pts=[];for(let i=0;i<25;i++){const px=R()*560+20;pts.push([px,300-px*.45+(R()-.5)*90])}dr()};$('rx').onclick=()=>{pts=[];dr();$('ro').textContent='Click the canvas to add at least 2 points.'};dr()}
+// U3
+{const c=$('sc'),x=c.getContext('2d');let t=0,raw=[],sl=[],de=[],d=50,run=1;
+$('sp').onclick=()=>{run=!run;$('sp').textContent=run?'Pause':'Resume'};
+setInterval(()=>{if(!run)return;t++;const v=50+28*Math.sin(t/9)+(R()-.5)*30;raw.push(v);const W=+$('sw').value,cc=$('sd').value/100;sl.push(raw.slice(-W).reduce((a,b)=>a+b)/Math.min(W,raw.length));d=d*(1-cc)+v*cc;de.push(d);[raw,sl,de].forEach(a=>a.length>120&&a.shift());
+x.clearRect(0,0,600,260);[[raw,'#667'],[sl,'#4cc9f0'],[de,'#ffb703']].forEach(([a,k])=>{x.strokeStyle=k;x.lineWidth=k=='#667'?1:3;x.beginPath();a.forEach((y,i)=>{const px=i*5,py=260-y*2.4;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()})},120)}
+// U4
+{const c=$('kc'),x=c.getContext('2d');let P,C,A,it,auto;
+function nw(){P=[];const B=[[150,90],[420,110],[300,230],[100,240],[500,240]];for(let i=0;i<130;i++){const b=B[i%5];P.push([b[0]+(R()+R()+R()-1.5)*80,b[1]+(R()+R()+R()-1.5)*60])}rc()}
+function rc(){const k=+$('kk').value;C=[];for(let i=0;i<k;i++)C.push(P[Math.floor(R()*P.length)].slice());A=P.map(()=>-1);it=0;dr()}
+function dr(){x.clearRect(0,0,600,300);P.forEach((p,i)=>{x.fillStyle=A[i]<0?'#778':COL[A[i]];x.beginPath();x.arc(p[0],p[1],4,0,7);x.fill()});C.forEach((q,i)=>{x.strokeStyle=COL[i];x.fillStyle='#fff';x.lineWidth=3;x.beginPath();x.arc(q[0],q[1],9,0,7);x.fill();x.stroke()});$('ko').textContent='Iteration '+it}
+function st(){let ch=0;P.forEach((p,i)=>{let bd=1e9,bk=0;C.forEach((q,k)=>{const d=(p[0]-q[0])**2+(p[1]-q[1])**2;d<bd&&(bd=d,bk=k)});if(A[i]!=bk)ch++;A[i]=bk});C.forEach((q,k)=>{const m=P.filter((_,i)=>A[i]==k);if(m.length){q[0]=m.reduce((s,p)=>s+p[0],0)/m.length;q[1]=m.reduce((s,p)=>s+p[1],0)/m.length}});it++;dr();if(!ch){clearInterval(auto);$('ko').textContent='Converged after '+it+' iterations'}}
+$('ks').onclick=st;$('kn').onclick=nw;$('kk').onchange=rc;$('ka').onclick=()=>{clearInterval(auto);auto=setInterval(st,700)};nw()}
+{const T=[['bread','milk'],['bread','butter','eggs'],['milk','butter','eggs','tea'],['bread','milk','butter'],['bread','milk','eggs'],['tea','milk'],['bread','butter'],['bread','milk','butter','eggs']];
+const it=[...new Set(T.flat())].sort();const cnt=s=>T.filter(t=>s.every(i=>t.includes(i))).length;
+function ap(){const m=+$('ms').value;$('mv').textContent=m;const f1=it.filter(i=>cnt([i])>=m),f2=[];for(let i=0;i<f1.length;i++)for(let j=i+1;j<f1.length;j++)cnt([f1[i],f1[j]])>=m&&f2.push([f1[i],f1[j]]);
+$('ap').innerHTML='<table><tr><th>Baskets</th></tr>'+T.map(t=>'<tr><td>'+t.join(', ')+'</td></tr>').join('')+'</table><p>Frequent 1-itemsets: '+(f1.map(i=>`<span class="chip">${i} (${cnt([i])})</span>`).join('')||'none')+'</p><p>Frequent 2-itemsets (built only from frequent items): '+(f2.map(p=>`<span class="chip">${p.join('+')} (${cnt(p)})</span>`).join('')||'none')+'</p>'}
+$('ms').oninput=ap;ap()}
+// U5
+$('mr').onclick=()=>{const w=$('mt').value.toLowerCase().match(/[a-z']+/g)||[],g={};w.forEach(a=>g[a]=(g[a]||0)+1);const ch=(s,i,k)=>`<span class="chip" style="animation-delay:${i*90}ms;color:${k}">${s}</span>`;
+$('mo').innerHTML='<p><b>1 Map</b> → '+w.map((a,i)=>ch(`(${a},1)`,i,'#4cc9f0')).join('')+'</p><p><b>2 Shuffle</b> → '+Object.keys(g).map((a,i)=>ch(`${a}: [${Array(g[a]).fill(1)}]`,i+w.length,'#ffb703')).join('')+'</p><p><b>3 Reduce</b> → '+Object.keys(g).map((a,i)=>ch(`${a} = ${g[a]}`,i+w.length*2,'#7ae582')).join('')+'</p>'};
+</script><script src="deep.js"></script></body></html>

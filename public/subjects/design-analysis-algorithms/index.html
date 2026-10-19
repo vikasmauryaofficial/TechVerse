@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAA Lab | TechVerse</title>
+<style>
+:root{--bg:#0b1020;--card:#141b34;--tx:#e2e8f0;--mu:#94a3b8;--ac:#38bdf8;--ac2:#a78bfa;--ln:#26315a}
+@media(prefers-color-scheme:light){:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#475569;--ln:#cbd5e1}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.6 system-ui,Segoe UI,sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh;flex-direction:column}
+header{padding:14px 22px;background:linear-gradient(90deg,#0ea5e9,#7c3aed);color:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+header b{font-size:20px;cursor:pointer}header small{opacity:.9}
+.wrap{display:flex;flex:1}nav{width:270px;padding:12px;border-right:1px solid var(--ln);overflow:auto;max-height:calc(100vh - 110px);position:sticky;top:0}
+nav h4{margin:14px 6px 4px;color:var(--ac);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+nav a{display:block;padding:6px 10px;border-radius:8px;color:var(--tx);text-decoration:none;cursor:pointer;font-size:14px}
+nav a:hover,nav a.on{background:var(--card);color:var(--ac)}nav a i{font-style:normal;float:right;font-size:11px;color:var(--ac2)}
+main{flex:1;padding:22px;max-width:980px;animation:f .4s}@keyframes f{from{opacity:0;transform:translateY(8px)}}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px 20px;margin-bottom:18px}
+h1,h2,h3{margin:.2em 0 .4em}h2{color:var(--ac)}code{background:var(--bg);padding:1px 6px;border-radius:5px;color:var(--ac2)}
+table.c{border-collapse:collapse;width:100%}table.c td,table.c th{border:1px solid var(--ln);padding:5px 9px;text-align:left}
+canvas{width:100%;max-width:600px;background:#0f172a;border-radius:12px;display:block}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+button{background:linear-gradient(90deg,#0ea5e9,#7c3aed);color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}button:hover{filter:brightness(1.15)}
+.msg{margin-top:8px;padding:8px 12px;background:var(--bg);border-left:4px solid var(--ac);border-radius:6px;min-height:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.grid .card{margin:0}
+.chip{display:inline-block;margin:3px;padding:3px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--ln);cursor:pointer;font-size:13px}.chip:hover{border-color:var(--ac)}
+footer{text-align:center;padding:12px;border-top:1px solid var(--ln);color:var(--mu);font-size:13px}
+@media(max-width:760px){.wrap{flex-direction:column}nav{width:100%;max-height:200px;position:static}}
+</style></head><body>
+<header><b onclick="go(-1)">⚡ TechVerse · DAA Lab</b><small>Design and Analysis of Algorithms — Theory + Practical</small></header>
+<div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
+<footer>Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b> · <b>TechVerse</b> · Vikas Maurya</footer>
+<script>
+const INF=Infinity,$=s=>document.querySelector(s);
+/* ---------- sorting generators ---------- */
+function* shell(a){let n=a.length;for(let g=n>>1;g>0;g>>=1)for(let i=g;i<n;i++){let t=a[i],j=i;for(;j>=g&&a[j-g]>t;j-=g){a[j]=a[j-g];yield{a:[...a],h:[j,j-g],m:`Gap ${g}: shift ${a[j]} forward`}}a[j]=t;yield{a:[...a],h:[j],m:`Gap ${g}: insert ${t}`}}}
+function* quick(a,lo=0,hi=a.length-1){if(lo>=hi)return;let p=a[hi],i=lo;for(let j=lo;j<hi;j++){yield{a:[...a],h:[j,hi],m:`Pivot=${p}: compare a[${j}]=${a[j]}`};if(a[j]<p){[a[i],a[j]]=[a[j],a[i]];i++}}[a[i],a[hi]]=[a[hi],a[i]];yield{a:[...a],h:[i],m:`Pivot ${p} placed at final index ${i}`};yield*quick(a,lo,i-1);yield*quick(a,i+1,hi)}
+function* merge(a,l=0,r=a.length-1){if(l>=r)return;let m=(l+r)>>1;yield*merge(a,l,m);yield*merge(a,m+1,r);let L=a.slice(l,m+1),R=a.slice(m+1,r+1),i=0,j=0,k=l;while(i<L.length||j<R.length){a[k]=j>=R.length||(i<L.length&&L[i]<=R[j])?L[i++]:R[j++];yield{a:[...a],h:[k],m:`Merging range [${l}..${r}]`};k++}}
+function* sift(a,n,i){for(;;){let l=2*i+1,r=l+1,m=i;if(l<n&&a[l]>a[m])m=l;if(r<n&&a[r]>a[m])m=r;if(m==i)return;[a[i],a[m]]=[a[m],a[i]];yield{a:[...a],h:[i,m],m:'Heapify: swap parent with larger child'};i=m}}
+function* heap(a){let n=a.length;for(let i=(n>>1)-1;i>=0;i--)yield*sift(a,n,i);for(let e=n-1;e>0;e--){[a[0],a[e]]=[a[e],a[0]];yield{a:[...a],h:[0,e],m:'Extract max to the end'};yield*sift(a,e,0)}}
+function* count(a){let c=Array(Math.max(...a)+1).fill(0);a.forEach(v=>c[v]++);let k=0;for(let v=0;v<c.length;v++)while(c[v]-->0){a[k]=v;yield{a:[...a],h:[k],m:`Count of ${v} used → write at index ${k}`};k++}}
+/* ---------- graph ---------- */
+const NM='ABCDEF',P=[[60,170],[170,60],[170,280],[310,100],[310,240],[500,170]],
+E=[[0,1,4],[0,2,2],[1,2,5],[1,3,10],[2,4,3],[4,3,4],[3,5,11],[4,5,6]],G='#22c55e',Y='#f5c518',R='#ef4444';
+const ND=s=>Object.fromEntries([...s].map(x=>[x,G])),LB=d=>d.map(x=>x==INF?'∞':x);
+function* prim(){let T=new Set([0]),sel={},tot=0;while(T.size<6){let c={},b=-1;E.forEach((e,i)=>{if(T.has(e[0])!=T.has(e[1])){c[i]=Y;if(b<0||e[2]<E[b][2])b=i}});yield{e:{...sel,...c},nd:ND(T),m:'Yellow = edges crossing the cut. Greedy: choose the cheapest.'};sel[b]=G;tot+=E[b][2];T.add(E[b][0]);T.add(E[b][1]);yield{e:{...sel},nd:ND(T),m:`Added edge ${NM[E[b][0]]}-${NM[E[b][1]]} (w=${E[b][2]}). MST cost so far = ${tot}`}}}
+function* kruskal(){let p=[0,1,2,3,4,5],f=x=>p[x]==x?x:p[x]=f(p[x]),sel={},tot=0;for(let i of E.map((_,i)=>i).sort((a,b)=>E[a][2]-E[b][2])){let[u,v,w]=E[i];yield{e:{...sel,[i]:Y},m:`Consider edge ${NM[u]}-${NM[v]} (w=${w}) in sorted order`};if(f(u)!=f(v)){p[f(u)]=f(v);sel[i]=G;tot+=w;yield{e:{...sel},m:`Different components → ACCEPT. Cost = ${tot}`}}else{sel[i]=R;yield{e:{...sel},m:'Same component → forms a cycle → REJECT'}}}}
+function* dijk(){let d=[0,INF,INF,INF,INF,INF],dn=new Set;while(dn.size<6){let u=-1;d.forEach((x,i)=>{if(!dn.has(i)&&(u<0||x<d[u]))u=i});dn.add(u);yield{e:{},nd:{...ND(dn),[u]:Y},lab:LB(d),m:`Pick nearest unvisited vertex ${NM[u]} (dist ${d[u]})`};for(let i=0;i<E.length;i++){const[a,b,w]=E[i];for(const[x,y]of[[a,b],[b,a]]){if(x==u&&d[x]+w<d[y]){d[y]=d[x]+w;yield{e:{[i]:G},nd:{...ND(dn),[y]:Y},lab:LB(d),m:`Relax ${NM[x]}→${NM[y]}: new dist = ${d[y]}`}}}}}}
+function* bford(){let d=[0,INF,INF,INF,INF,INF];for(let k=1;k<6;k++){let ch=0;for(let i=0;i<E.length;i++){let[a,b,w]=E[i];for(let[x,y]of[[a,b],[b,a]])if(d[x]+w<d[y]){d[y]=d[x]+w;ch=1;yield{e:{[i]:G},nd:{[y]:Y},lab:LB(d),m:`Pass ${k}: relax ${NM[x]}→${NM[y]} = ${d[y]}`}}}if(!ch){yield{e:{},lab:LB(d),m:`Pass ${k}: no change → converged`};return}}}
+const PAL=['#ef4444','#22c55e','#3b82f6'];
+function* gcol(){let c=Array(6).fill(-1);function* go(v){if(v==6)return 1;for(let k=0;k<3;k++){if(E.every(([a,b])=>!((a==v&&c[b]==k)||(b==v&&c[a]==k)))){c[v]=k;yield{e:{},nd:Object.fromEntries(c.map((x,i)=>[i,x<0?'#1e293b':PAL[x]])),m:`Vertex ${NM[v]} ← colour ${k+1}`};if(yield*go(v+1))return 1}}c[v]=-1;yield{e:{},nd:Object.fromEntries(c.map((x,i)=>[i,x<0?'#1e293b':PAL[x]])),m:`Dead end at ${NM[v]} → BACKTRACK`};return 0}yield*go(0);yield{e:{},nd:Object.fromEntries(c.map((x,i)=>[i,PAL[x]])),m:'Valid 3-colouring found ✔'}}
+/* ---------- DP / backtracking ---------- */
+function* knap(){let w=[1,3,4,5],v=[1,4,5,7],W=7,d=[...Array(5)].map(()=>Array(W+1).fill(0));const T=(c,m)=>({t:[['item\\W',...[...Array(W+1).keys()]],...d.map((r,i)=>[i?`#${i} w${w[i-1]} v${v[i-1]}`:'none',...r])],c,m});yield T([1,1],'dp[i][j] = best value using first i items with capacity j');for(let i=1;i<=4;i++)for(let j=0;j<=W;j++){d[i][j]=d[i-1][j];let s='skip item';if(w[i-1]<=j&&d[i-1][j-w[i-1]]+v[i-1]>d[i][j]){d[i][j]=d[i-1][j-w[i-1]]+v[i-1];s='take item'}yield T([i+1,j+1],`dp[${i}][${j}] = ${d[i][j]} (${s})`)}yield T([5,8],`Answer = ${d[4][W]}`)}
+function* floyd(){let d=[[0,3,INF,7],[8,0,2,INF],[5,INF,0,1],[2,INF,INF,0]];const T=(c,m)=>({t:[['',...'0123'],...d.map((r,i)=>[i,...r.map(x=>x==INF?'∞':x)])],c,m});yield T([0,0],'Initial distance matrix');for(let k=0;k<4;k++)for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(d[i][k]+d[k][j]<d[i][j]){d[i][j]=d[i][k]+d[k][j];yield T([i+1,j+1],`k=${k}: d[${i}][${j}] improved via vertex ${k} → ${d[i][j]}`)}yield T([0,0],'All-pairs shortest paths done ✔')}
+function* nq(){let n=6,q=[];function* go(r){if(r==n){yield{q:[...q],m:'Solution found ✔'};return 1}for(let c=0;c<n;c++){let ok=q.every((x,i)=>x!=c&&Math.abs(x-c)!=r-i);q[r]=c;yield{q:[...q],m:`Row ${r}: try column ${c} → ${ok?'safe':'attack!'}`};if(ok&&(yield*go(r+1)))return 1}q.length=r;yield{q:[...q],m:`Row ${r}: no column works → BACKTRACK`};return 0}yield*go(0)}
+function* plot(){for(let n=1;n<=20;n+=.5)yield{n,m:`n = ${n}: compare 2ⁿ, n², n log n, n — see how fast 2ⁿ explodes`}}
+/* ---------- content ---------- */
+const sortInfo=(b,w,s,x)=>`<table class=c><tr><th>Best</th><th>Worst</th><th>Space</th><th>Stable?</th></tr><tr><td>${b}</td><td>${w}</td><td>${s}</td><td>${x}</td></tr></table>`;
+const T=[
+[1,'Intro, Growth of Functions','<h3>Algorithm</h3><p>A finite sequence of well-defined steps that solves a problem. Analyse by <b>time</b> and <b>space</b> as a function of input size n.</p><ul><li><b>Big-O</b> upper bound, <b>Ω</b> lower bound, <b>Θ</b> tight bound.</li><li>Order: 1 &lt; log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ &lt; n!</li><li>Recurrences: Master theorem T(n)=aT(n/b)+f(n).</li></ul>','plot',plot],
+[1,'Shell Sort','<p>Generalised insertion sort: sort elements far apart (gap h), then shrink the gap to 1. Moves elements long distances early.</p>'+sortInfo('n log n','O(n²) (gap n/2)','O(1)','No'),'bars',shell],
+[1,'Quick Sort','<p>Divide &amp; conquer: pick a pivot, partition into smaller/larger, recurse.</p>'+sortInfo('n log n','n²','O(log n)','No'),'bars',quick],
+[1,'Merge Sort','<p>Split in halves, sort each, merge. T(n)=2T(n/2)+n ⇒ Θ(n log n).</p>'+sortInfo('n log n','n log n','O(n)','Yes'),'bars',merge],
+[1,'Heap Sort','<p>Build a max-heap, repeatedly move the max to the end and re-heapify.</p>'+sortInfo('n log n','n log n','O(1)','No'),'bars',heap],
+[1,'Sorting in Linear Time','<p>Counting sort (shown) beats the Ω(n log n) comparison bound when keys are integers in range k: Θ(n+k). Radix and Bucket sort build on the same idea.</p>','bars',count],
+[1,'Comparing Sorting Algorithms','<table class=c><tr><th>Algorithm</th><th>Avg</th><th>Worst</th><th>Note</th></tr><tr><td>Shell</td><td>~n^1.3</td><td>n²</td><td>in-place</td></tr><tr><td>Quick</td><td>n log n</td><td>n²</td><td>fastest in practice</td></tr><tr><td>Merge</td><td>n log n</td><td>n log n</td><td>stable, O(n) space</td></tr><tr><td>Heap</td><td>n log n</td><td>n log n</td><td>in-place</td></tr><tr><td>Counting</td><td>n+k</td><td>n+k</td><td>integers only</td></tr></table><p>Tip: run each sort on the same array from the sorting pages and compare the number of frames.</p>','none'],
+[2,'Red-Black Trees','<p>BST with a colour bit. Rules: root black; red node has black children; every path has equal black-height. Height ≤ 2 log(n+1) ⇒ search/insert/delete O(log n) using recolouring + rotations.</p>','none'],
+[2,'B-Trees','<p>Multiway balanced tree of minimum degree t: each node has t-1…2t-1 keys. Designed for disk — high fan-out keeps height tiny. Operations O(t log<sub>t</sub> n). Used in databases and file systems.</p>','none'],
+[2,'Binomial Heaps','<p>Forest of binomial trees B<sub>k</sub> (2ᵏ nodes), like the binary representation of n. Union is O(log n) — just like binary addition. Insert/extract-min O(log n).</p>','none'],
+[2,'Fibonacci Heaps','<p>Lazy collection of heap-ordered trees. Insert, merge, decrease-key are <b>O(1) amortised</b>; extract-min O(log n) amortised. Makes Dijkstra O(E + V log V).</p>','none'],
+[2,'Tries','<p>Tree where each edge is a character; a path spells a word. Insert/search in O(L) for word length L, independent of the number of words. Used for autocomplete and dictionaries.</p>','none'],
+[2,'Skip List','<p>Linked list with random express lanes (each node promoted with probability ½). Expected O(log n) search/insert/delete, simpler than balanced trees.</p>','none'],
+[3,'Divide &amp; Conquer','<p><b>Divide → Conquer → Combine.</b></p><ul><li><b>Binary search</b>: T(n)=T(n/2)+1 = O(log n)</li><li><b>Strassen matrix multiplication</b>: 7 multiplications instead of 8 ⇒ O(n<sup>2.81</sup>)</li><li><b>Convex hull</b> (divide-and-conquer / Graham scan): O(n log n)</li><li>Merge sort &amp; quick sort (see Unit I animations)</li></ul>','none'],
+[3,'Greedy: Knapsack &amp; Reliability','<p>Greedy makes the locally best choice. <b>Fractional knapsack</b>: sort by value/weight, take greedily — optimal, O(n log n). (0/1 knapsack needs DP.) Optimal reliability allocation: add the device copy with the best marginal reliability gain per cost.</p>','none'],
+[3,'Prim’s MST','<p>Grow a tree from one vertex; always add the cheapest edge leaving the tree. O(E log V) with a heap.</p>','graph',prim],
+[3,'Kruskal’s MST','<p>Sort edges; add an edge if it does not create a cycle (Union-Find). O(E log E).</p>','graph',kruskal],
+[3,'Dijkstra','<p>Single-source shortest paths with non-negative weights: repeatedly finalise the nearest vertex and relax its edges. O(E log V).</p>','graph',dijk],
+[3,'Bellman-Ford','<p>Relax every edge V-1 times; handles negative weights and detects negative cycles. O(VE).</p>','graph',bford],
+[4,'0/1 Knapsack (DP)','<p>dp[i][j] = max(dp[i-1][j], v<sub>i</sub> + dp[i-1][j-w<sub>i</sub>]). Optimal substructure + overlapping subproblems. O(nW).</p>','table',knap],
+[4,'Floyd-Warshall','<p>All-pairs shortest paths: d[i][j] = min(d[i][j], d[i][k]+d[k][j]) for each intermediate k. O(V³). (Warshall = same idea for transitive closure.)</p>','table',floyd],
+[4,'n-Queens (Backtracking)','<p>Place queens row by row; if no safe column, <b>backtrack</b>. Shown for n=6.</p>','board',nq],
+[4,'Graph Colouring','<p>Backtracking assigns colours so adjacent vertices differ (m=3 here). Watch the red <i>backtrack</i> messages.</p>','graph',gcol],
+[4,'B&amp;B, TSP, Hamiltonian, Sum of Subsets','<ul><li><b>Branch &amp; Bound</b>: explore a state-space tree, prune nodes whose bound is worse than the best known.</li><li><b>TSP</b>: cost-matrix reduction gives the lower bound.</li><li><b>Hamiltonian cycle</b>: backtrack extending a path through unvisited vertices.</li><li><b>Sum of subsets</b>: include/exclude each item; prune if sum exceeds target.</li></ul>','none'],
+[5,'FFT &amp; Algebraic Computation','<p>Polynomial multiplication via evaluation at roots of unity: DFT in O(n log n) using divide &amp; conquer on even/odd coefficients, multiply point-wise, then inverse FFT. Also: Horner’s rule evaluates a polynomial in n multiplications.</p>','none'],
+[5,'String Matching','<ul><li><b>Naive</b>: O(nm)</li><li><b>Rabin-Karp</b>: rolling hash, O(n+m) expected</li><li><b>KMP</b>: prefix function avoids re-scanning, O(n+m)</li></ul><p>Also: NP-completeness, approximation algorithms.</p>','none']];
+const UN=['','Unit I — Foundations &amp; Sorting','Unit II — Advanced Data Structures','Unit III — Divide &amp; Conquer, Greedy','Unit IV — DP, Backtracking, B&amp;B','Unit V — Selected Topics'];
+/* ---------- UI ---------- */
+let fr=[],ix=0,tm=null,arr,cur;
+const rnd=()=>arr=Array.from({length:12},()=>5+Math.floor(Math.random()*56));
+$('#nav').innerHTML=[1,2,3,4,5].map(u=>`<h4>${UN[u]}</h4>`+T.map((t,i)=>t[0]==u?`<a id=n${i} onclick=go(${i})>${t[1]}${t[3]!='none'?'<i>▶ live</i>':''}</a>`:'').join('')).join('');
+function go(i){stop();document.querySelectorAll('nav a').forEach(a=>a.classList.remove('on'));const m=$('#main');
+if(i<0){m.innerHTML='<div class=card><h1>Design &amp; Analysis of Algorithms</h1><p>Click any topic: read the theory, then watch the algorithm run step by step.</p></div><div class=grid>'+[1,2,3,4,5].map(u=>`<div class=card><h3>${UN[u]}</h3>`+T.map((t,j)=>t[0]==u?`<span class=chip onclick=go(${j})>${t[1]}${t[3]!='none'?' ▶':''}</span>`:'').join('')+'</div>').join('')+'</div>';return}
+cur=T[i];$('#n'+i).classList.add('on');
+m.innerHTML=`<h2>${cur[1]}</h2><div class=card>${cur[2]}</div>`+(cur[3]=='none'?'':`<div class=card><h3>🔬 Practical</h3><div class=ctl><button onclick=play()>▶ / ⏸</button><button onclick=stp(-1)>⏮ Back</button><button onclick=stp(1)>Step ⏭</button><button onclick=build()>↺ Restart</button>${cur[3]=='bars'?'<button onclick="rnd();build()">🎲 New array</button>':''}<label>Speed <input type=range id=sp min=1 max=10 value=6></label></div><canvas id=cv width=600 height=340></canvas><div class=msg id=ms></div></div>`);
+if(cur[3]=='bars')rnd();if(cur[3]!='none')build();window.scrollTo(0,0)}
+function build(){stop();fr=cur[3]=='bars'?[...cur[4]([...arr])]:[...cur[4]()];if(cur[3]=='bars')fr.push({a:[...arr].sort((x,y)=>x-y),h:[],m:'Sorted ✔',done:1});ix=0;draw()}
+function stop(){clearInterval(tm);tm=null}
+function play(){if(tm)return stop();if(ix>=fr.length-1)ix=0;const run=()=>{if(ix>=fr.length-1)return stop();ix++;draw();tm=setTimeout(run,1100-$('#sp').value*100)};tm=1;run()}
+function stp(d){stop();ix=Math.max(0,Math.min(fr.length-1,ix+d));draw()}
+function draw(){const f=fr[ix],c=$('#cv'),x=c.getContext('2d'),W=600,H=340;x.clearRect(0,0,W,H);x.textAlign='center';x.font='13px system-ui';const k=cur[3];
+if(k=='bars'){const n=f.a.length,bw=W/n,mx=Math.max(...f.a);f.a.forEach((v,i)=>{const h=v/mx*(H-50);x.fillStyle=f.done?G:f.h&&f.h.includes(i)?'#f59e0b':'#38bdf8';x.fillRect(i*bw+3,H-h-5,bw-6,h);x.fillStyle='#e2e8f0';x.fillText(v,i*bw+bw/2,H-h-9)})}
+else if(k=='graph'){E.forEach(([a,b,w],i)=>{x.strokeStyle=(f.e&&f.e[i])||'#475569';x.lineWidth=f.e&&f.e[i]?5:2;x.beginPath();x.moveTo(...P[a]);x.lineTo(...P[b]);x.stroke();x.fillStyle='#e2e8f0';x.fillText(w,(P[a][0]+P[b][0])/2+8,(P[a][1]+P[b][1])/2-6)});P.forEach((p,i)=>{x.beginPath();x.arc(p[0],p[1],20,0,7);x.fillStyle=(f.nd&&f.nd[i])||'#1e293b';x.fill();x.strokeStyle='#38bdf8';x.lineWidth=2;x.stroke();x.fillStyle='#fff';x.font='bold 15px system-ui';x.fillText(NM[i],p[0],p[1]+5);if(f.lab){x.fillStyle='#f5c518';x.fillText(f.lab[i],p[0],p[1]+38)}x.font='13px system-ui'})}
+else if(k=='table'){const R=f.t.length,C=f.t[0].length,cw=Math.min(72,(W-10)/C),ch=Math.min(44,(H-10)/R);f.t.forEach((r,i)=>r.forEach((v,j)=>{const hl=f.c[0]==i&&f.c[1]==j;x.fillStyle=hl?'#f59e0b':i==0||j==0?'#312e81':'#1e293b';x.fillRect(5+j*cw,5+i*ch,cw-2,ch-2);x.fillStyle=hl?'#000':'#e2e8f0';x.fillText(String(v),5+j*cw+cw/2,5+i*ch+ch/2+4)}))}
+else if(k=='board'){const n=6,s=50;for(let r=0;r<n;r++)for(let c=0;c<n;c++){x.fillStyle=(r+c)%2?'#334155':'#64748b';x.fillRect(150+c*s,20+r*s,s,s)}x.font='34px serif';x.fillStyle='#f5c518';f.q.forEach((c,r)=>x.fillText('♛',150+c*s+s/2,20+r*s+38))}
+else{const mx=400,X=n=>40+n*26,Y=v=>H-30-Math.min(v,mx)/mx*(H-50);x.strokeStyle='#64748b';x.beginPath();x.moveTo(40,10);x.lineTo(40,H-30);x.lineTo(W-10,H-30);x.stroke();[['n',a=>a,'#22c55e'],['n log n',a=>a*Math.log2(a),'#38bdf8'],['n²',a=>a*a,'#f59e0b'],['2ⁿ',a=>2**a,'#ef4444']].forEach(([l,fn,col],q)=>{x.strokeStyle=col;x.lineWidth=3;x.beginPath();for(let a=1;a<=f.n;a+=.5)a==1?x.moveTo(X(a),Y(fn(a))):x.lineTo(X(a),Y(fn(a)));x.stroke();x.fillStyle=col;x.fillText(l,70+q*70,20)})}
+$('#ms').textContent=`Step ${ix+1}/${fr.length}: `+f.m}
+go(-1);
+</script></body></html>

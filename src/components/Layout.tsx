@@ -24,12 +24,17 @@ function Footer() {
     <footer className="bg-dark text-white/80 mt-16">
       <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <img
-              src="/techverse-logo.png"
-              alt="TechVerse — Learn, Build, Grow"
-              className="w-[144px] h-[92px] object-contain object-left"
+              src="/techverse-mark.png"
+              alt=""
+              aria-hidden="true"
+              className="w-12 h-12 object-contain"
             />
+            <span className="flex flex-col leading-none">
+              <span className="font-bold tracking-tight text-white">TechVerse</span>
+              <span className="mt-1.5 text-[9px] font-semibold tracking-[0.16em] text-white/60">LEARN · BUILD · GROW</span>
+            </span>
           </div>
           <p className="text-sm text-white/60 max-w-xs mb-4">
             Learn, practice, and get placed with India's most comprehensive ed-tech platform.

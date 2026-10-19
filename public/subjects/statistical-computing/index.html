@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TechVerse | Statistical Computing Lab</title>
+<style>
+:root{--bg:#0b1020;--c1:#22d3ee;--c2:#a78bfa;--tx:#e2e8f0;--mu:#94a3b8;--cd:#141b34}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+#bg{position:fixed;inset:0;z-index:0}
+header,main,section,footer{position:relative;z-index:1}
+header{padding:28px 20px 10px;text-align:center}
+.logo{font-size:2.2rem;font-weight:800;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c1));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 4s linear infinite}
+@keyframes sh{to{background-position:200%}}
+header p{color:var(--mu)}
+.by{font-size:.85rem;margin-top:4px}
+h1{font-size:1.2rem;margin:14px 0 2px;font-weight:600}
+#home{max-width:1000px;margin:20px auto;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{background:var(--cd);border:1px solid #ffffff1a;border-radius:16px;padding:20px;cursor:pointer;transition:.3s;animation:up .6s both}
+.card:hover{transform:translateY(-8px) scale(1.02);border-color:var(--c1);box-shadow:0 10px 30px #22d3ee33}
+.card .ic{font-size:2.2rem}.card b{color:var(--c1)}.card small{color:var(--mu);display:block}
+@keyframes up{from{opacity:0;transform:translateY(30px)}}
+#lab{display:none;max-width:1200px;margin:10px auto;padding:0 12px;grid-template-columns:260px 1fr;gap:16px}
+aside{background:var(--cd);border-radius:14px;padding:12px;height:fit-content;position:sticky;top:8px;max-height:92vh;overflow:auto}
+aside h4{color:var(--c2);margin:10px 0 4px;font-size:.85rem}
+aside button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--tx);padding:6px 8px;border-radius:8px;cursor:pointer;font-size:.9rem}
+aside button:hover,aside button.on{background:#22d3ee22;color:var(--c1)}
+article{background:var(--cd);border-radius:14px;padding:20px;animation:up .4s both;min-width:0}
+article h2{color:var(--c1)}.th{margin:10px 0;color:#cbd5e1}
+.demo{background:#0b1226;border:1px solid #ffffff14;border-radius:12px;padding:12px;margin:12px 0}
+.ctl{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:8px;font-size:.85rem}
+.ctl input{accent-color:var(--c1)}
+canvas.cv{width:100%;max-width:640px;background:#060a18;border-radius:8px;display:block}
+.info{color:#f0abfc;margin-top:6px;font-size:.9rem;word-break:break-word}
+button.b{background:linear-gradient(90deg,var(--c1),var(--c2));color:#06101f;border:0;padding:6px 14px;border-radius:8px;font-weight:700;cursor:pointer}
+pre{background:#050816;border-left:3px solid var(--c2);padding:12px;border-radius:8px;overflow:auto;font-size:.85rem;color:#a7f3d0;margin-top:6px}
+footer{text-align:center;color:var(--mu);font-size:.8rem;padding:24px 10px}
+#back{margin:0 0 10px;display:none}
+@media(max-width:800px){#lab{grid-template-columns:1fr}aside{position:static}}
+</style></head><body>
+<canvas id="bg"></canvas>
+<header>
+<div class="logo">TechVerse</div>
+<p>Statistical Computing · Theory + Practical Lab</p>
+<h1>Vikas Maurya</h1>
+<p class="by">Design by Vikas Maurya Academy &amp; Vikas Coding School</p>
+</header>
+<main id="home"></main>
+<section id="lab"><aside id="nav"></aside><article id="art"></article></section>
+<footer>© TechVerse · Vikas Maurya Academy &amp; Vikas Coding School (YouTube) · Syllabus: AKTU Statistical Computing, Units I–V</footer>
+<script>
+const U=[["Unit I","Descriptive Statistics & Probability","📊"],["Unit II","Inferential Statistics & Linear Methods","🧪"],["Unit III","Random Numbers, Monte Carlo & MCMC","🎲"],["Unit IV","Resampling, Density & Numerical Methods","🔁"],["Unit V","R Programming","💻"]];
+// [unit,title,theory,R code,demo]
+const T=[
+[0,"Descriptive Statistics","Central tendency (mean, median, mode), dispersion (variance, SD, IQR), skewness and kurtosis summarise a dataset. Increase skewness below and watch the mean move away from the median.",`x <- c(12,15,11,19,25,14,13)
+mean(x); median(x); sd(x); var(x)
+summary(x)
+hist(x, col="skyblue")
+library(e1071); skewness(x); kurtosis(x)`,"desc"],
+[0,"Correlation & Linear Regression","Pearson r measures linear association (-1 to 1). Least squares fits y = a + bx. Multiple regression adds more predictors.",`cor(x, y); cor.test(x, y)
+fit <- lm(y ~ x)
+summary(fit)
+plot(x, y); abline(fit, col="red")
+lm(y ~ x1 + x2)   # multiple regression`,"corr"],
+[0,"Probability & Bayes' Theorem","P(A|B) = P(B|A)P(A)/P(B). Even an accurate test gives many false positives when the event is rare.",`prior <- 0.02; sens <- 0.95; spec <- 0.90
+post <- prior*sens / (prior*sens + (1-prior)*(1-spec))
+post
+dbinom(3, 10, 0.5); pnorm(1.96)`,"bayes"],
+[0,"Random Variables & Central Limit Theorem","E[X], Var(X), Markov and Chebyshev inequalities bound tail probabilities. CLT: the mean of many independent samples is approximately Normal, whatever the original shape.",`means <- replicate(2000, mean(rexp(30)))
+hist(means, freq=FALSE)
+curve(dnorm(x, 1, 1/sqrt(30)), add=TRUE)
+# Chebyshev: P(|X-mu| >= k*sd) <= 1/k^2`,"clt"],
+[1,"Hypothesis Testing (z / t)","Set H0, compute test statistic, find p-value. If p < 0.05 reject H0. Larger n or effect size makes rejection more likely (power).",`t.test(x, mu=10)                 # one sample
+t.test(x, y)                     # independent
+t.test(x, y, paired=TRUE)        # paired
+z <- (mean(x)-10)/(sd(x)/sqrt(length(x)))
+2*(1-pnorm(abs(z)))`,"ztest"],
+[1,"ANOVA, Chi-square & Goodness of Fit","ANOVA compares several group means via the F ratio. Chi-square tests independence and goodness of fit using observed vs expected counts.",`aov_fit <- aov(score ~ group, data=df)
+summary(aov_fit)
+tbl <- table(df$gender, df$choice)
+chisq.test(tbl)                  # independence
+chisq.test(c(20,30,50), p=c(.2,.3,.5))  # goodness of fit`],
+[1,"Regression: QR & SVD","QR (Householder) solves least squares stably. SVD factors X = UDV'. Both underlie lm() and PCA.",`X <- cbind(1, x); qrX <- qr(X)
+qr.coef(qrX, y)
+s <- svd(scale(X[,-1, drop=FALSE]))
+s$d`],
+[1,"PCA (Dimension Reduction)","PCA rotates data to uncorrelated components ordered by variance, keeping the top few to reduce dimensions.",`p <- prcomp(iris[,1:4], scale.=TRUE)
+summary(p)
+biplot(p)
+screeplot(p, type="lines")`],
+[2,"Pseudo-Random Numbers (Inverse Transform)","If U ~ Uniform(0,1), then X = F^-1(U) has CDF F. For Exp(λ): X = -ln(U)/λ. Acceptance-rejection handles densities without simple inverses.",`u <- runif(2000)
+x <- -log(u)/1.5
+hist(x, freq=FALSE)
+curve(dexp(x, 1.5), add=TRUE, col="red")`,"invt"],
+[2,"Monte Carlo Integration","Estimate integrals/expectations by random sampling; error shrinks like 1/√n. Here the fraction of points inside a quarter circle gives π/4.",`n <- 1e5
+x <- runif(n); y <- runif(n)
+4*mean(x^2 + y^2 < 1)
+# integral of exp(-x^2) on 0..1
+mean(exp(-runif(n)^2))`,"mc"],
+[2,"Markov Chain Monte Carlo (Metropolis-Hastings)","Build a Markov chain whose stationary distribution is the target. Propose y, accept with probability min(1, f(y)/f(x)). Try a tiny and a huge step size.",`f <- function(x) exp(-(x+2)^2/2) + exp(-(x-2)^2/2)
+x <- numeric(10000)
+for(i in 2:10000){
+  y <- x[i-1] + rnorm(1, 0, 2)
+  x[i] <- ifelse(runif(1) < f(y)/f(x[i-1]), y, x[i-1])
+}
+hist(x, freq=FALSE); plot(x, type="l")  # convergence`,"mcmc"],
+[3,"Resampling: Bootstrap, Jackknife, CV","Bootstrap resamples the data with replacement to approximate the sampling distribution; percentile CI = 2.5% and 97.5% quantiles.",`library(boot)
+bs <- replicate(1000, mean(sample(x, replace=TRUE)))
+quantile(bs, c(.025,.975))
+boot(x, function(d,i) mean(d[i]), R=1000)`,"boot"],
+[3,"Density Estimation (Kernel Smoothing)","KDE places a small kernel on every point and sums them. Bandwidth h controls smoothness: small = wiggly, large = oversmoothed.",`d <- density(x, bw=0.5)
+plot(d)
+hist(x, freq=FALSE); lines(d, col="red")`,"kde"],
+[3,"Numerical Methods: Root Finding","Newton-Raphson: x(n+1) = x(n) - f(x)/f'(x). It converges quadratically near the root. Here solve x² - 2 = 0.",`f <- function(x) x^2 - 2
+uniroot(f, c(0, 5))$root
+newton <- function(x){ for(i in 1:6) x <- x - (x^2-2)/(2*x); x }
+newton(8)`,"newton"],
+[3,"Optimization & EM Algorithm","optim() does unconstrained/constrained minimisation. EM alternates E-step (expected memberships) and M-step (update parameters). Simplex: linear programming.",`optim(c(0,0), function(p) (p[1]-3)^2 + (p[2]+1)^2)
+optimize(function(x) (x-2)^2, c(0,5))
+library(lpSolve); lp("max", c(3,2), rbind(c(1,1),c(1,0)), "<=", c(4,3))
+library(mixtools); normalmixEM(x, k=2)   # EM`],
+[4,"R Basics","R is a vectorised language. Objects: vectors, matrices, lists, data frames, factors. Control flow: if, for, while, apply family. Functions via function().",`2+3*4; sqrt(16)
+v <- c(1,2,3); m <- matrix(1:6, 2)
+df <- data.frame(a=1:3, b=c("x","y","z"))
+sq <- function(n) n^2
+for(i in 1:3) print(sq(i))
+sapply(v, sq); Sys.Date()`],
+[4,"Data Import, Descriptive Commands & Graphics","Import data, aggregate, plot, export results. Use libraries for statistics and visualisation.",`df <- read.csv("data.csv")
+str(df); summary(df)
+aggregate(score ~ group, df, mean)
+png("plot.png"); boxplot(score ~ group, df); dev.off()
+write.csv(df, "out.csv")`]
+];
+const $=s=>document.querySelector(s),R=Math.random,N=()=>Math.sqrt(-2*Math.log(1-R()))*Math.cos(6.2832*R());
+const Phi=z=>{const t=1/(1+.2316419*Math.abs(z)),p=.3989423*Math.exp(-z*z/2)*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p};
+function hist(c,d,b,g,lo=Math.min(...d),hi=Math.max(...d)){const W=c.canvas.width,H=c.canvas.height,bw=(hi-lo)/b,k=Array(b).fill(0);c.clearRect(0,0,W,H);d.forEach(x=>{const i=Math.floor((x-lo)/bw);i>=0&&i<b&&k[i]++});const y=k.map(v=>v/(d.length*bw));let mx=Math.max(...y);if(g)for(let i=0;i<=100;i++)mx=Math.max(mx,g(lo+i*(hi-lo)/100));mx*=1.1;y.forEach((v,i)=>{c.fillStyle='#22d3ee99';c.fillRect(i*W/b+1,H-20-v/mx*(H-30),W/b-2,v/mx*(H-30))});if(g){c.strokeStyle='#f0abfc';c.lineWidth=2;c.beginPath();for(let i=0;i<=100;i++){const yy=H-20-g(lo+i*(hi-lo)/100)/mx*(H-30);i?c.lineTo(i*W/100,yy):c.moveTo(0,yy)}c.stroke()}c.fillStyle='#94a3b8';c.fillText(lo.toFixed(1),4,H-5);c.fillText(hi.toFixed(1),W-34,H-5)}
+const D={
+desc:{c:[['n','Sample size',20,500,150,10],['sk','Skewness',0,3,0,.1]],f:(v,c)=>{const n=+v.n,d=Array.from({length:n},()=>10+3*N()+v.sk*3*-Math.log(1-R())),m=d.reduce((a,b)=>a+b)/n,md=[...d].sort((a,b)=>a-b)[n>>1],sd=Math.sqrt(d.reduce((a,b)=>a+(b-m)**2,0)/(n-1)),sk=d.reduce((a,b)=>a+((b-m)/sd)**3,0)/n;hist(c,d,25);return`Mean ${m.toFixed(2)} | Median ${md.toFixed(2)} | SD ${sd.toFixed(2)} | Skewness ${sk.toFixed(2)}`}},
+corr:{c:[['r','Correlation ρ',-1,1,.7,.05]],f:(v,c)=>{const W=640,H=300,x=[],y=[],r=+v.r;c.clearRect(0,0,W,H);for(let i=0;i<80;i++){const a=N();x.push(a);y.push(r*a+Math.sqrt(1-r*r)*N())}const mx=x.reduce((a,b)=>a+b)/80,my=y.reduce((a,b)=>a+b)/80;let sxy=0,sxx=0,syy=0;x.forEach((a,i)=>{sxy+=(a-mx)*(y[i]-my);sxx+=(a-mx)**2;syy+=(y[i]-my)**2});const b=sxy/sxx,a0=my-b*mx,P=u=>(u+4)/8*W,Q=u=>H-(u+4)/8*H;c.fillStyle='#22d3ee';x.forEach((a,i)=>{c.beginPath();c.arc(P(a),Q(y[i]),3,0,7);c.fill()});c.strokeStyle='#f0abfc';c.lineWidth=2;c.beginPath();c.moveTo(P(-3),Q(a0-3*b));c.lineTo(P(3),Q(a0+3*b));c.stroke();return`Sample r = ${(sxy/Math.sqrt(sxx*syy)).toFixed(3)} | y = ${a0.toFixed(2)} + ${b.toFixed(2)}x`}},
+bayes:{c:[['p','Prevalence %',1,50,2,1],['s','Sensitivity %',50,100,95,1],['t','Specificity %',50,100,90,1]],f:(v,c)=>{const p=v.p/100,pp=p*v.s/100/(p*v.s/100+(1-p)*(1-v.t/100));c.clearRect(0,0,640,300);c.fillStyle='#334155';c.fillRect(40,110,560,50);c.fillStyle='#22d3ee';c.fillRect(40,110,560*pp,50);c.fillStyle='#fff';c.font='18px sans-serif';c.fillText('P(Disease | Positive) = '+(pp*100).toFixed(1)+'%',40,90);c.font='12px sans-serif';return`Prior ${v.p}% → posterior ${(pp*100).toFixed(1)}%. Rare events produce many false positives.`}},
+clt:{c:[['n','Sample size n',1,50,1,1]],f:(v,c)=>{const n=+v.n,d=Array.from({length:2000},()=>{let s=0;for(let i=0;i<n;i++)s-=Math.log(1-R());return s/n}),sd=1/Math.sqrt(n);hist(c,d,40,x=>Math.exp(-(((x-1)/sd)**2)/2)/(sd*2.5066),0,4);return`2000 means of ${n} Exp(1) values. Pink curve = Normal(1, ${sd.toFixed(2)}).`}},
+ztest:{c:[['d','True mean shift',0,2,.3,.05],['n','Sample size',5,300,50,5]],f:(v,c)=>{const W=640,H=300,z=(+v.d+N()/Math.sqrt(v.n))*Math.sqrt(v.n),p=2*(1-Phi(Math.abs(z))),X=u=>(u+5)/10*W,Y=u=>H-20-Math.exp(-u*u/2)*220;c.clearRect(0,0,W,H);c.fillStyle='#f8717199';for(let u=-5;u<5;u+=.05)if(Math.abs(u)>=Math.abs(z))c.fillRect(X(u),Y(u),W*.005+1,H-20-Y(u));c.strokeStyle='#22d3ee';c.lineWidth=2;c.beginPath();for(let u=-5;u<=5;u+=.1)u<-4.9?c.moveTo(X(u),Y(u)):c.lineTo(X(u),Y(u));c.stroke();c.strokeStyle='#f0abfc';[z,-z].forEach(q=>{const x=X(Math.max(-5,Math.min(5,q)));c.beginPath();c.moveTo(x,0);c.lineTo(x,H-20);c.stroke()});return`z = ${z.toFixed(2)} | p-value = ${p.toFixed(4)} → ${p<.05?'Reject H0':'Fail to reject H0'} (α = 0.05). Click Re-run for a new sample.`}},
+invt:{c:[['l','Rate λ',.2,3,1.5,.1]],f:(v,c)=>{const l=+v.l,d=Array.from({length:2000},()=>-Math.log(1-R())/l);hist(c,d,40,x=>l*Math.exp(-l*x),0,4/l);return`X = -ln(U)/λ from Uniform U. Pink = true Exp(${l}) density.`}},
+mc:{a:1,c:[['k','Points per frame',10,2000,200,10]],f:(v,c,S)=>{if(!S.n){S.n=0;S.k=0;c.clearRect(0,0,640,300);c.strokeStyle='#94a3b8';c.strokeRect(170,0,300,300)}for(let i=0;i<v.k&&S.n<200000;i++){const x=R(),y=R(),q=x*x+y*y<1;q&&S.k++;S.n++;if(S.n<30000){c.fillStyle=q?'#22d3ee':'#f87171';c.fillRect(170+x*300,300-y*300,2,2)}}return`n = ${S.n} | π ≈ ${(4*S.k/S.n).toFixed(4)} (true 3.1416)`}},
+mcmc:{a:1,c:[['s','Proposal step size',.1,6,2,.1]],f:(v,c,S)=>{const tf=x=>Math.exp(-((x+2)**2)/2)+Math.exp(-((x-2)**2)/2);if(!S.d){S.d=[];S.x=0;S.ac=0}if(S.d.length<20000){for(let i=0;i<30;i++){const y=S.x+v.s*N();if(R()<tf(y)/tf(S.x)){S.x=y;S.ac++}S.d.push(S.x)}hist(c,S.d,40,x=>tf(x)/5.013,-6,6)}return`${S.d.length} samples | acceptance ${(100*S.ac/S.d.length).toFixed(0)}% | pink = target density`}},
+boot:{c:[['B','Resamples B',100,3000,1000,100]],f:(v,c,S)=>{S.d=S.d||Array.from({length:20},()=>Math.exp(N()*.6+1));const d=S.d,m=Array.from({length:+v.B},()=>{let s=0;for(let i=0;i<20;i++)s+=d[R()*20|0];return s/20}).sort((a,b)=>a-b);hist(c,m,30);return`Sample mean ${(d.reduce((a,b)=>a+b)/20).toFixed(2)} | 95% percentile CI: [${m[Math.floor(.025*v.B)].toFixed(2)}, ${m[Math.floor(.975*v.B)].toFixed(2)}]`}},
+kde:{c:[['h','Bandwidth h',.1,2,.5,.05]],f:(v,c,S)=>{S.d=S.d||Array.from({length:40},()=>R()<.5?N()*.8:4+N());const d=S.d,h=+v.h;hist(c,d,14,u=>d.reduce((a,x)=>a+Math.exp(-(((u-x)/h)**2)/2),0)/(40*h*2.5066),-4,10);return`Histogram + kernel density estimate (Gaussian kernel, h = ${h}). Small h = noisy, large h = oversmoothed.`}},
+newton:{c:[['x','Start x0',.5,10,8,.5]],f:(v,c)=>{const W=640,H=300,X=u=>u/10*W,Y=u=>H-20-(u+5)/105*(H-30);c.clearRect(0,0,W,H);c.strokeStyle='#22d3ee';c.lineWidth=2;c.beginPath();for(let u=0;u<=10;u+=.1)u?c.lineTo(X(u),Y(u*u-2)):c.moveTo(X(u),Y(u*u-2));c.stroke();c.strokeStyle='#94a3b8';c.beginPath();c.moveTo(0,Y(0));c.lineTo(W,Y(0));c.stroke();let x=+v.x,s='x0='+x.toFixed(4);c.fillStyle='#f0abfc';for(let i=0;i<6;i++){c.beginPath();c.arc(X(x),Y(x*x-2),5,0,7);c.fill();x-=(x*x-2)/(2*x);s+=' → '+x.toFixed(6)}return s+' (√2 = 1.414214)'}}
+};
+let cur=-1,raf,S={};
+function mk(){ $('#home').innerHTML=U.map((u,i)=>`<div class="card" style="animation-delay:${i*.1}s" onclick="openU(${i})"><div class="ic">${u[2]}</div><b>${u[0]}</b><div>${u[1]}</div><small>${T.filter(t=>t[0]==i).length} topics · theory + R + live demo</small></div>`).join('');
+ $('#nav').innerHTML='<button onclick="goHome()">← Launcher</button>'+U.map((u,i)=>`<h4>${u[0]}: ${u[1]}</h4>`+T.map((t,j)=>t[0]==i?`<button id="t${j}" onclick="openT(${j})">${t[1]}</button>`:'').join('')).join('')}
+function goHome(){cancelAnimationFrame(raf);$('#lab').style.display='none';$('#home').style.display='grid'}
+function openU(i){openT(T.findIndex(t=>t[0]==i))}
+function openT(j){cancelAnimationFrame(raf);cur=j;S={};const t=T[j],d=D[t[4]];$('#home').style.display='none';$('#lab').style.display='grid';
+ document.querySelectorAll('aside button').forEach(b=>b.classList.remove('on'));$('#t'+j).classList.add('on');
+ const a=$('#art');a.style.animation='none';a.offsetHeight;a.style.animation='';
+ a.innerHTML=`<small>${U[t[0]][0]}</small><h2>${t[1]}</h2><p class="th">${t[2]}</p>`+(d?`<div class="demo"><b>▶ Live Practical</b><div class="ctl">${d.c.map(k=>`<label>${k[1]}: <span id="o_${k[0]}">${k[4]}</span> <input type="range" id="r_${k[0]}" min="${k[2]}" max="${k[3]}" step="${k[5]}" value="${k[4]}"></label>`).join('')}<button class="b" id="rr">Re-run</button></div><canvas class="cv" id="cv" width="640" height="300"></canvas><div class="info" id="inf"></div></div>`:'')+`<b>R Code</b> <button class="b" id="cp">Copy</button><pre></pre>`;
+ a.querySelector('pre').textContent=t[3];$('#cp').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(t[3]);$('#cp').textContent='Copied ✓';setTimeout(()=>$('#cp').textContent='Copy',1200)};
+ if(d){const c=$('#cv').getContext('2d'),vals=()=>{const v={};d.c.forEach(k=>v[k[0]]=+$('#r_'+k[0]).value);return v},run=()=>{cancelAnimationFrame(raf);const go=()=>{$('#inf').textContent=d.f(vals(),c,S);if(d.a)raf=requestAnimationFrame(go)};go()};
+  d.c.forEach(k=>$('#r_'+k[0]).oninput=()=>{$('#o_'+k[0]).textContent=$('#r_'+k[0]).value;S={};run()});$('#rr').onclick=()=>{S={};run()};run()}
+ scrollTo(0,0)}
+mk();
+// animated background
+const bg=$('#bg'),g=bg.getContext('2d');let P=[];
+function rs(){bg.width=innerWidth;bg.height=innerHeight;P=Array.from({length:55},()=>({x:R()*bg.width,y:R()*bg.height,vx:R()-.5,vy:R()-.5}))}
+rs();addEventListener('resize',rs);
+(function an(){g.clearRect(0,0,bg.width,bg.height);P.forEach((p,i)=>{p.x=(p.x+p.vx+bg.width)%bg.width;p.y=(p.y+p.vy+bg.height)%bg.height;g.fillStyle='#22d3ee88';g.fillRect(p.x,p.y,2,2);for(let j=i+1;j<P.length;j++){const q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<120){g.strokeStyle=`rgba(167,139,250,${.25-d/480})`;g.beginPath();g.moveTo(p.x,p.y);g.lineTo(q.x,q.y);g.stroke()}}});requestAnimationFrame(an)})();
+</script></body></html>

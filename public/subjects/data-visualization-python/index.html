@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TechVerse | Data Visualization with Python - Vikas Maurya</title>
+<style>
+:root{--bg:#F3F6F8;--ink:#12263A;--mut:#4F6577;--ac:#0E7C86;--am:#E8A33D;--card:#fff;--code:#0F2233;--ln:#D5DEE5}
+@media(prefers-color-scheme:dark){:root{--bg:#0C1822;--ink:#E6EEF4;--mut:#9DB2C3;--card:#132634;--ln:#244052;--code:#08121A}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,Segoe UI,sans-serif;display:flex}
+nav{position:sticky;top:0;height:100vh;width:270px;flex:none;overflow:auto;background:#12263A;color:#DCE8F0;padding:20px 14px}
+nav h1{font:700 18px/1.3 Georgia,serif;margin:0 0 16px;color:#fff}
+nav a{display:block;color:#B9CCDA;text-decoration:none;padding:6px 10px;border-radius:6px;font-size:14px}
+nav a:hover,nav a.on{background:#1E3D57;color:#fff}
+nav b{display:block;margin:14px 10px 4px;color:var(--am);font-size:13px}
+main{flex:1;min-width:0;padding:0 clamp(16px,4vw,56px) 80px;max-width:1000px}
+.hero{padding:44px 0 20px}
+.hero h2{font:700 clamp(28px,5vw,46px)/1.15 Georgia,serif;margin:0 0 10px}
+.hero p{color:var(--mut);max-width:60ch}
+canvas{width:100%;display:block;background:var(--card);border:1px solid var(--ln);border-radius:10px}
+section.unit{padding-top:36px}
+section.unit>h2{font:700 28px Georgia,serif;margin:0 0 4px;border-bottom:3px solid var(--ac);padding-bottom:6px}
+.lab{background:var(--card);border-left:4px solid var(--am);padding:8px 14px;margin:12px 0 22px;border-radius:0 8px 8px 0}
+details{background:var(--card);border:1px solid var(--ln);border-radius:10px;margin:10px 0}
+summary{cursor:pointer;padding:12px 16px;font-weight:600}
+summary:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--am);outline-offset:2px}
+.body{padding:0 16px 16px}
+.body p{margin:6px 0 10px;max-width:72ch}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:4px;margin-right:6px}
+.th{background:#D6ECEE;color:#075B63}.pr{background:#FBE7C4;color:#7A4B05}
+pre{position:relative;margin:6px 0;background:var(--code);color:#D5E6F2;padding:14px;border-radius:8px;overflow:auto;font:13px/1.5 Consolas,monospace}
+pre button{position:absolute;top:6px;right:6px;background:#1E3D57;color:#fff;border:0;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:12px}
+.demo{margin:12px 0;padding:12px;background:var(--bg);border:1px dashed var(--ac);border-radius:8px}
+.demo button,.demo select{background:var(--ac);color:#fff;border:0;border-radius:6px;padding:6px 12px;margin:0 6px 8px 0;cursor:pointer;font:inherit;font-size:14px}
+.demo input[type=range]{width:220px;vertical-align:middle}
+table{border-collapse:collapse;font-size:14px}td,th{border:1px solid var(--ln);padding:4px 10px}td.na{background:#F7C6C6;color:#7A1111;font-weight:700}
+nav .brand{font:700 13px Georgia,serif;color:var(--am);margin:0 0 4px}
+nav .credit{margin-top:22px;padding:12px 10px;border-top:1px solid #2A4A63;font-size:12.5px;line-height:1.5;color:#B9CCDA}
+nav .credit strong{color:#fff;display:block}
+footer{margin-top:60px;padding:22px 0;border-top:3px solid var(--ac);color:var(--mut);font-size:14px}
+footer b{color:var(--ink)}
+@media(max-width:800px){body{display:block}nav{position:static;height:auto;width:auto}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<nav><div class="brand">TechVerse</div><h1>Data Visualization<br>with Python</h1><div id="nav"></div><div class="credit"><strong>Vikas Maurya</strong>Design by Vikas Maurya Academy &amp; Vikas Coding School<br>A TechVerse learning resource</div></nav>
+<main>
+<div class="hero"><div class="brand" style="font:700 15px Georgia,serif;color:var(--ac)">TechVerse by Vikas Maurya</div><h2>From raw numbers to a picture that explains itself</h2>
+<p>Each topic has Theory, Practical code you can copy into Jupyter or VS Code, and a live demo. Start at Unit 1 or jump from the sidebar.</p>
+<canvas id="hero" height="220" aria-label="Animation: numbers turning into a bar chart"></canvas></div>
+<div id="units"></div>
+<footer><b>TechVerse</b> - Data Visualization with Python<br>Created by <b>Vikas Maurya</b> | Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b></footer>
+</main>
+<script>
+const U=[
+{id:'u1',n:'Unit 1: Python and Data Basics',lab:'Hands-on: set up Jupyter/Anaconda and run basic EDA on a dirty dataset to find missing values.',demo:'dirty',T:[
+['Python basics: variables, numbers, strings, booleans','A variable is a name that points to a value. Python infers the type: int, float, str, bool. Use type() to check. Strings are immutable sequences of characters.',
+`age = 21; pi = 3.14; name = "ABES"; ok = True
+print(type(age), type(pi), type(name), type(ok))
+print(name.lower(), name[0:2], len(name), f"{name} has {age} students")`],
+['Operators','Arithmetic (+ - * / // % **), comparison (== != < >), logical (and, or, not), membership (in) and identity (is).',
+`a, b = 17, 5
+print(a // b, a % b, a ** 2, a > b and b > 0, 3 in [1, 2, 3])`],
+['Data types: numeric, dictionary, set, sequence','Sequences (list, tuple, str) are ordered. A dict maps keys to values. A set keeps unique items only. Choose by what you need: order, lookup, or uniqueness.',
+`marks = [78, 91, 65]            # list
+pt = (3, 4)                    # tuple
+student = {"name": "Riya", "cgpa": 8.7}   # dict
+tags = set(["a", "b", "a"])    # {'a','b'}
+print(marks[-1], student["cgpa"], tags)`],
+['If-else, for and while loops','Conditions choose a path; for loops iterate over a sequence; while loops repeat until a condition fails.',
+`for m in marks:
+    grade = "A" if m >= 90 else "B" if m >= 75 else "C"
+    print(m, grade)
+n = 3
+while n > 0:
+    print(n); n -= 1`],
+['User-defined functions','A function packages reusable logic. Parameters in, return value out. Good functions do one job and have a clear name.',
+`def average(values):
+    return sum(values) / len(values)
+print(average(marks))`],
+['Why visualize? Human perception, encodings, chart types','Humans see position and length far more accurately than area or color. Encode your most important variable with position. Match chart to question: trend = line, compare = bar, relationship = scatter, distribution = histogram, parts of whole = stacked bar (use pie sparingly). Industry uses: sales dashboards, hospital monitoring, finance risk, sports analytics.',
+`# Same data, different encodings: which comparison is easier to read?
+import matplotlib.pyplot as plt
+v = [30, 45, 38, 52]
+fig, ax = plt.subplots(1, 2, figsize=(8, 3))
+ax[0].bar("ABCD", v); ax[1].pie(v, labels="ABCD")
+plt.show()`],
+['Data formats and Python setup','CSV is plain text and universal, JSON is nested key-value, Excel has sheets. Tools: Anaconda + Jupyter for notebooks, VS Code for projects, Kaggle for free hosted notebooks and real datasets.',
+`# Terminal: conda create -n viz python=3.11 && conda activate viz
+# pip install pandas numpy matplotlib seaborn plotly jupyter
+import pandas as pd
+df_csv  = pd.read_csv("data.csv")
+df_json = pd.read_json("data.json")
+df_xls  = pd.read_excel("data.xlsx", sheet_name=0)`],
+['Pandas and NumPy + EDA for missing values','NumPy gives fast arrays; Pandas gives tables (DataFrames). EDA = look before you plot: shape, types, summary, missing values, duplicates.',
+`import numpy as np, pandas as pd
+df = pd.read_csv("dirty.csv")
+print(df.shape); df.info(); print(df.describe())
+print(df.isna().sum())                 # missing per column
+print((df.isna().mean() * 100).round(1))  # percent missing
+df["age"] = df["age"].fillna(df["age"].median())
+df = df.drop_duplicates().dropna(subset=["name"])`]]},
+
+{id:'u2',n:'Unit 2: Foundation for Visualization',lab:'Hands-on: build a multi-plot Exploratory Dashboard with Seaborn for correlation analysis.',demo:'charts',T:[
+['Plot structure: figure, axes, labels','A Figure is the canvas; Axes is one plot inside it. Always label axes with units and add a title that states the finding.',
+`import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.plot([1, 2, 3, 4], [10, 14, 9, 17])
+ax.set(title="Weekly sales", xlabel="Week", ylabel="Units")
+plt.show()`],
+['Line, bar and scatter plots','Line shows change over ordered x. Bar compares categories (start at zero). Scatter shows relationship between two numbers; marker and color add a third variable.',
+`x = np.arange(1, 6)
+plt.plot(x, x**2, marker="o", label="squares")
+plt.plot(x, x*3, "--s", label="triple"); plt.legend()
+plt.figure(); plt.bar(["CSE", "IT", "ECE"], [60, 45, 38])
+plt.figure(); plt.scatter(df["hours"], df["marks"], c=df["marks"], cmap="viridis")`],
+['Histograms, subplots and styling','A histogram bins numbers to show distribution shape (skew, spread, gaps). Subplots put related views side by side. Annotations point at the story.',
+`fig, ax = plt.subplots(1, 2, figsize=(9, 3.5))
+ax[0].hist(df["marks"], bins=10, edgecolor="white")
+ax[1].plot(x, x**2)
+ax[1].annotate("peak", xy=(5, 25), xytext=(3, 20), arrowprops=dict(arrowstyle="->"))
+plt.tight_layout()`],
+['Exporting publication-ready plots','Use vector formats (SVG/PDF) for papers, PNG at 300 dpi for slides. bbox_inches="tight" trims white space.',
+`plt.savefig("fig1.pdf", bbox_inches="tight")
+plt.savefig("fig1.png", dpi=300, bbox_inches="tight")`],
+['Case study: exploratory workflow + Seaborn dashboard','Workflow: ask a question, check data, plot distributions, plot relationships, refine, then export. Seaborn makes correlation dashboards in a few lines.',
+`import seaborn as sns
+df = sns.load_dataset("penguins").dropna()
+fig, ax = plt.subplots(2, 2, figsize=(11, 8))
+sns.histplot(df, x="body_mass_g", hue="species", ax=ax[0,0])
+sns.scatterplot(df, x="flipper_length_mm", y="body_mass_g", hue="species", ax=ax[0,1])
+sns.boxplot(df, x="species", y="bill_length_mm", ax=ax[1,0])
+sns.heatmap(df.select_dtypes("number").corr(), annot=True, cmap="coolwarm", ax=ax[1,1])
+plt.tight_layout()`]]},
+
+{id:'u3',n:'Unit 3: Statistical Visualization',lab:'Hands-on: build a Global Migration interactive map with Folium or Plotly.',demo:'corr',T:[
+['Central tendency, dispersion and outliers','Mean is pulled by outliers; median is robust. Std dev and IQR measure spread. An outlier is far outside Q1 - 1.5*IQR or Q3 + 1.5*IQR. Always plot before trusting a number.',
+`s = df["body_mass_g"]
+print(s.mean(), s.median(), s.mode()[0], s.std(), s.var())
+q1, q3 = s.quantile([.25, .75]); iqr = q3 - q1
+print(s[(s < q1 - 1.5*iqr) | (s > q3 + 1.5*iqr)])
+sns.boxplot(x=s)`],
+['Sampling techniques','Random, stratified (keep group proportions), systematic (every k-th) and cluster sampling. A biased sample gives a confident wrong chart.',
+`rand  = df.sample(n=50, random_state=1)
+strat = df.groupby("species", group_keys=False).apply(lambda g: g.sample(frac=.2))
+syst  = df.iloc[::5]`],
+['Covariance and correlation (Pearson, Spearman)','Covariance shows direction only. Pearson r (-1 to 1) measures linear strength; Spearman uses ranks so it catches monotonic curves and resists outliers. Correlation is not causation.',
+`print(df[["flipper_length_mm", "body_mass_g"]].cov())
+print(df["flipper_length_mm"].corr(df["body_mass_g"]))                    # Pearson
+print(df["flipper_length_mm"].corr(df["body_mass_g"], method="spearman")) # Spearman`],
+['Seaborn: categorical, distribution, PDF and regression plots','Categorical: bar, box, violin, strip. Distribution: hist, KDE (smooth estimate of the PDF), ECDF. Regression: scatter plus fitted line with confidence band.',
+`sns.set_theme(style="whitegrid", palette="deep")
+sns.violinplot(df, x="species", y="body_mass_g")
+sns.kdeplot(df, x="body_mass_g", hue="species", fill=True)
+sns.regplot(df, x="flipper_length_mm", y="body_mass_g")
+sns.pairplot(df, hue="species")`],
+['Hands-on: Global Migration map','Choropleth colors regions by value; bubble maps use size. Plotly adds hover and animation by year.',
+`import plotly.express as px
+m = px.data.gapminder()
+fig = px.choropleth(m, locations="iso_alpha", color="lifeExp", hover_name="country",
+                    animation_frame="year", color_continuous_scale="Viridis")
+fig.show()
+# Folium: import folium; mp = folium.Map([20.6, 78.9], zoom_start=4)
+# folium.CircleMarker([28.6, 77.2], radius=8, popup="Delhi").add_to(mp); mp.save("map.html")`]]},
+
+{id:'u4',n:'Unit 4: Interactive Visualization',lab:'Hands-on: deploy a live Python dashboard on a local server or GitHub Pages.',demo:'hover',T:[
+['Plotly basics and interactivity','Interactive charts let viewers hover for exact values, zoom into regions and click legends to filter. Good for exploration; use static for print.',
+`import plotly.express as px
+df = px.data.gapminder().query("year == 2007")
+fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop", color="continent",
+                 hover_name="country", log_x=True)
+fig.show()`],
+['Animation and time series','Animation adds the time dimension: one frame per year. Keep axis ranges fixed so motion is meaningful.',
+`px.scatter(px.data.gapminder(), x="gdpPercap", y="lifeExp", size="pop", color="continent",
+           animation_frame="year", animation_group="country", log_x=True, range_y=[25, 90])`],
+['Dash: layout and callbacks','Dash builds web apps in pure Python. Layout = what is on the page. Callback = a function that reruns when an input changes.',
+`from dash import Dash, dcc, html, Input, Output
+app = Dash(__name__)
+app.layout = html.Div([dcc.Dropdown(["Asia", "Europe", "Africa"], "Asia", id="c"), dcc.Graph(id="g")])
+@app.callback(Output("g", "figure"), Input("c", "value"))
+def update(cont):
+    d = px.data.gapminder().query("continent == @cont")
+    return px.line(d, x="year", y="lifeExp", color="country")
+app.run(host="0.0.0.0", port=8050)   # students open http://SERVER-IP:8050`],
+['Streamlit and real-time dashboards, APIs','Streamlit turns a script into an app: every widget change reruns the script. Combine with an API and st.cache_data for live data.',
+`# save as app.py, run: streamlit run app.py --server.address 0.0.0.0
+import streamlit as st, pandas as pd, plotly.express as px
+st.title("Marks dashboard")
+f = st.file_uploader("CSV", type="csv")
+if f:
+    d = pd.read_csv(f); col = st.selectbox("Column", d.select_dtypes("number").columns)
+    st.plotly_chart(px.histogram(d, x=col))`],
+['D3.js and SVG (web-based visualization)','SVG draws shapes in the browser. D3 binds data to shapes: one data item = one element. You can see the idea with no library:',
+`<svg id="s" width="300" height="120"></svg>
+<script>
+const data = [30, 80, 45, 60];
+document.getElementById("s").innerHTML = data.map((v, i) =>
+  '<rect x="' + (i*70+10) + '" y="' + (110-v) + '" width="55" height="' + v + '" fill="teal"/>').join("");
+<\/script>`]]},
+
+{id:'u5',n:'Unit 5: Best Practices and Case Studies',lab:'Hands-on: visualize classifier performance (confusion matrix, feature importance) and deploy to Streamlit Cloud or GitHub.',demo:'color',T:[
+['Visual best practices, ethics, color and accessibility','Start bars at zero, keep scales honest, label clearly, remove clutter. About 8% of men have color-vision deficiency: avoid red-green only, use colorblind-safe palettes and add shapes or labels. Never truncate an axis to exaggerate.',
+`sns.set_palette("colorblind")
+plt.style.use("seaborn-v0_8-whitegrid")
+# Sequential data: viridis. Diverging around zero: coolwarm. Categories: colorblind palette.`],
+['Storytelling and time-series/geo data','A story chart has a headline finding, one highlighted series, muted context and an annotation. Time series: resample and smooth to show trend; geo: choropleth for rates, bubbles for counts.',
+`ts = df.set_index("date")["sales"]
+ax = ts.plot(color="lightgray", figsize=(8, 3))
+ts.rolling(7).mean().plot(ax=ax, color="teal", lw=2)
+ax.annotate("Festival spike", xy=(ts.idxmax(), ts.max()))`],
+['Power BI and dashboard review','Power BI imports CSV/Excel, builds visuals by drag and drop and publishes dashboards. Review checklist: one question per dashboard, key number first, consistent colors, filters that work, readable on a projector.',
+`# Power BI Desktop: Get Data > Text/CSV > Transform (Power Query) > build visuals
+# Python visual in Power BI: dataset DataFrame is available as "dataset"
+import matplotlib.pyplot as plt
+dataset.groupby("branch")["marks"].mean().plot(kind="bar"); plt.show()`],
+['Hands-on: classifier performance','Accuracy hides mistakes. A confusion matrix shows which classes get confused; feature importance shows what the model relied on.',
+`from sklearn.datasets import load_iris
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import ConfusionMatrixDisplay
+X, y = load_iris(return_X_y=True, as_frame=True)
+Xtr, Xte, ytr, yte = train_test_split(X, y, random_state=0)
+m = RandomForestClassifier().fit(Xtr, ytr)
+ConfusionMatrixDisplay.from_estimator(m, Xte, yte)
+pd.Series(m.feature_importances_, X.columns).sort_values().plot.barh()`],
+['Deployment, portfolio and GenAI-assisted analysis','Push app.py and requirements.txt to GitHub, then deploy on Streamlit Cloud for a public link. Use GenAI for EDA ideas and code drafts, but verify: run the code, check the numbers, and never paste private data into public tools.',
+`# requirements.txt: streamlit, pandas, plotly
+# git init && git add . && git commit -m "viz app" && git push
+# Prompt idea: "Here is df.head() and df.describe(). Suggest 5 EDA checks and matplotlib code."`]]}
+];
+const nav=document.getElementById('nav'),root=document.getElementById('units');
+U.forEach(u=>{
+ nav.insertAdjacentHTML('beforeend','<b>'+u.n+'</b>');
+ let h='<section class="unit" id="'+u.id+'"><h2>'+u.n+'</h2><div class="lab">'+u.lab+'</div><div class="demo" data-demo="'+u.demo+'"></div>';
+ u.T.forEach((t,i)=>{const id=u.id+'t'+i;
+  nav.insertAdjacentHTML('beforeend','<a href="#'+id+'">'+t[0]+'</a>');
+  h+='<details id="'+id+'"><summary>'+t[0]+'</summary><div class="body"><span class="tag th">Theory</span><p>'+t[1]+'</p><span class="tag pr">Practical</span><pre><button>Copy</button><code></code></pre></div></details>';});
+ root.insertAdjacentHTML('beforeend',h+'</section>');
+});
+document.querySelectorAll('pre').forEach((p,i)=>{const c=U.flatMap(u=>u.T)[i][2];
+ p.querySelector('code').textContent=c;
+ p.querySelector('button').onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(c);e.target.textContent='Copied';setTimeout(()=>e.target.textContent='Copy',1200)}});
+addEventListener('hashchange',()=>{const d=document.querySelector(location.hash);d&&d.tagName=='DETAILS'&&(d.open=true)});
+// ---- canvas helpers
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function setup(c,h){const r=devicePixelRatio||1,w=c.clientWidth;c.width=w*r;c.height=h*r;c.style.height=h+'px';const x=c.getContext('2d');x.scale(r,r);return[x,w,h]}
+// ---- hero: numbers morph into bars
+(function(){const c=document.getElementById('hero');const vals=[34,52,41,68,57,80,63];let t0=null;
+ function draw(ts){t0=t0||ts;const[x,w,h]=setup(c,220);const p=Math.min(1,(ts-t0)/2200);const e=1-Math.pow(1-p,3);
+  x.font='13px Consolas,monospace';const bw=w/vals.length;
+  vals.forEach((v,i)=>{const bh=v*2*e,bx=i*bw+bw*.15,by=190-bh;
+   x.fillStyle=css('--ac');x.globalAlpha=.25+.75*e;x.fillRect(bx,by,bw*.7,bh);x.globalAlpha=1;
+   x.fillStyle=css('--ink');x.textAlign='center';
+   x.fillText(String(v),bx+bw*.35,e<.5?100+i*8-e*20:by-6);});
+  if(p<1)requestAnimationFrame(draw)}
+ requestAnimationFrame(draw);addEventListener('resize',()=>requestAnimationFrame(draw))})();
+// ---- unit demos
+const D={
+dirty(el){const rows=[['Asha',20,78],['Ravi',null,65],['Meena',22,null],['Asha',20,78],['',21,90]];
+ el.innerHTML='<b>Find the missing values.</b> Click Run isna().sum()<br><br><table><tr><th>name</th><th>age</th><th>marks</th></tr>'+rows.map(r=>'<tr>'+r.map(v=>'<td class="'+(v===null||v===''?'miss':'')+'">'+(v===null?'NaN':v)+'</td>').join('')+'</tr>').join('')+'</table><br><button id="b1">Run isna().sum()</button> <button id="b2">Fill age with median</button><pre id="o1" style="display:none"></pre>';
+ const o=el.querySelector('#o1');el.querySelector('#b1').onclick=()=>{el.querySelectorAll('td.miss').forEach(t=>t.classList.add('na'));o.style.display='block';o.textContent='name   1 (empty text)\nage    1\nmarks  1\nduplicate rows: 1'};
+ el.querySelector('#b2').onclick=()=>{el.querySelectorAll('td.na').forEach(t=>{if(t.textContent=='NaN'&&t.cellIndex==1){t.textContent='20';t.className=''}})}},
+charts(el){el.innerHTML='<b>Pick a chart type for the same data.</b><br><button data-k="line">Line</button><button data-k="bar">Bar</button><button data-k="scatter">Scatter</button><button data-k="hist">Histogram</button><canvas height="240"></canvas>';
+ const c=el.querySelector('canvas'),d=[12,19,14,25,22,30,27,35];let k='line',t0;
+ const hist=[2,5,9,14,10,6,3,1];
+ function draw(ts){t0=t0||ts;const[x,w,h]=setup(c,240),e=Math.min(1,(ts-t0)/700),m=36,pw=w-2*m,ph=h-2*m;
+  x.strokeStyle=css('--mut');x.beginPath();x.moveTo(m,m/2);x.lineTo(m,h-m);x.lineTo(w-m/2,h-m);x.stroke();
+  x.fillStyle=css('--ac');x.strokeStyle=css('--ac');x.lineWidth=2;
+  const data=k=='hist'?hist:d,mx=k=='hist'?16:40,n=data.length;
+  data.forEach((v,i)=>{const px=m+(i+.5)*pw/n,py=h-m-v/mx*ph*e;
+   if(k=='bar'||k=='hist'){const bw=pw/n*(k=='hist'?1:.6);x.fillRect(px-bw/2,py,bw-(k=='hist'?2:0),h-m-py)}
+   if(k=='scatter'){x.beginPath();x.arc(px,py,6,0,7);x.fill()}
+   if(k=='line'){i?x.lineTo(px,py):(x.beginPath(),x.moveTo(px,py))}});
+  if(k=='line')x.stroke();
+  x.fillStyle=css('--mut');x.font='12px system-ui';x.fillText({line:'Trend over time',bar:'Compare categories',scatter:'See relationship',hist:'See distribution'}[k],m+8,m/2+4);
+  if(e<1)requestAnimationFrame(draw)}
+ el.querySelectorAll('button').forEach(b=>b.onclick=()=>{k=b.dataset.k;t0=null;requestAnimationFrame(draw)});requestAnimationFrame(draw)},
+corr(el){el.innerHTML='<b>Drag r from -1 to 1</b> and watch the scatter tighten. r = <span id="rv">0.80</span><br><input type="range" min="-100" max="100" value="80"><canvas height="260"></canvas>';
+ const c=el.querySelector('canvas'),s=el.querySelector('input');let seed=[];for(let i=0;i<70;i++){const a=Math.sqrt(-2*Math.log(Math.random()+1e-9)),b=2*Math.PI*Math.random();seed.push([a*Math.cos(b),a*Math.sin(b)])}
+ function draw(){const r=s.value/100;el.querySelector('#rv').textContent=r.toFixed(2);const[x,w,h]=setup(c,260);
+  x.fillStyle=css('--ac');seed.forEach(([a,b])=>{const yy=r*a+Math.sqrt(1-r*r)*b;x.beginPath();x.arc(w/2+a*w/8,h/2-yy*h/8,4,0,7);x.fill()})}
+ s.oninput=draw;draw()},
+hover(el){el.innerHTML='<b>Hover over a bar</b> to read its exact value (what Plotly does for you).<canvas height="230"></canvas><div id="tip">&nbsp;</div>';
+ const c=el.querySelector('canvas'),tip=el.querySelector('#tip'),n=['Jan','Feb','Mar','Apr','May','Jun'],v=[42,55,38,70,64,81];let hv=-1;
+ function draw(){const[x,w,h]=setup(c,230),bw=w/n.length;n.forEach((s,i)=>{x.fillStyle=i==hv?css('--am'):css('--ac');const bh=v[i]*2.2;x.fillRect(i*bw+bw*.15,200-bh,bw*.7,bh);x.fillStyle=css('--ink');x.textAlign='center';x.fillText(s,i*bw+bw/2,218)})}
+ c.onmousemove=e=>{const i=Math.floor((e.offsetX)/(c.clientWidth/n.length));hv=i;tip.textContent=n[i]+': '+v[i]+' sales';draw()};c.onmouseleave=()=>{hv=-1;draw()};draw()},
+color(el){el.innerHTML='<b>Accessibility check.</b> Switch the palette, then simulate red-green color blindness.<br><button data-p="bad">Red + green</button><button data-p="good">Blue + orange</button><label><input type="checkbox" id="cb"> simulate color blindness</label><canvas height="120"></canvas>';
+ const c=el.querySelector('canvas'),cb=el.querySelector('#cb');let p='bad';
+ function draw(){const[x,w,h]=setup(c,120),pal={bad:['#D62728','#2CA02C'],good:['#0072B2','#E69F00']}[p];
+  pal.forEach((col,i)=>{let f=col;if(cb.checked&&p=='bad')f='#8C7B2A';x.fillStyle=f;x.fillRect(20+i*(w/2),20,w/2-40,60);x.fillStyle=css('--ink');x.fillText(i?'Series B':'Series A',24+i*(w/2),100)})}
+ el.querySelectorAll('button').forEach(b=>b.onclick=()=>{p=b.dataset.p;draw()});cb.onchange=draw;draw()}};
+document.querySelectorAll('.demo').forEach(e=>D[e.dataset.demo](e));
+const links=[...document.querySelectorAll('nav a')];
+</script></body></html>

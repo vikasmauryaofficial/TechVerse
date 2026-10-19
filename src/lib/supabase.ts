@@ -5,7 +5,6 @@ import {
   jobs as mockJobs,
   notes as mockNotes,
   problems as mockProblems,
-  videos as mockVideos,
 } from '@/data/mockData';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
@@ -146,6 +145,15 @@ export interface YouTubeVideoItem {
   channel: Channel;
 }
 
+export interface YouTubePlaylistItem {
+  playlistId: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  videoCount: number;
+  channel: Channel;
+}
+
 const fallbackDate = new Date().toISOString();
 
 function mapMockCourse(course: (typeof mockCourses)[number]): DBCourse {
@@ -253,15 +261,6 @@ function mapMockNote(note: (typeof mockNotes)[number]): DBNote {
   };
 }
 
-function mapMockYouTubeVideos() {
-  return mockVideos.map((video) => ({
-    videoId: String(video.id),
-    title: video.title,
-    publishedDate: new Date().toISOString(),
-    channel: video.channel,
-  }));
-}
-
 // Data fetching functions
 
 export async function fetchCourses(): Promise<DBCourse[]> {
@@ -353,9 +352,7 @@ export async function fetchSiteSettings(): Promise<DBSiteSettings | null> {
 
 export async function fetchYouTubeVideos(channel?: Channel, max?: number): Promise<YouTubeVideoItem[]> {
   if (!isSupabaseConfigured) {
-    const videos = mapMockYouTubeVideos();
-    const filtered = channel ? videos.filter((video) => video.channel === channel) : videos;
-    return filtered.slice(0, max ?? filtered.length);
+    throw new Error('Configure Supabase to load live YouTube videos.');
   }
 
   const params = new URLSearchParams();
@@ -368,7 +365,47 @@ export async function fetchYouTubeVideos(channel?: Channel, max?: number): Promi
       Authorization: `Bearer ${supabaseAnonKey}`,
     },
   });
-  if (!resp.ok) throw new Error(`YouTube feed failed (${resp.status})`);
-  const json = await resp.json();
+  const json = await resp.json() as { videos?: YouTubeVideoItem[]; error?: string };
+  if (!resp.ok) throw new Error(json.error || `YouTube feed failed (${resp.status}).`);
   return json.videos || [];
+}
+
+async function fetchYouTubeFeed<T>(params: URLSearchParams): Promise<T> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Configure Supabase to load YouTube playlists.');
+  }
+
+  const response = await fetch(`${supabaseUrl}/functions/v1/youtube-feed?${params}`, {
+    headers: {
+      Authorization: `Bearer ${supabaseAnonKey}`,
+      apikey: supabaseAnonKey,
+    },
+  });
+  const result = await response.json() as { error?: string } & T;
+  if (!response.ok) {
+    throw new Error(result.error || `YouTube feed failed (${response.status}).`);
+  }
+  return result;
+}
+
+export async function fetchYouTubePlaylists(channel?: Channel, max = 50): Promise<YouTubePlaylistItem[]> {
+  const params = new URLSearchParams({ resource: 'playlists', max: String(max) });
+  if (channel) params.set('channel', channel);
+  const result = await fetchYouTubeFeed<{ playlists?: YouTubePlaylistItem[] }>(params);
+  return result.playlists || [];
+}
+
+export async function fetchYouTubePlaylistVideos(
+  playlistId: string,
+  channel: Channel,
+  max = 50,
+): Promise<YouTubeVideoItem[]> {
+  const params = new URLSearchParams({
+    resource: 'playlistVideos',
+    playlistId,
+    channel,
+    max: String(max),
+  });
+  const result = await fetchYouTubeFeed<{ videos?: YouTubeVideoItem[] }>(params);
+  return result.videos || [];
 }

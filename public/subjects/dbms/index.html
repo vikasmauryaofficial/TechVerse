@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DBMS Lab – TechVerse</title>
+<style>
+:root{--bg:#0b1020;--card:#141b34;--ac:#38bdf8;--ac2:#a78bfa;--tx:#e6ebff;--mu:#8f9bc4;--ok:#34d399;--bad:#f87171}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,system-ui,sans-serif;background:radial-gradient(circle at 20% 0,#1b2450,var(--bg) 60%);color:var(--tx);display:flex;min-height:100vh}
+nav{width:270px;padding:18px;background:#0a0f20;border-right:1px solid #232c52;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0}
+nav h1{font-size:22px;margin:0;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;color:transparent}
+nav small{color:var(--mu);display:block;margin-bottom:16px}
+nav button{display:block;width:100%;text-align:left;margin:6px 0;padding:11px;border:1px solid #232c52;border-radius:10px;background:var(--card);color:var(--tx);cursor:pointer;transition:.25s}
+nav button:hover,nav button.on{transform:translateX(5px);border-color:var(--ac);box-shadow:0 0 14px #38bdf855}
+main{flex:1;padding:26px;max-width:1000px}
+.fade{animation:up .6s both}@keyframes up{from{opacity:0;transform:translateY(18px)}}
+h2{margin-top:0}.tabs{display:flex;gap:8px;margin:14px 0}
+.tabs button{padding:9px 18px;border-radius:20px;border:1px solid var(--ac);background:none;color:var(--ac);cursor:pointer}
+.tabs button.on{background:var(--ac);color:#04101c;font-weight:700}
+.card{background:var(--card);border:1px solid #232c52;border-radius:14px;padding:14px 18px;margin:10px 0;animation:up .5s both}
+.card h3{margin:0 0 6px;color:var(--ac)}.card p{margin:0;color:#c9d2f5;line-height:1.55}
+textarea,input,select{width:100%;background:#0a0f20;color:var(--tx);border:1px solid #2d386a;border-radius:8px;padding:9px;font:14px Consolas,monospace;margin:5px 0}
+.run{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#04101c;border:0;border-radius:8px;padding:9px 20px;font-weight:700;cursor:pointer}
+table{border-collapse:collapse;margin:8px 0;font-size:14px}td,th{border:1px solid #2d386a;padding:6px 12px}th{background:#1d2750;color:var(--ac)}
+tr{animation:up .4s both}.ok{color:var(--ok)}.bad{color:var(--bad)}.mu{color:var(--mu)}
+.arch{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.arch div{padding:14px 18px;border-radius:12px;background:#1d2750;border:1px solid var(--ac);text-align:center}
+.arch b.ar{color:var(--ac2);font-size:24px;animation:flow 1.1s infinite}@keyframes flow{50%{transform:translateX(7px);opacity:.3}}
+.arch div:nth-child(odd){animation:glow 3s infinite}@keyframes glow{50%{box-shadow:0 0 18px var(--ac)}}
+label{margin-right:12px;cursor:pointer}footer{margin-top:30px;color:var(--mu);font-size:13px;border-top:1px solid #232c52;padding-top:10px}
+li{animation:up .4s both;margin:3px 0}
+@media(max-width:800px){body{flex-direction:column}nav{width:100%;height:auto;position:static}}
+</style></head><body>
+<nav><h1>TechVerse</h1><small>DBMS Interactive Lab<br>by Vikas Maurya</small><div id="menu"></div></nav>
+<main><div id="app"></div>
+<footer>© TechVerse · Design by <b>Vikas Maurya Academy &amp; Vikas Coding School</b> · Prof. Vikas Maurya</footer></main>
+<script>
+const $=s=>document.querySelector(s);
+const U=[
+{n:'Unit I',t:'Introduction & ER Model',th:[
+['Database System vs File System','A DBMS removes redundancy, inconsistency, and isolated data of file systems and adds security, sharing, concurrent access and recovery.'],
+['Three-Schema Architecture','External level (views) → Conceptual level (logical schema) → Internal level (storage). Data independence: logical (change conceptual without changing views) and physical (change storage without changing schema).'],
+['Schema vs Instance','Schema = design/structure (rarely changes). Instance = data at a moment in time (changes constantly).'],
+['DDL, DML, DCL, TCL','DDL: CREATE, ALTER, DROP. DML: SELECT, INSERT, UPDATE, DELETE. DCL: GRANT, REVOKE. TCL: COMMIT, ROLLBACK, SAVEPOINT.'],
+['ER Model','Entity (rectangle), Attribute (oval), Relationship (diamond). Mapping constraints: 1:1, 1:N, M:N, participation total/partial. Weak entity has a partial key.'],
+['Keys','Super key: any attribute set that uniquely identifies a row. Candidate key: minimal super key. Primary key: chosen candidate key. Foreign key links tables.'],
+['Generalization, Specialization, Aggregation','Generalization: bottom-up merge of entities. Specialization: top-down split (IS-A). Aggregation: treat a relationship as an entity for higher-level relationships.'],
+['ER to Tables','Strong entity → table. M:N → new table with both keys. 1:N → put FK on N side. Multivalued attribute → separate table. Ternary relationship → table with 3 FKs.']],lab:lab1},
+{n:'Unit II',t:'Relational Model & SQL',th:[
+['Relational Model & Integrity','Relation = table, tuple = row, attribute = column. Entity integrity: PK not NULL. Referential integrity: FK must match a PK or be NULL. Domain constraints restrict values.'],
+['Relational Algebra','σ select (rows), π project (columns), ∪ union, − difference, × product, ⋈ join, ρ rename. Calculus: Tuple (TRC) and Domain (DRC) are non-procedural.'],
+['SQL Basics','Data types: INT, VARCHAR, DATE, DECIMAL. Operators: arithmetic, comparison, logical, LIKE, IN, BETWEEN. Aggregates: COUNT, SUM, AVG, MIN, MAX with GROUP BY / HAVING.'],
+['Joins & Set Operations','INNER, LEFT, RIGHT, FULL joins. UNION, INTERSECT, MINUS (EXCEPT). Subqueries can be nested in WHERE/FROM.'],
+['Views, Indexes, Cursors, Triggers, Procedures','View = saved query. Index speeds lookups (B-tree). Cursor walks rows in PL/SQL. Trigger fires on INSERT/UPDATE/DELETE. Procedure = stored PL/SQL program.']],lab:lab2},
+{n:'Unit III',t:'Design & Normalization',th:[
+['Functional Dependency','X → Y means X uniquely determines Y. Armstrong axioms: reflexivity, augmentation, transitivity. Closure X⁺ = all attributes determined by X.'],
+['1NF, 2NF, 3NF, BCNF','1NF: atomic values. 2NF: 1NF + no partial dependency. 3NF: 2NF + no transitive dependency. BCNF: every determinant is a candidate key.'],
+['MVD, JD, 4NF, 5NF','Multivalued dependency X ↠ Y: independent multi-valued facts. 4NF removes non-trivial MVDs; 5NF removes join dependencies.'],
+['Lossless & Dependency-Preserving Decomposition','Decomposition R→R1,R2 is lossless if R1∩R2 is a key of R1 or R2. Prefer lossless + dependency preserving.']],lab:lab3},
+{n:'Unit IV',t:'Transactions & Distributed DB',th:[
+['ACID','Atomicity, Consistency, Isolation, Durability.'],
+['Serializability','Conflict serializable if the precedence graph has no cycle. Conflicts: R-W, W-R, W-W on the same item by different transactions. View serializability is more general.'],
+['Recoverability','Recoverable, cascadeless (ACA) and strict schedules prevent dirty-read failures.'],
+['Log-based Recovery & Checkpoints','Write-ahead log: <T,X,old,new>. Deferred vs immediate update. Checkpoint limits how far back recovery must scan: REDO committed, UNDO uncommitted.'],
+['Deadlock Handling','Prevention (wait-die, wound-wait), detection (wait-for graph cycle), recovery (victim rollback).'],
+['Distributed Database','Fragmentation (horizontal/vertical), replication, allocation, distributed commit (2PC), directory systems.']],lab:lab4},
+{n:'Unit V',t:'Concurrency Control & Oracle',th:[
+['Lock-based Protocols','Shared (S) and Exclusive (X) locks. Two-Phase Locking (growing then shrinking) guarantees serializability; Strict 2PL holds X locks until commit.'],
+['Timestamp Ordering','Each transaction gets a timestamp; operations that arrive out of order cause rollback. Thomas write rule ignores obsolete writes.'],
+['Validation-based (Optimistic)','Read → Validation → Write phases. Good when conflicts are rare.'],
+['Multiple Granularity & MVCC','Intention locks (IS, IX, SIX) on a hierarchy DB→table→page→row. Multi-version schemes let readers see snapshots without blocking writers.'],
+['Case Study: Oracle','Oracle uses MVCC (undo segments) for read consistency, row-level locking, redo logs, SCN-based recovery, and PL/SQL.']],lab:lab5}];
+let cur=0,tab='th';
+function menu(){$('#menu').innerHTML=U.map((u,i)=>`<button class="${i==cur?'on':''}" onclick="go(${i})"><b>${u.n}</b><br><small>${u.t}</small></button>`).join('')}
+function go(i,t='th'){cur=i;tab=t;menu();const u=U[i];
+$('#app').innerHTML=`<div class="fade"><h2>${u.n}: ${u.t}</h2><div class="tabs"><button class="${tab=='th'?'on':''}" onclick="go(${i},'th')">📖 Theory</button><button class="${tab=='lab'?'on':''}" onclick="go(${i},'lab')">🧪 Practical Lab</button></div><div id="body"></div></div>`;
+if(tab=='th'){$('#body').innerHTML=(i==0?`<div class="arch"><div>External<br><small>Views</small></div><b class="ar">⇄</b><div>Conceptual<br><small>Logical schema</small></div><b class="ar">⇄</b><div>Internal<br><small>Storage</small></div></div>`:'')+u.th.map((c,k)=>`<div class="card" style="animation-delay:${k*.07}s"><h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('')}
+else u.lab($('#body'))}
+function tbl(rows){if(!rows.length)return'<p class="mu">No rows.</p>';const k=Object.keys(rows[0]);return`<table><tr>${k.map(x=>`<th>${x}</th>`).join('')}</tr>${rows.map((r,i)=>`<tr style="animation-delay:${i*.08}s">${k.map(x=>`<td>${r[x]??''}</td>`).join('')}</tr>`).join('')}</table>`}
+/* LAB 1: key finder */
+function lab1(el){const S=[{roll:101,email:'a@x.com',name:'Amit',dept:'CSE',phone:'9811'},{roll:102,email:'b@x.com',name:'Amit',dept:'IT',phone:'9822'},{roll:103,email:'c@x.com',name:'Riya',dept:'CSE',phone:'9833'},{roll:104,email:'d@x.com',name:'Riya',dept:'CSE',phone:'9844'}];
+const cols=Object.keys(S[0]);
+el.innerHTML=`<div class="card"><h3>Key Finder – STUDENT table</h3><p>Tick attributes and test whether they form a Super Key or a Candidate Key.</p></div>${tbl(S)}<div>${cols.map(c=>`<label><input type="checkbox" value="${c}" style="width:auto"> ${c}</label>`).join('')}</div><button class="run" id="kb">Test</button><div id="ko" class="card"></div>`;
+const uniq=a=>new Set(S.map(r=>a.map(c=>r[c]).join('|'))).size==S.length;
+$('#kb').onclick=()=>{const a=[...el.querySelectorAll('input:checked')].map(x=>x.value);if(!a.length)return $('#ko').innerHTML='Select at least one attribute.';
+if(!uniq(a))return $('#ko').innerHTML=`<span class="bad">{${a}} is NOT a key – duplicate values exist.</span>`;
+const min=a.every(c=>!a.filter(x=>x!=c).length||!uniq(a.filter(x=>x!=c)));
+$('#ko').innerHTML=`<span class="ok">{${a}} is a Super Key.</span><br>`+(min?'<span class="ok">It is also minimal → Candidate Key (can be chosen as Primary Key).</span>':'<span class="mu">Not minimal – a smaller subset is already unique.</span>')}}
+/* LAB 2: mini SQL */
+const DB={student:[{roll:101,name:'Amit',dept:'CSE',cgpa:8.2},{roll:102,name:'Riya',dept:'IT',cgpa:9.1},{roll:103,name:'Karan',dept:'CSE',cgpa:7.4},{roll:104,name:'Sana',dept:'ECE',cgpa:8.8}],enroll:[{roll:101,course:'DBMS',marks:78},{roll:102,course:'DBMS',marks:91},{roll:103,course:'OS',marks:66},{roll:101,course:'OS',marks:70}]};
+function runSQL(q){const m=q.trim().replace(/;$/,'').match(/^select\s+(.+?)\s+from\s+(\w+)(?:\s+join\s+(\w+)\s+on\s+(\w+)\.(\w+)\s*=\s*(\w+)\.(\w+))?(?:\s+where\s+(\w+)\s*(>=|<=|!=|=|>|<)\s*'?([^']+?)'?)?(?:\s+order\s+by\s+(\w+)(?:\s+(asc|desc))?)?$/i);
+if(!m)throw'Supported: SELECT cols|* FROM t [JOIN t2 ON t.a=t2.b] [WHERE c op v] [ORDER BY c [DESC]]';
+const t1=m[2].toLowerCase();if(!DB[t1])throw'Unknown table '+t1;let r=DB[t1];
+if(m[3]){const t2=m[3].toLowerCase();if(!DB[t2])throw'Unknown table '+t2;const [a,b]=m[4].toLowerCase()==t1?[m[5],m[7]]:[m[7],m[5]];r=[];DB[t1].forEach(x=>DB[t2].forEach(y=>{if(x[a]==y[b])r.push({...x,...y})}))}
+if(m[8]){const v=isNaN(+m[10])?m[10]:+m[10],c=m[8],o=m[9];r=r.filter(x=>({'=':x[c]==v,'!=':x[c]!=v,'>':x[c]>v,'<':x[c]<v,'>=':x[c]>=v,'<=':x[c]<=v})[o])}
+if(m[11]){const c=m[11],d=(m[12]||'').toLowerCase()=='desc'?-1:1;r=[...r].sort((a,b)=>(a[c]>b[c]?1:-1)*d)}
+if(m[1].trim()!='*'){const cs=m[1].split(',').map(s=>s.trim());r=r.map(x=>Object.fromEntries(cs.map(c=>[c,x[c]])))}return r}
+function lab2(el){el.innerHTML=`<div class="card"><h3>Mini SQL Engine (runs in your browser)</h3><p>Tables: <b>student</b>(roll,name,dept,cgpa), <b>enroll</b>(roll,course,marks). Try the examples below.</p></div>
+<select id="ex"><option>SELECT * FROM student</option><option>SELECT name, cgpa FROM student WHERE cgpa > 8 ORDER BY cgpa DESC</option><option>SELECT name, course, marks FROM student JOIN enroll ON student.roll = enroll.roll</option><option>SELECT * FROM enroll WHERE course = 'DBMS'</option></select>
+<textarea id="q" rows="3">SELECT * FROM student</textarea><button class="run" id="rb">▶ Run Query</button><div id="qo"></div>`;
+$('#ex').onchange=e=>$('#q').value=e.target.value;
+$('#rb').onclick=()=>{try{$('#qo').innerHTML=tbl(runSQL($('#q').value))}catch(e){$('#qo').innerHTML=`<p class="bad">${e}</p>`}};$('#rb').click()}
+/* LAB 3: FD closure */
+function lab3(el){el.innerHTML=`<div class="card"><h3>Functional Dependency Lab</h3><p>Enter attributes, FDs (use letters, e.g. A->B, B->C, CD->E) and find closures and candidate keys.</p></div>
+Attributes<input id="at" value="ABCDE">FDs<input id="fd" value="A->B, B->C, CD->E">Closure of<input id="cl" value="A"><button class="run" id="fb">Compute</button><div id="fo" class="card"></div>`;
+$('#fb').onclick=()=>{const A=[...new Set($('#at').value.toUpperCase().replace(/[^A-Z]/g,''))],F=$('#fd').value.toUpperCase().split(',').map(s=>s.split('->').map(x=>x.replace(/[^A-Z]/g,''))).filter(f=>f.length==2&&f[0]);
+const clo=X=>{let s=new Set(X),ch=1,st=[[...s].join('')];while(ch){ch=0;F.forEach(([l,r])=>{if([...l].every(c=>s.has(c))&&[...r].some(c=>!s.has(c))){[...r].forEach(c=>s.add(c));ch=1;st.push(`${[...s].join('')}  (applied ${l}→${r})`)}})}return[s,st]};
+const [s,st]=clo($('#cl').value.toUpperCase().replace(/[^A-Z]/g,''));
+const keys=[];for(let m=1;m<1<<A.length;m++){const X=A.filter((_,i)=>m>>i&1);if(clo(X)[0].size==A.length&&!keys.some(k=>[...k].every(c=>X.includes(c))))keys.push(X.join(''))}
+$('#fo').innerHTML=`<b>Closure steps:</b><ol>${st.map(x=>`<li>${x}</li>`).join('')}</ol><b>(${$('#cl').value.toUpperCase()})⁺ = {${[...s].join(', ')}}</b><br><br><b>Candidate Keys:</b> <span class="ok">${keys.join(', ')||'none'}</span>`}}
+/* LAB 4: serializability */
+function graph(nodes,edges,cyc){const R=110,cx=150,cy=130,p={};nodes.forEach((n,i)=>{const a=2*Math.PI*i/nodes.length-Math.PI/2;p[n]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+return`<svg width="300" height="260"><defs><marker id="h" markerWidth="8" markerHeight="8" refX="26" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" fill="#a78bfa"/></marker></defs>${edges.map(([a,b])=>`<line x1="${p[a][0]}" y1="${p[a][1]}" x2="${p[b][0]}" y2="${p[b][1]}" stroke="${cyc?'#f87171':'#a78bfa'}" stroke-width="2" marker-end="url(#h)"/>`).join('')}${nodes.map(n=>`<circle cx="${p[n][0]}" cy="${p[n][1]}" r="20" fill="#1d2750" stroke="#38bdf8"/><text x="${p[n][0]}" y="${p[n][1]+5}" fill="#fff" text-anchor="middle">${n}</text>`).join('')}</svg>`}
+function lab4(el){el.innerHTML=`<div class="card"><h3>Conflict Serializability Checker</h3><p>Write a schedule like <code>R1(A) W2(A) W1(A) R2(B)</code>. The tool builds the precedence graph and checks for cycles.</p></div><textarea id="sc" rows="2">R1(A) W2(A) W1(A)</textarea><button class="run" id="sb">Check</button><div id="so"></div>`;
+$('#sb').onclick=()=>{const ops=[...$('#sc').value.toUpperCase().matchAll(/([RW])(\d+)\((\w+)\)/g)].map(m=>({o:m[1],t:'T'+m[2],x:m[3]}));const T=[...new Set(ops.map(o=>o.t))],E=[];
+ops.forEach((a,i)=>ops.slice(i+1).forEach(b=>{if(a.t!=b.t&&a.x==b.x&&(a.o=='W'||b.o=='W')&&!E.some(e=>e[0]==a.t&&e[1]==b.t))E.push([a.t,b.t])}));
+const indeg={};T.forEach(t=>indeg[t]=E.filter(e=>e[1]==t).length);const ord=[],q=T.filter(t=>!indeg[t]);while(q.length){const t=q.shift();ord.push(t);E.filter(e=>e[0]==t).forEach(e=>{if(!--indeg[e[1]])q.push(e[1])})}
+const ok=ord.length==T.length;$('#so').innerHTML=`<div class="card fade">${graph(T,E,!ok)}<p>Edges: ${E.map(e=>e.join('→')).join(', ')||'none'}</p><p class="${ok?'ok':'bad'}"><b>${ok?'✔ Conflict serializable. Equivalent serial order: '+ord.join(' → '):'✘ Cycle found – NOT conflict serializable.'}</b></p></div>`}; $('#sb').click()}
+/* LAB 5: lock manager */
+function lab5(el){el.innerHTML=`<div class="card"><h3>Lock Manager &amp; Deadlock Detector</h3><p>Format: <code>txn:S(item)</code> or <code>txn:X(item)</code>. Requests run in order; conflicting ones wait. Try the default to see a deadlock.</p></div><textarea id="lk" rows="2">1:X(A) 2:X(B) 1:X(B) 2:X(A)</textarea><button class="run" id="lb">Simulate</button><ul id="lo"></ul><div id="lw"></div>`;
+$('#lb').onclick=()=>{const rq=[...$('#lk').value.toUpperCase().matchAll(/(\d+):([SX])\((\w+)\)/g)].map(m=>({t:'T'+m[1],m:m[2],x:m[3]}));const L={},W={},blocked=new Set(),log=[];
+rq.forEach(r=>{if(blocked.has(r.t))return log.push(`<span class="mu">${r.t} is waiting → ${r.m}(${r.x}) queued</span>`);
+const h=(L[r.x]||[]).filter(l=>l.t!=r.t&&(l.m=='X'||r.m=='X'));
+if(h.length){blocked.add(r.t);W[r.t]=h[0].t;log.push(`<span class="bad">${r.t} requests ${r.m}(${r.x}) – DENIED, waits for ${h[0].t}</span>`)}else{(L[r.x]=L[r.x]||[]).push({t:r.t,m:r.m});log.push(`<span class="ok">${r.t} granted ${r.m}(${r.x})</span>`)}});
+$('#lo').innerHTML=log.map((l,i)=>`<li style="animation-delay:${i*.5}s">${l}</li>`).join('');
+let dl=null;for(const s in W){let c=s,seen=[];while(W[c]&&!seen.includes(c)){seen.push(c);c=W[c]}if(W[c]&&seen.includes(c)){dl=seen.slice(seen.indexOf(c));break}}
+const E=Object.entries(W),N=[...new Set(E.flat())];
+$('#lw').innerHTML=`<div class="card" style="animation-delay:${log.length*.5}s"><b>Wait-for graph</b><br>${N.length?graph(N,E,!!dl):'<span class="ok">No waiting – no graph.</span>'}<p class="${dl?'bad':'ok'}"><b>${dl?'☠ DEADLOCK: '+dl.join(' → ')+' → '+dl[0]+'. Fix: abort a victim (e.g. '+dl[0]+') and release its locks.':'✔ No deadlock.'}</b></p></div>`}; $('#lb').click()}
+go(0);
+</script></body></html>

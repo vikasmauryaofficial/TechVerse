@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Servlets & JSP – Theory + Practical</title>
+<style>
+:root{--bg:#0f172a;--c:#1e293b;--tx:#e2e8f0;--mu:#94a3b8;--a:#38bdf8;--b:#f59e0b;--g:#4ade80}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx);display:flex}
+nav{position:sticky;top:0;height:100vh;width:260px;overflow:auto;background:#0b1220;padding:16px;flex:none}
+nav h1{font-size:17px;color:var(--a);margin:0 0 10px}nav h4{margin:14px 0 4px;color:var(--b);font-size:12px;letter-spacing:1px}
+nav a{display:block;color:var(--mu);text-decoration:none;font-size:13px;padding:5px 8px;border-radius:6px}nav a:hover,nav a.on{background:var(--c);color:#fff}
+main{flex:1;padding:24px;max-width:900px;min-width:0}
+section{background:var(--c);border-radius:14px;padding:20px;margin-bottom:22px;opacity:0;transform:translateY(24px);transition:.6s}
+section.in{opacity:1;transform:none}
+h2{margin:0 0 8px;color:var(--a);font-size:21px}h2 small{color:var(--b);font-size:12px;display:block}
+li{margin:5px 0;line-height:1.5}pre{background:#020617;border-left:3px solid var(--g);padding:12px;border-radius:8px;overflow:auto;font-size:13px;color:#bbf7d0}
+.demo{border:1px dashed #475569;border-radius:10px;padding:12px;margin-top:10px}.demo>b{color:var(--b);font-size:12px}
+button{background:var(--a);color:#001;border:0;padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:600;margin:4px 4px 4px 0}button:hover{filter:brightness(1.15)}
+input,select{background:#020617;color:var(--tx);border:1px solid #475569;padding:6px;border-radius:6px}
+.row{display:flex;justify-content:space-between;position:relative;margin:34px 0 14px}
+.n{background:#334155;padding:10px 6px;border-radius:8px;width:22%;text-align:center;font-size:13px;transition:.3s}.n.hot{background:var(--a);color:#001;transform:scale(1.08)}
+.dot{position:absolute;top:-22px;left:0;width:16px;height:16px;border-radius:50%;background:var(--b);transition:left .9s ease;box-shadow:0 0 12px var(--b)}
+.cap{min-height:22px;color:var(--g);font-size:14px}.chip{display:inline-block;background:#334155;padding:5px 10px;border-radius:20px;margin:3px;cursor:pointer;font-size:13px}.chip:hover,.chip.on{background:var(--b);color:#001}
+.step{display:inline-block;padding:8px 14px;border-radius:8px;background:#334155;margin:3px;transition:.3s}.step.hot{background:var(--g);color:#001;transform:scale(1.1)}
+.log{font:13px monospace;color:var(--mu);white-space:pre-wrap}table{border-collapse:collapse;font-size:13px}td,th{border:1px solid #475569;padding:4px 10px}
+@media(max-width:800px){body{display:block}nav{position:static;height:auto;width:auto}}
+</style><script src="theme.js"></script></head><body>
+<nav><h1>Servlets & JSP</h1><div id="nav"></div></nav><main><p style="color:var(--mu)">Unit: Servlets and Java Server Pages. Read the theory, study the code, then press the buttons in each <b style="color:var(--b)">Live Demo</b>.</p><div id="app"></div></main>
+<script>
+const F=(n,s)=>['flow',n,s];
+const T=[
+{g:'SERVLETS',t:'Servlet Overview and Architecture',th:['A servlet is a Java class that runs inside a web container (Tomcat) and generates dynamic responses.','The container manages threads, lifecycle, URL mapping and security; you only write business logic.','Request path: Browser → Web server/container → Servlet → (DB) → response back.'],
+code:`@WebServlet("/hello")\npublic class Hello extends HttpServlet {\n  protected void doGet(HttpServletRequest req, HttpServletResponse res)\n      throws IOException {\n    res.setContentType("text/html");\n    res.getWriter().println("<h1>Hello Servlet</h1>");\n  }\n}`,
+d:F(['Browser','Container','Servlet','Database'],[[0,1,'HTTP request /hello'],[1,2,'container calls service()'],[2,3,'servlet queries DB'],[3,2,'rows returned'],[2,1,'HttpServletResponse filled'],[1,0,'HTTP response (HTML)']])},
+{g:'SERVLETS',t:'Interface Servlet and Life Cycle',th:['javax/jakarta.servlet.Servlet declares: init(), service(), destroy(), getServletConfig(), getServletInfo().','init() runs ONCE after loading; service() runs for EVERY request (a new thread each); destroy() runs ONCE before unloading.','HttpServlet.service() dispatches to doGet()/doPost() based on the HTTP method.'],
+code:`public void init(ServletConfig c){ System.out.println("init once"); }\nprotected void doGet(HttpServletRequest rq, HttpServletResponse rs){ /* every request */ }\npublic void destroy(){ System.out.println("cleanup"); }`,d:['life']},
+{g:'SERVLETS',t:'Handling HTTP GET and POST Requests',th:['GET: data goes in the URL query string (visible, bookmarkable, size-limited). Use for reading/searching.','POST: data goes in the request body (hidden, large, not cached). Use for forms, login, uploads.','Read data with request.getParameter("name"). Override doGet()/doPost().'],
+code:`protected void doPost(HttpServletRequest rq, HttpServletResponse rs) throws IOException {\n  String name = rq.getParameter("name");\n  rs.getWriter().println("Hello " + name);\n}\n// HTML: <form action="hello" method="post"> <input name="name"> </form>`,d:['getpost']},
+{g:'SERVLETS',t:'Redirecting Requests to Other Resources',th:['response.sendRedirect(url): server tells browser to make a NEW request. URL in address bar changes; 2 round trips; can go to other sites.','RequestDispatcher.forward(req,res): handled inside the server. URL does not change; 1 round trip; same request object; same application only.','include() adds another resource\'s output into the current response.'],
+code:`// Redirect (browser makes new request)\nresponse.sendRedirect("login.html");\n\n// Forward (server-side)\nRequestDispatcher rd = request.getRequestDispatcher("welcome");\nrd.forward(request, response);`,
+d:F(['Browser','Servlet A','Browser (again)','Servlet B'],[[0,1,'request /a'],[1,0,'302 + Location: /b'],[0,3,'NEW request /b'],[3,0,'final response']]),n:'Animation shows sendRedirect: note the extra trip. With forward(), Servlet A passes to B inside the server and the browser never knows.'},
+{g:'SERVLETS',t:'Session Tracking',th:['HTTP is stateless: the server forgets you after every response.','Session tracking remembers a user across requests. Techniques: Cookies, URL rewriting (;jsessionid=...), Hidden form fields, HttpSession.','Examples: login state, shopping cart.'],
+code:`// URL rewriting\nString url = response.encodeURL("cart");\n// Hidden field\n<input type="hidden" name="uid" value="101">`,d:F(['Browser','Server'],[[0,1,'request #1 (no ID)'],[1,0,'response + session ID'],[0,1,'request #2 + session ID'],[1,0,'"Welcome back!"']])},
+{g:'SERVLETS',t:'Cookies',th:['A cookie is a small name=value text stored by the browser and sent back automatically with every request to that site.','Server sends Set-Cookie header; browser returns Cookie header. Set expiry with setMaxAge(seconds).','Stored on client, so don\'t keep secrets in it.'],
+code:`Cookie c = new Cookie("user", "Ravi");\nc.setMaxAge(60*60);\nresponse.addCookie(c);\n\nfor (Cookie k : request.getCookies())\n  out.println(k.getName() + "=" + k.getValue());`,d:['cookie']},
+{g:'SERVLETS',t:'Session Tracking with HttpSession',th:['Data is kept on the SERVER; only a session ID (JSESSIONID cookie) goes to the browser.','request.getSession() returns the current session or creates one. Use setAttribute/getAttribute.','invalidate() ends it; setMaxInactiveInterval() sets timeout.'],
+code:`HttpSession s = request.getSession();\nInteger n = (Integer) s.getAttribute("visits");\nn = (n == null) ? 1 : n + 1;\ns.setAttribute("visits", n);\nout.println("Visit no. " + n);`,d:['session']},
+{g:'JSP',t:'JSP Introduction and Overview',th:['JSP lets you write HTML with embedded Java; easier than println() in servlets.','First request: container translates page.jsp → page_jsp.java (a servlet), compiles it, loads it. Later requests reuse it.','Servlet = logic-heavy (controller). JSP = presentation (view).'],
+code:`<!-- translated to a servlet's _jspService() -->\n<html><body>\n  Today is <%= new java.util.Date() %>\n</body></html>`,
+d:F(['page.jsp','page_jsp.java','page_jsp.class','Response'],[[0,1,'1. Translation'],[1,2,'2. Compilation'],[2,3,'3. init + _jspService()'],[3,0,'HTML sent to browser']])},
+{g:'JSP',t:'A First Java Server Page Example',th:['Save as hello.jsp in webapps/ROOT (or your app) and open http://server:8080/hello.jsp.','Template text (HTML) goes straight to output; <% %> is Java.'],
+code:`<%@ page language="java" contentType="text/html" %>\n<html><body>\n<h2>Welcome</h2>\n<% for(int i=1;i<=3;i++){ %>\n  <p>Line <%= i %></p>\n<% } %>\n</body></html>`,d:['jspout']},
+{g:'JSP',t:'Implicit Objects',th:['Objects created by the container; use them directly in scriptlets, no declaration needed. There are 9.','Click a name below to see what it is.'],code:`<%\n String user = request.getParameter("user");\n session.setAttribute("u", user);\n out.println("Hi " + user);\n%>`,d:['implicit']},
+{g:'JSP',t:'Scripting Elements',th:['Scriptlet <% code %> goes inside _jspService().','Expression <%= value %> prints a value (no semicolon).','Declaration <%! int x; %> becomes class-level fields/methods (shared by all requests).','Comment <%-- hidden --%> is not sent to the browser.'],code:`<%! int count = 0; %>\n<% count++; %>\nVisitors: <%= count %>`,d:['script']},
+{g:'JSP',t:'Standard Actions',th:['XML-style tags processed at request time (unlike directives).','<jsp:include> – insert another page at runtime. <jsp:forward> – transfer control. <jsp:param> – pass parameter.','<jsp:useBean>, <jsp:setProperty>, <jsp:getProperty> – work with JavaBeans.'],
+code:`<jsp:include page="header.jsp" />\n<jsp:useBean id="st" class="pkg.Student" scope="session"/>\n<jsp:setProperty name="st" property="name" value="Asha"/>\n<jsp:getProperty name="st" property="name"/>\n<jsp:forward page="result.jsp">\n  <jsp:param name="id" value="5"/>\n</jsp:forward>`,d:F(['index.jsp','container','header.jsp','Output'],[[0,1,'<jsp:include page="header.jsp">'],[1,2,'run header.jsp at request time'],[2,3,'output merged into page'],[3,0,'complete page sent']])},
+{g:'JSP',t:'Directives',th:['Instructions to the container at TRANSLATION time. Syntax: <%@ directive attr="value" %>.','page: import, contentType, errorPage, isErrorPage, session.','include: copies a file at translation time (static include).','taglib: declares a custom tag library.'],
+code:`<%@ page import="java.util.*" errorPage="err.jsp" %>\n<%@ include file="footer.html" %>\n<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>`,d:['dir']},
+{g:'JSP',t:'Custom Tag Libraries',th:['Create your own tags to remove Java code from JSP. Three parts: Tag handler class, TLD file (describes tag), JSP using the tag.','JSTL is the standard library: <c:if>, <c:forEach>, <c:out>.'],
+code:`public class HelloTag extends SimpleTagSupport {\n  public void doTag() throws IOException {\n    getJspContext().getOut().print("Hello Tag!");\n  }\n}\n<!-- JSP -->\n<%@ taglib uri="/WEB-INF/my.tld" prefix="my" %>\n<my:hello/>`,
+d:F(['JSP page','Container','TLD file','Tag handler'],[[0,1,'<my:hello/> found'],[1,2,'look up tag in TLD'],[2,3,'class = HelloTag'],[3,0,'doTag() writes output']])}
+];
+const $=(h,p)=>{const e=document.createElement('div');e.innerHTML=h;return e.firstElementChild};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const D={
+flow(el,t){const[nodes,steps]=[t.d[1],t.d[2]];el.innerHTML=`<div class="row"><div class="dot"></div>${nodes.map(n=>`<div class="n">${n}</div>`).join('')}</div><div class="cap"></div><button>▶ Play</button><i style="color:var(--mu);font-size:13px">${t.n||''}</i>`;
+const ns=[...el.querySelectorAll('.n')],dot=el.querySelector('.dot'),cap=el.querySelector('.cap');
+const cx=i=>ns[i].offsetLeft+ns[i].offsetWidth/2-8;dot.style.left=cx(0)+'px';
+el.querySelector('button').onclick=async()=>{for(const[a,b,l]of steps){ns.forEach(n=>n.classList.remove('hot'));ns[a].classList.add('hot');dot.style.left=cx(a)+'px';cap.textContent=l;await new Promise(r=>setTimeout(r,500));dot.style.left=cx(b)+'px';await new Promise(r=>setTimeout(r,1100));ns.forEach(n=>n.classList.remove('hot'));ns[b].classList.add('hot')}}},
+life(el){let loaded=0,calls=0;el.innerHTML=`<div id=s><span class=step>init()</span><span class=step>service()</span><span class=step>destroy()</span></div><button id=a>Send request</button><button id=b>Undeploy app</button><div class=log></div>`;
+const st=[...el.querySelectorAll('.step')],lg=el.querySelector('.log');const hot=i=>{st.forEach((s,j)=>s.classList.toggle('hot',i==j))};
+el.querySelector('#a').onclick=()=>{if(!loaded){loaded=1;hot(0);lg.textContent+='init() called – ONCE\n';setTimeout(()=>{hot(1)},600)}else hot(1);calls++;lg.textContent+=`service()→doGet() – request #${calls} (new thread)\n`};
+el.querySelector('#b').onclick=()=>{if(!loaded)return lg.textContent+='nothing loaded yet\n';hot(2);lg.textContent+='destroy() called – ONCE. Servlet unloaded.\n';loaded=0;calls=0}},
+getpost(el){el.innerHTML=`<select><option>GET</option><option>POST</option></select> name: <input value="Ravi" size=8> <button>Send</button><pre class=log style="color:#fde68a"></pre><div class=cap></div>`;
+const[s,i,b,p,c]=[...el.querySelectorAll('select,input,button,pre,.cap')];
+b.onclick=()=>{const v=encodeURIComponent(i.value);if(s.value=='GET'){p.textContent=`GET /app/hello?name=${v} HTTP/1.1\nHost: server:8080\n\n(no body)`;c.textContent='→ doGet(): data is visible in the URL'}else{p.textContent=`POST /app/hello HTTP/1.1\nHost: server:8080\nContent-Type: application/x-www-form-urlencoded\nContent-Length: ${v.length+5}\n\nname=${v}`;c.textContent='→ doPost(): data is hidden in the body, URL stays clean'}}},
+cookie(el){let jar={};el.innerHTML=`name <input id=k size=6 value=user> value <input id=v size=6 value=Ravi> <button id=a>1. Server sends Set-Cookie</button><button id=b>2. Browser makes next request</button><pre class=log style="color:#fde68a"></pre>`;
+const p=el.querySelector('pre'),k=el.querySelector('#k'),v=el.querySelector('#v');
+el.querySelector('#a').onclick=()=>{jar[k.value]=v.value;p.textContent=`HTTP/1.1 200 OK\nSet-Cookie: ${k.value}=${v.value}; Max-Age=3600\n\n[browser stores it in its cookie jar]`};
+el.querySelector('#b').onclick=()=>{const c=Object.entries(jar).map(e=>e.join('=')).join('; ');p.textContent=`GET /app/next HTTP/1.1\n${c?'Cookie: '+c+'\n\ngetCookies() finds: '+c:'(jar empty – no Cookie header sent)'}`}},
+session(el){let id=null,n=0;el.innerHTML=`<button id=a>New request</button><button id=b>session.invalidate()</button><table><tr><th>JSESSIONID (browser cookie)</th><th>Server-side "visits"</th></tr><tr><td id=i>–</td><td id=n>–</td></tr></table><div class=cap></div>`;
+const q=s=>el.querySelector(s);q('#a').onclick=()=>{if(!id){id=Math.random().toString(36).slice(2,12).toUpperCase();q('.cap').textContent='getSession() created a NEW session'}else q('.cap').textContent='getSession() found the existing session';n++;q('#i').textContent=id;q('#n').textContent=n};
+q('#b').onclick=()=>{id=null;n=0;q('#i').textContent=q('#n').textContent='–';q('.cap').textContent='Session destroyed'}},
+jspout(el){el.innerHTML=`<button>Run JSP</button><div class=log style="color:var(--tx);font-size:15px"></div>`;el.querySelector('button').onclick=async()=>{const o=el.querySelector('.log');o.innerHTML='<h3 style="margin:4px">Welcome</h3>';for(let i=1;i<=3;i++){await new Promise(r=>setTimeout(r,600));o.innerHTML+=`<p style="margin:2px">Line ${i} <small style="color:var(--b)">(loop pass ${i})</small></p>`}}},
+implicit(el){const o={request:['HttpServletRequest','Client data: getParameter(), getHeader()'],response:['HttpServletResponse','Output control: sendRedirect(), setContentType()'],out:['JspWriter','Writes to the page: out.println()'],session:['HttpSession','Per-user data: setAttribute()'],application:['ServletContext','Shared by whole app: getAttribute()'],config:['ServletConfig','Servlet init parameters'],pageContext:['PageContext','Access to all scopes in one object'],page:['Object (this)','The servlet instance itself'],exception:['Throwable','Only in isErrorPage="true" pages']};
+el.innerHTML=Object.keys(o).map(k=>`<span class=chip>${k}</span>`).join('')+'<div class=cap style="margin-top:8px"></div>';
+el.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{el.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');el.querySelector('.cap').textContent=`${c.textContent} → type ${o[c.textContent][0]}. ${o[c.textContent][1]}`})},
+script(el){let n=0;el.innerHTML=`<button>Open page (a new visitor)</button><div class=cap></div><div class=log></div>`;el.querySelector('button').onclick=()=>{n++;el.querySelector('.cap').textContent=`<%! int count %> lives on the servlet, <% count++ %> runs per request`;el.querySelector('.log').textContent+=`Request ${n}: Visitors: ${n}\n`}},
+dir(el){const o={page:'Translation time: sets language, imports, error page.',include:'Translation time: file text is pasted in BEFORE compiling (static).',taglib:'Translation time: loads a tag library prefix.'};el.innerHTML=Object.keys(o).map(k=>`<span class=chip>${k}</span>`).join('')+'<div class=cap style="margin-top:8px"></div><i style="color:var(--mu);font-size:13px">Compare: &lt;jsp:include&gt; runs at request time (dynamic).</i>';
+el.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{el.querySelector('.cap').textContent=`<%@ ${c.textContent} %> → ${o[c.textContent]}`})}};
+const app=document.getElementById('app'),nav=document.getElementById('nav');let last='';
+T.forEach((t,i)=>{if(t.g!=last){nav.innerHTML+=`<h4>${t.g}</h4>`;last=t.g}nav.innerHTML+=`<a href="#t${i}">${i+1}. ${t.t}</a>`;
+const s=document.createElement('section');s.id='t'+i;s.innerHTML=`<h2><small>${t.g} · TOPIC ${i+1}</small>${t.t}</h2><b style="color:var(--b)">THEORY</b><ul>${t.th.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b style="color:var(--g)">PRACTICAL CODE</b><pre>${esc(t.code)}</pre><div class="demo"><b>▶ LIVE DEMO</b><div></div></div>`;
+app.appendChild(s);D[t.d[0]](s.querySelector('.demo div'),t)});
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+x.target.id))}}),{threshold:.15});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+</script></body></html>

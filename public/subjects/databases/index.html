@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DB Classroom</title>
+<style>
+:root{--bg:#fafafa;--card:#fff;--ink:#1c2430;--mut:#667085;--line:#dde1e7;--ac:#0b6e99;--code:#f1f3f6}
+@media(prefers-color-scheme:dark){:root{--bg:#14181f;--card:#1c222b;--ink:#e6e9ee;--mut:#9aa4b2;--line:#2e3642;--code:#10141a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+h1{font-size:19px;margin:0}nav{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:6px}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button.on{background:var(--ac);border-color:var(--ac);color:#fff}button.go{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tabs{padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+main{display:grid;grid-template-columns:240px 1fr;gap:20px;padding:20px;max-width:1100px;margin:auto}
+@media(max-width:760px){main{grid-template-columns:1fr}}
+aside button{display:block;width:100%;text-align:left;margin-bottom:6px}
+section{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:20px;min-width:0}
+pre,code{background:var(--code);border-radius:4px;font:14px Consolas,monospace}pre{padding:10px;overflow:auto}code{padding:1px 5px}
+textarea{width:100%;min-height:130px;font:14px Consolas,monospace;background:var(--code);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px}
+.out{margin-top:10px;overflow:auto}table{border-collapse:collapse;margin:6px 0}th,td{border:1px solid var(--line);padding:4px 10px;text-align:left}th{background:var(--code)}
+.task{border-left:4px solid var(--ac);padding:4px 12px;margin:14px 0;background:var(--code)}
+.opt{display:block;padding:6px 10px;border:1px solid var(--line);border-radius:6px;margin:6px 0;cursor:pointer}
+.ok{border-color:#1a8a4a;background:#1a8a4a22}.bad{border-color:#c0392b;background:#c0392b22}.mut{color:var(--mut)}
+.err{color:#c0392b;white-space:pre-wrap}
+</style></head><body>
+<header><h1>DB Classroom</h1><nav id="subj"></nav></header>
+<main><aside id="side"></aside><section id="body">Loading…</section></main>
+<script>
+const $=s=>document.querySelector(s);const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let C,S='sql',V='learn',T=0,U=0,eng={};
+const SQLJS='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/',PGL='https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.17/dist/index.js';
+const load=u=>new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=()=>j(Error('Could not load '+u+' (check internet)'));document.head.appendChild(s)});
+/* ---------- engines ---------- */
+async function engine(){const k=C[S].engine;if(eng[S])return eng[S];const seed=C[S].seed;let e;
+ if(k==='sql'){await load(SQLJS+'sql-wasm.js');const SQL=await initSqlJs({locateFile:f=>SQLJS+f});const db=new SQL.Database();db.run(seed);
+  e={run:async c=>db.exec(c).map(r=>({cols:r.columns,rows:r.values}))};}
+ else if(k==='pg'){const {PGlite}=await import(PGL);const pg=new PGlite();await pg.exec(seed);
+  e={run:async c=>(await pg.exec(c)).map(r=>r.fields&&r.fields.length?{cols:r.fields.map(f=>f.name),rows:r.rows.map(o=>Object.values(o).map(v=>typeof v==='object'&&v!==null?JSON.stringify(v):v))}:{text:'OK'+(r.affectedRows?' ('+r.affectedRows+' rows)':'')})};}
+ else{const store={};e={run:async c=>mongo(c,store)};await e.run(seed);}
+ return eng[S]=e;}
+function mongo(code,st){
+ const m=(d,f)=>Object.entries(f||{}).every(([k,v])=>{if(k==='$and')return v.every(x=>m(d,x));if(k==='$or')return v.some(x=>m(d,x));const x=d[k];
+  if(v&&typeof v==='object'&&!Array.isArray(v))return Object.entries(v).every(([o,y])=>({$gt:x>y,$gte:x>=y,$lt:x<y,$lte:x<=y,$ne:x!==y,$eq:x===y,$in:Array.isArray(y)&&y.includes(x),$nin:Array.isArray(y)&&!y.includes(x),$exists:(x!==undefined)===y})[o]);return x===v});
+ const db=new Proxy({},{get:(_,n)=>{const a=st[n]??=[];return{
+  insertOne(d){a.push({_id:st._n=(st._n||0)+1,...d});return{acknowledged:true}},
+  insertMany(ds){ds.forEach(d=>this.insertOne(d));return{insertedCount:ds.length}},
+  find(f,p){let r=a.filter(d=>m(d,f));const pr=d=>{if(!p)return d;const inc=Object.keys(p).some(k=>p[k]&&k!=='_id'),o={};for(const k in d)if(inc?(p[k]||(k==='_id'&&p._id!==0)):p[k]!==0)o[k]=d[k];return o};
+   const c={sort(s){const[k,dir]=Object.entries(s)[0];r=[...r].sort((x,y)=>(x[k]>y[k]?1:-1)*dir);return c},limit(n){r=r.slice(0,n);return c},toArray(){return r.map(pr)}};return c},
+  aggregate(p){let r=a.slice();for(const s of p){if(s.$match)r=r.filter(d=>m(d,s.$match));else if(s.$limit)r=r.slice(0,s.$limit);
+   else if(s.$sort){const[k,dir]=Object.entries(s.$sort)[0];r=[...r].sort((x,y)=>(x[k]>y[k]?1:-1)*dir)}
+   else if(s.$group){const g={},G=s.$group,f=e=>typeof e==='string'&&e[0]==='$'?e.slice(1):null;r.forEach(d=>{const id=f(G._id)?d[f(G._id)]:G._id,o=g[id]??={_id:id,_x:{}};for(const[k,v]of Object.entries(G)){if(k==='_id')continue;const e=Object.values(v)[0];(o._x[k]??=[]).push(f(e)?d[f(e)]:e)}});
+    r=Object.values(g).map(o=>{for(const[k,v]of Object.entries(G)){if(k==='_id')continue;const op=Object.keys(v)[0],x=o._x[k];o[k]=op==='$sum'?x.reduce((p,c)=>p+c,0):op==='$avg'?x.reduce((p,c)=>p+c,0)/x.length:op==='$max'?Math.max(...x):op==='$min'?Math.min(...x):x.length}delete o._x;return o})}}return{toArray:()=>r}},
+  countDocuments(f){return a.filter(d=>m(d,f)).length},
+  updateOne(f,u){const d=a.find(d=>m(d,f));return this._u(d?[d]:[],u)},updateMany(f,u){return this._u(a.filter(d=>m(d,f)),u)},
+  _u(ds,u){ds.forEach(d=>{Object.assign(d,u.$set);for(const k in u.$inc)d[k]=(d[k]||0)+u.$inc[k]});return{modifiedCount:ds.length}},
+  deleteOne(f){const i=a.findIndex(d=>m(d,f));if(i>=0)a.splice(i,1);return{deletedCount:i>=0?1:0}},
+  deleteMany(f){const n=a.length;st[n]=a.filter(d=>!m(d,f));return{deletedCount:n-st[n].length}}}}});
+ return code.split(/\n(?=db\.)|;\s*(?=db\.)/).map(s=>s.trim().replace(/;$/,'')).filter(s=>s&&!s.startsWith('//')).map(s=>{let r=new Function('db','return ('+s+')')(db);if(r&&r.toArray)r=r.toArray();return{text:JSON.stringify(r,null,1)}});}
+function show(rs){return rs.length?rs.map(r=>r.text!==undefined?'<pre>'+esc(r.text)+'</pre>':'<table><tr>'+r.cols.map(c=>'<th>'+esc(c)+'</th>').join('')+'</tr>'+r.rows.map(x=>'<tr>'+x.map(v=>'<td>'+esc(v??'NULL')+'</td>').join('')+'</tr>').join('')+'</table>').join(''):'<p class="mut">Done. No rows returned.</p>'}
+async function run(id){const o=$('#o'+id);o.textContent='Running…';try{const e=await engine();o.innerHTML=show(await e.run($('#e'+id).value))}catch(x){o.innerHTML='<div class="err">'+esc(x.message||x)+'</div>'}}
+function reset(){delete eng[S];alert('Practice database reset to the starting data.')}
+const editor=(id,v)=>`<textarea id="e${id}" spellcheck="false" onkeydown="if(event.ctrlKey&&event.key==='Enter')run('${id}')">${esc(v)}</textarea><p><button class="go" onclick="run('${id}')">Run (Ctrl+Enter)</button> <button onclick="reset()">Reset database</button></p><div class="out" id="o${id}"></div>`;
+/* ---------- views ---------- */
+function draw(){const s=C[S];document.documentElement.style.setProperty('--ac',s.accent);
+ $('#subj').innerHTML=Object.keys(C).map(k=>`<button class="${k===S?'on':''}" onclick="S='${k}';T=0;U=0;draw()">${C[k].title}</button>`).join(''); 
+ $('#side').innerHTML=C[S].topics.map((t,i)=>`<p><b>${i+1}. ${esc(t.title)}</b></p>`+t.subs.map((u,j)=>`<button class="${i===T&&j===U?'on':''}" onclick="T=${i};U=${j};draw()">${i+1}.${j+1} ${esc(u.title)}</button>`).join('')).join('');
+ learn();}
+function learn(){const t=C[S].topics[T],u=t&&t.subs[U];if(!u){$('#body').innerHTML='<p>No topics yet.</p>';return}
+ const f=[];C[S].topics.forEach((x,i)=>x.subs.forEach((_,j)=>f.push([i,j])));const k=f.findIndex(a=>a[0]===T&&a[1]===U),p=f[k-1],n=f[k+1];
+ $('#body').innerHTML=`<p class="mut">${esc(t.title)}</p><h2>${esc(u.title)}</h2>${u.theory}${u.demo&&u.demo.length?demoBox(u.demo):''}<div class="task"><b>Practical task:</b> ${esc(u.task)}</div>${editor('L',u.starter)}<p>${p?`<button onclick="T=${p[0]};U=${p[1]};draw()">Previous</button> `:''}${n?`<button class="go" onclick="T=${n[0]};U=${n[1]};draw()">Next subtopic</button>`:''}</p>`;scrollTo(0,0)}
+let DM=[];function demoBox(d){DM=d;return '<div class="task"><b>Live demo</b> <span class="mut">Press the steps in order. Code appears in the editor and runs. If you get an already-exists error, press Reset database.</span></div>'+d.map((x,i)=>`<p><button onclick="demo(${i})">Step ${i+1}</button> ${esc(x.say)}</p>`).join('')}
+function demo(i){$('#eL').value=DM[i].code;run('L');$('#eL').scrollIntoView({block:'nearest'})}
+function quiz(){const q=C[S].quiz;if(!q.length){$('#body').innerHTML='<p>No quiz questions yet.</p>';return}
+ $('#body').innerHTML=`<h2>${C[S].title} quiz</h2>`+q.map((x,i)=>`<div><p><b>${i+1}. ${esc(x.q)}</b></p>`+x.options.map((o,j)=>`<label class="opt" id="q${i}_${j}"><input type="radio" name="q${i}" value="${j}"> ${esc(o)}</label>`).join('')+`<p class="mut" id="x${i}"></p></div>`).join('')+'<p><button class="go" onclick="grade()">Check answers</button> <span id="score"></span></p>';}
+function grade(){const q=C[S].quiz;let n=0;q.forEach((x,i)=>{const p=document.querySelector(`input[name=q${i}]:checked`);x.options.forEach((_,j)=>$(`#q${i}_${j}`).classList.remove('ok','bad'));$(`#q${i}_${x.answer}`).classList.add('ok');
+ if(p&&+p.value===x.answer)n++;else if(p)$(`#q${i}_${p.value}`).classList.add('bad');$('#x'+i).textContent=x.explain||''});$('#score').textContent='Score: '+n+' / '+q.length}
+function scen(){const q=C[S].scenarios;$('#body').innerHTML=`<h2>Scenario questions</h2>`+(q.length?q.map((x,i)=>`<div class="task"><b>Q${i+1}.</b> ${esc(x.q)}</div>${editor('S'+i,x.starter||'')}<details><summary>Show solution / hint</summary><pre>${esc(x.hint||'')}</pre></details><hr>`).join(''):'<p>No scenario questions yet.</p>')}
+function teach(){$('#body').innerHTML=`<h2>Teacher: add content to ${C[S].title}</h2>
+<p>Paste a JSON array, choose the type, then save. Students see it after refreshing.</p>
+<p><label>Type <select id="kind"><option value="quiz">Quiz questions</option><option value="scenarios">Scenario questions</option><option value="topics">Topics (theory + practical)</option></select></label> <label>PIN <input id="pin" type="password" size="10"></label></p>
+<textarea id="items" style="min-height:220px" placeholder='Quiz format:\n[{"q":"Question?","options":["A","B","C","D"],"answer":1,"explain":"Why B is right"}]\n\nScenario format:\n[{"q":"Scenario...","starter":"-- code","hint":"solution"}]\n\nTopic format:\n[{"title":"Joins","theory":"<p>HTML theory</p>","task":"Practical task","starter":"SELECT ..."}]'></textarea>
+<p><button class="go" onclick="save()">Save</button> <span id="msg"></span></p><p class="mut">"answer" is the option number starting from 0 (A=0, B=1, C=2, D=3).</p>`}
+async function save(){try{const items=JSON.parse($('#items').value);const r=await fetch('/api/add',{method:'POST',body:JSON.stringify({pin:$('#pin').value,subject:S,kind:$('#kind').value,items})});$('#msg').textContent=await r.text();if(r.ok)C=await (await fetch('/api/content')).json()}catch(e){$('#msg').textContent='Error: '+e.message}}
+fetch('content.json').then(r=>{if(!r.ok)throw Error('Could not load database lesson content.');return r.json()}).then(c=>{C=c;draw()}).catch(e=>{$('#body').innerHTML='<p class="err">'+esc(e.message)+'</p>'});
+</script><footer><b>TechVerse</b> - Database Systems<br>Created by <b>Vikas Maurya</b> | Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b></footer></body></html>

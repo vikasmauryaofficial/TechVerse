@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OOSD with C++ | TechVerse</title>
+<style>
+:root{--ink:#16193f;--ink2:#23286b;--bg:#f2f5fb;--card:#fff;--teal:#0b9c9c;--coral:#ff6a55;--sun:#ffc24b;--txt:#1d2142;--mut:#5d6385;--code:#0f1330}
+*{box-sizing:border-box}body{margin:0;font:16px/1.65 "Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh}
+aside{width:300px;background:var(--ink);color:#dfe3ff;position:sticky;top:0;height:100vh;overflow:auto;padding:18px 14px;flex-shrink:0}
+.brand{font:700 26px Georgia,serif;color:#fff;margin:0}.brand span{color:var(--sun)}
+.by{font-size:12.5px;color:#9aa1d8;margin:2px 0 16px}
+details{margin-bottom:6px}summary{cursor:pointer;padding:8px 10px;border-radius:8px;font-weight:600;color:#fff;list-style:none}
+summary:hover,summary:focus-visible{background:var(--ink2);outline:none}
+.t{display:block;width:100%;text-align:left;background:none;border:0;color:#c3c8f5;padding:6px 10px 6px 22px;font:inherit;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+.t:hover,.t:focus-visible{background:var(--ink2);outline:none}.t.on{border-color:var(--coral);color:#fff;background:var(--ink2)}
+main{flex:1;min-width:0;padding:28px clamp(16px,4vw,48px) 20px}
+.hero{background:var(--ink);color:#fff;border-radius:18px;padding:34px;display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:center}
+.hero h1{font:700 clamp(28px,4vw,44px)/1.15 Georgia,serif;margin:0 0 10px}.hero p{color:#b9bfee;margin:0 0 16px}
+.go{background:var(--coral);color:#fff;border:0;border-radius:10px;padding:11px 20px;font:600 16px inherit;font-family:inherit;cursor:pointer}
+.stage{position:relative;height:170px}
+.box{position:absolute;top:20px;width:120px;border:2px solid var(--sun);border-radius:8px;background:#1d2260;font:13px Consolas,monospace;overflow:hidden}
+.box b{display:block;background:var(--sun);color:var(--ink);text-align:center;padding:2px}.box i{display:block;padding:2px 8px;font-style:normal}
+#b1{left:0}#b2{right:0}.msg{position:absolute;top:70px;left:105px;font:12px Consolas,monospace;color:var(--sun);white-space:nowrap;animation:fly 3s ease-in-out infinite}
+@keyframes fly{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(150px);opacity:0}}
+.units{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}
+.u{background:var(--card);border-radius:12px;padding:16px;border-top:5px solid var(--teal);cursor:pointer;transition:transform .2s}.u:hover{transform:translateY(-3px)}
+.u h3{margin:0 0 4px;font-size:17px}.u p{margin:0;font-size:14px;color:var(--mut)}
+h2{font:700 28px Georgia,serif;margin:0 0 4px}.crumb{color:var(--teal);font-weight:600;margin-bottom:6px}
+.card{background:var(--card);border-radius:14px;padding:20px;margin-top:16px;box-shadow:0 1px 3px #16193f14}
+.card h4{margin:0 0 8px;font-size:15px;color:var(--ink2)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{padding:7px 12px;border-radius:20px;background:#e6e9f8;font-size:14px;opacity:.35;transition:.4s}.chip.lit{opacity:1;background:var(--ink2);color:#fff;transform:scale(1.06)}
+.ar{color:var(--mut)}
+pre{margin:0;background:var(--code);color:#e7eaff;padding:16px;border-radius:10px;overflow:auto;font:14px/1.55 Consolas,"Courier New",monospace;max-height:420px}
+.k{color:#7fd1ff}.s{color:#9be28f}.c{color:#7b83b8}.n{color:#ffc24b}
+.bar{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.run{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:8px 16px;font:600 15px inherit;font-family:inherit;cursor:pointer}
+.ghost{background:none;border:1px solid #c5cae8;color:var(--ink2);border-radius:8px;padding:7px 12px;font-family:inherit;cursor:pointer}
+.out{margin-top:10px;background:#000;color:#8bf58b;min-height:70px;white-space:pre-wrap}.out .p{color:#8890c8}
+svg text{font:13px Consolas,monospace;fill:var(--txt)}.ll{stroke:#b6bbdc;stroke-dasharray:5 4}
+.arrow{stroke:var(--coral);stroke-width:2;fill:none;stroke-dasharray:400;stroke-dashoffset:400;animation:draw .9s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.nav{display:flex;justify-content:space-between;margin-top:18px}
+footer{margin-top:30px;padding:16px;text-align:center;font-size:14px;color:var(--mut);border-top:1px solid #d6dbef}
+footer b{color:var(--ink2)}
+.menu{display:none}
+@media(max-width:820px){body{display:block}aside{position:static;width:auto;height:auto;max-height:320px}.hero{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.arrow{stroke-dashoffset:0}}
+</style></head><body>
+<aside><h1 class="brand">Tech<span>Verse</span></h1><div class="by">Vikas Maurya Academy &amp; Vikas Coding School</div><nav id="nav"></nav></aside>
+<main><div id="view"></div>
+<footer>Design by <b>Vikas Maurya Academy</b> &amp; <b>Vikas Coding School</b> &nbsp;|&nbsp; <b>TechVerse</b> – Tech Learning Brand &nbsp;|&nbsp; Created by <b>Vikas Maurya</b></footer></main>
+<script>
+const r=String.raw;
+const T=(title,theory,code,out,flow,seq)=>({title,theory,code,out,flow:flow.split(">"),seq});
+const U=[
+{n:"Unit I",t:"Introduction to Object Orientation",d:"Object, identity, encapsulation, polymorphism, generality, modelling, UML",topics:[
+T("Object & Identity","An object bundles data and behaviour. Identity is what keeps two objects distinct even when all their values are equal. In C++ the identity of an object is its address in memory.",
+r`class Student { public: int roll; };
+int main() {
+    Student a{1}, b{1};
+    cout << (a.roll == b.roll ? "Same values\n" : "Different values\n");
+    cout << (&a == &b ? "Same object" : "Different object");
+}`,"Same values\nDifferent object","Class>Create object a>Create object b>Compare values>Compare addresses"),
+T("Encapsulation & Information Hiding","Encapsulation wraps data and the functions that work on it into one unit. Information hiding keeps the data private so it can only change through controlled public functions.",
+r`class Account {
+    double balance = 1000;          // hidden
+public:
+    void deposit(double x) { if (x > 0) balance += x; }
+    double get() const { return balance; }
+};
+int main() {
+    Account a; a.deposit(500);
+    cout << "Balance: " << a.get();
+    // a.balance = 0;   // error: balance is private
+}`,"Balance: 1500","Private data>Public interface>Validation>Safe update"),
+T("Polymorphism","One interface, many forms. A base-class pointer calls the right derived-class version at run time through virtual functions.",
+r`class Shape { public: virtual void draw() { cout << "Shape\n"; } };
+class Circle : public Shape { public: void draw() override { cout << "Circle\n"; } };
+class Square : public Shape { public: void draw() override { cout << "Square\n"; } };
+int main() {
+    Shape *s[] = { new Circle, new Square };
+    for (Shape *p : s) p->draw();
+}`,"Circle\nSquare","Base pointer>Virtual call>vtable lookup>Derived draw() runs"),
+T("Generality (Generalization & Templates)","Generalization puts common features in a general class. Templates make one piece of code work for many types.",
+r`template <class T>
+T bigger(T a, T b) { return a > b ? a : b; }
+int main() {
+    cout << bigger(3, 9) << " " << bigger(2.5, 1.5) << " " << bigger('a', 'z');
+}`,"9 2.5 z","Write once>Compiler sees int>Compiler sees double>Compiler sees char"),
+T("Modelling, Principles & UML","We model to understand and communicate a system before building it. Principles: choose models carefully, models have different levels of detail, good models connect to reality, and no single model is enough. UML has building blocks (things, relationships, diagrams), common mechanisms and an architecture of five views: use case, design, process, implementation, deployment.",
+r`// UML box:  Student | - name : string | + study()
+class Student {
+    string name;                  // - name : string
+public:
+    Student(string n) : name(n) {}
+    void study() { cout << name << " is studying"; }   // + study()
+};
+int main() { Student s("Riya"); s.study(); }`,"Riya is studying","Real world>Model (UML)>Code>Test>Refine")]},
+{n:"Unit II",t:"Basic Structural & Behavioural Modelling",d:"Class, object, collaboration, sequence, use case, activity, state, component, deployment diagrams",topics:[
+T("Class & Object Diagrams","A class diagram shows classes and their relationships: association, aggregation, composition, generalization, dependency. An object diagram is a snapshot of instances at one moment.",
+r`class Engine { public: void start() { cout << "Engine on\n"; } };
+class Car {
+    Engine e;          // composition: Engine lives and dies with Car
+public:
+    void go() { e.start(); cout << "Car moving"; }
+};
+int main() { Car c; c.go(); }`,"Engine on\nCar moving","Find classes>Add attributes>Add operations>Draw relationships>Make object snapshot"),
+T("Collaboration Diagram","Shows objects and the numbered messages they pass. Polymorphic messages go to a base type, iterated messages are marked with *, and an object can send a message to itself.",
+r`class Printer { public: void print(int n) { cout << "Page " << n << "\n"; } };
+class Report {
+    Printer p;
+    void format() { cout << "Formatting\n"; }          // self message
+public:
+    void publish() { format(); for (int i = 1; i <= 2; i++) p.print(i); }  // *[i=1..2]
+};
+int main() { Report r; r.publish(); }`,"Formatting\nPage 1\nPage 2","Objects>Links>Numbered messages>Iteration *>Self message",
+["Main>Report:1 publish()","Report>Report:2 format()","Report>Printer:3 *print(i)"]),
+T("Sequence Diagram & Call-back","Shows messages in time order along lifelines. Synchronous calls wait for a reply; asynchronous messages do not. In a call-back the receiver calls back a function given by the sender.",
+r`void onDone(string msg) { cout << "Callback: " << msg; }
+void download(void (*cb)(string)) {
+    cout << "Downloading...\n";
+    cb("file ready");
+}
+int main() { download(onDone); }`,"Downloading...\nCallback: file ready","Pass function>Work starts>Work ends>Callback fires",
+["Main>Server:download(cb)","Server>Server:work","Server>Main:cb(file ready)"]),
+T("Broadcast Messages","One sender sends the same message to many receivers (Observer pattern).",
+r`class Student {
+    string n;
+public:
+    Student(string x) : n(x) {}
+    void notify(string m) { cout << n << " got: " << m << "\n"; }
+};
+int main() {
+    Student list[] = { Student("Aman"), Student("Riya") };
+    for (auto &s : list) s.notify("Quiz tomorrow");
+}`,"Aman got: Quiz tomorrow\nRiya got: Quiz tomorrow","Teacher>Message>All students receive",
+["Teacher>Aman:notify()","Teacher>Riya:notify()"]),
+T("Use Case & Activity Diagrams","A use case describes what a system does for an actor. An activity diagram shows the flow of actions with decisions, forks and joins.",
+r`int main() {
+    int pin = 1234, entered = 1234; double bal = 5000;
+    if (entered == pin) {            // decision [PIN valid]
+        bal -= 1000;                 // use case: Withdraw cash
+        cout << "Collect cash. Balance " << bal;
+    } else cout << "Invalid PIN";
+}`,"Collect cash. Balance 4000","Actor: Customer>Enter PIN>PIN valid?>Withdraw>Collect cash"),
+T("State Machine Diagram","An object moves between states when an event occurs, optionally guarded by a condition and doing an action. Events and signals trigger transitions.",
+r`enum State { RED, GREEN, YELLOW };
+int main() {
+    State s = RED;
+    const char *name[] = { "RED", "GREEN", "YELLOW" };
+    for (int i = 0; i < 4; i++) {
+        cout << name[s] << " -> ";
+        s = (s == RED) ? GREEN : (s == GREEN) ? YELLOW : RED;   // event: timer
+    }
+    cout << name[s];
+}`,"RED -> GREEN -> YELLOW -> RED -> GREEN","RED>timer>GREEN>timer>YELLOW>timer>RED"),
+T("Process, Thread & Time/Interaction Diagrams","A process owns resources; threads run inside it. Time and interaction diagrams show when messages and state changes happen.",
+r`#include <thread>
+void task(int id) { cout << "Thread " << id << " running\n"; }
+int main() {
+    thread t1(task, 1); t1.join();
+    thread t2(task, 2); t2.join();
+}   // compile with: g++ main.cpp -pthread`,"Thread 1 running\nThread 2 running","Process starts>Create thread>Run>join()>Finish"),
+T("Package, Component & Deployment Diagrams","A package groups related elements. Components are replaceable parts (files, libraries). A deployment diagram maps components onto hardware nodes.",
+r`namespace Billing { void pay()   { cout << "Billing: paid\n"; } }
+namespace Library { void issue() { cout << "Library: issued\n"; } }
+int main() { Billing::pay(); Library::issue(); }   // namespace = package`,"Billing: paid\nLibrary: issued","Packages>Components (.lib/.dll)>Nodes (servers)>Deployed system")]},
+{n:"Unit III",t:"Object Oriented Analysis & Design",d:"Design, optimization, SA/SD, JSD, mapping OO to non-OO, OOP style",topics:[
+T("Object Oriented Design & Optimization","Design combines the object, dynamic and functional models, chooses algorithms, optimizes (e.g. caching a derived value), controls flow, adjusts inheritance, represents objects and packages the code, then documents design decisions.",
+r`class Circle {
+    double r, area; bool ready = false;
+public:
+    Circle(double x) : r(x) {}
+    double getArea() {              // optimization: compute once, reuse
+        if (!ready) { area = 3.14159 * r * r; ready = true; cout << "(computed) "; }
+        return area;
+    }
+};
+int main() { Circle c(2); cout << c.getArea() << "\n" << c.getArea(); }`,"(computed) 12.5664\n12.5664","Combine 3 models>Design algorithms>Optimize>Control>Package>Document"),
+T("SA/SD and JSD","Structured Analysis/Design breaks a system by functions (data flow diagrams, structure charts). Jackson Structured Development models real-world entities and their time-ordered actions. Object orientation breaks the system by objects instead.",
+r`// SA/SD style: functions first, data passed around
+double area(double r) { return 3.14159 * r * r; }
+// OO style: data and function together
+class Circle { double r; public: Circle(double x):r(x){} double area(){ return 3.14159*r*r; } };
+int main() { cout << area(1) << " " << Circle(1).area(); }`,"3.14159 3.14159","DFD>Structure chart>Code functions | Entities>Actions>Objects"),
+T("Mapping OO to Non-OO Languages","In C, a class becomes a struct, methods become functions taking a pointer to the struct, and inheritance is done by embedding the base struct.",
+r`struct Stack { int data[10]; int top; };
+void push(Stack *s, int x) { s->data[s->top++] = x; }
+int pop(Stack *s) { return s->data[--s->top]; }
+int main() {
+    Stack s; s.top = 0;
+    push(&s, 10); push(&s, 20);
+    cout << pop(&s) << " " << pop(&s);
+}`,"20 10","Class>struct>Methods>functions with pointer>Inheritance>embedded struct"),
+T("OOP Style: Reuse, Extensibility, Robustness","Procedural code puts functions first. OOP gives reusability (inheritance), extensibility (new classes without editing old code), and robustness (encapsulation). Programming in the large needs modules and clear interfaces.",
+r`class Logger { public: virtual void log(string m) { cout << "[LOG] " << m << "\n"; } };
+class FileLogger : public Logger { public: void log(string m) override { cout << "[FILE] " << m << "\n"; } };
+void run(Logger &l) { l.log("started"); }      // unchanged for new loggers
+int main() { Logger a; FileLogger b; run(a); run(b); }`,"[LOG] started\n[FILE] started","Reuse base>Extend with new class>Old code untouched>Robust system")]},
+{n:"Unit IV",t:"C++ Basics & Functions",d:"Program structure, namespace, enum, operators, casting, references, inline, overloading, friend",topics:[
+T("Program Structure, Namespace, Enum, Casting","A C++ program has headers, optional namespaces and a main(). enum names integer constants; casting converts between types.",
+r`namespace tv { const int YEAR = 2026; }
+enum Level { LOW = 1, HIGH = 5 };
+int main() {
+    double x = 7.9;
+    cout << tv::YEAR << " " << HIGH << " " << (int)x << " " << static_cast<float>(1) / 3;
+}`,"2026 5 7 0.333333","#include>namespace>main()>variables>output"),
+T("Control Structures","if, switch, for, while and do-while control the flow of a program. break and continue change a loop.",
+r`int main() {
+    for (int i = 1; i <= 5; i++) {
+        if (i % 2 == 0) continue;
+        cout << i << " ";
+    }
+}`,"1 3 5","i=1 print>i=2 skip>i=3 print>i=4 skip>i=5 print"),
+T("Call by Reference, Inline vs Macro","A reference is an alias, so changes affect the caller's variable. Inline functions are type-checked and evaluate arguments once; macros are plain text replacement and can give wrong results.",
+r`void swapRef(int &a, int &b) { int t = a; a = b; b = t; }
+#define SQ(x) x * x                       // becomes 2 + 3 * 2 + 3
+inline int sq(int x) { return x * x; }
+int main() {
+    int p = 1, q = 2; swapRef(p, q);
+    cout << p << q << " " << SQ(2 + 3) << " " << sq(2 + 3);
+}`,"21 11 25","Swap by reference>Macro expands as text>Inline evaluates 5 first>25"),
+T("Function Overloading & Default Arguments","Same function name, different parameter lists. Default arguments fill missing values.",
+r`int add(int a, int b) { return a + b; }
+double add(double a, double b) { return a + b; }
+int area(int l, int b = 5) { return l * b; }
+int main() { cout << add(2, 3) << " " << add(1.5, 2.5) << " " << area(4); }`,"5 4 20","Call add(2,3)>int version>Call add(1.5,2.5)>double version"),
+T("Friend & Virtual Functions","A friend function can reach private members without being a member. Virtual functions enable run-time polymorphism (see Unit I).",
+r`class Box {
+    int w = 7;
+    friend void show(Box b);
+};
+void show(Box b) { cout << "Width " << b.w; }
+int main() { show(Box()); }`,"Width 7","Declare friend>Outside function>Reads private data")]},
+{n:"Unit V",t:"Objects, Classes, Inheritance & Polymorphism",d:"Constructors, static, operators, inheritance types, this, pure virtual",topics:[
+T("Static Members, Constructors & Destructors","Static members belong to the class. Constructors (default, parameterized, copy) build objects; the destructor cleans up when the object ends, in reverse order.",
+r`class Demo {
+    static int count;
+public:
+    Demo()            { count++; cout << "ctor " << count << "\n"; }
+    Demo(const Demo&) { count++; cout << "copy " << count << "\n"; }
+    ~Demo()           { cout << "dtor\n"; }
+};
+int Demo::count = 0;
+int main() { Demo a; Demo b = a; }`,"ctor 1\ncopy 2\ndtor\ndtor","Create a>Copy to b>End of main>b destroyed>a destroyed"),
+T("Operator Overloading & Type Conversion","Give operators meaning for your own class. A conversion operator lets an object become another type.",
+r`class Money {
+public:
+    int rs;
+    Money(int r) : rs(r) {}
+    Money operator+(Money o) { return Money(rs + o.rs); }
+    operator int() { return rs; }                 // Money -> int
+};
+int main() { Money a(50), b(70); int total = a + b; cout << total; }`,"120","a + b>operator+ called>Money(120)>converted to int"),
+T("Inheritance Types & Virtual Base Class","Single, multiple, multilevel, hierarchical and hybrid inheritance. In the diamond problem a virtual base class gives the bottom class only one copy of the top class.",
+r`class A { public: int x = 1; };
+class B : virtual public A {};
+class C : virtual public A {};
+class D : public B, public C {};      // hybrid (diamond)
+int main() { D d; cout << d.x; }      // no ambiguity`,"1","A at top>B and C inherit virtually>D inherits both>one copy of A"),
+T("this Pointer, Pure Virtual & Polymorphism","this points to the current object. A pure virtual function (= 0) makes the class abstract; derived classes must override it. A base pointer then runs the derived version.",
+r`class Shape { public: virtual double area() = 0; virtual ~Shape() {} };
+class Rect : public Shape {
+    double w, h;
+public:
+    Rect(double w, double h) { this->w = w; this->h = h; }
+    double area() override { return w * h; }
+};
+int main() { Shape *p = new Rect(3, 4); cout << p->area(); delete p; }`,"12","Abstract Shape>Rect overrides area()>Shape* points to Rect>Rect::area() runs")]}
+];
+const HDR="#include <iostream>\nusing namespace std;\n\n";
+const $=s=>document.querySelector(s),esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const KW="class|public|private|protected|virtual|override|int|double|float|char|void|const|static|return|if|else|for|while|continue|break|new|delete|enum|namespace|template|inline|friend|struct|operator|bool|using|this|string|auto|true|false|thread|State";
+function hl(c){return esc(c).replace(new RegExp("(//.*)|(\"(?:[^\"\\\\]|\\\\.)*\")|(#\\w+)|\\b("+KW+")\\b|\\b(\\d+\\.?\\d*)\\b","g"),(m,a,b,p,k,n)=>a?`<span class=c>${a}</span>`:b?`<span class=s>${b}</span>`:p?`<span class=k>${p}</span>`:k?`<span class=k>${k}</span>`:`<span class=n>${n}</span>`)}
+function seq(list){const P=[];const M=list.map(x=>{const[a,rest]=x.split(">");const[b,l]=[rest.split(":")[0],rest.split(":").slice(1).join(":")];[a,b].forEach(p=>P.includes(p)||P.push(p));return{a,b,l}});
+const W=190,x=p=>70+P.indexOf(p)*W,H=70+M.length*50;
+let s=`<svg viewBox="0 0 ${70*2+(P.length-1)*W} ${H}" width="100%" role="img" aria-label="Sequence diagram">`;
+P.forEach(p=>s+=`<rect x="${x(p)-45}" y="4" width="90" height="26" rx="5" fill="#16193f"/><text x="${x(p)}" y="22" text-anchor="middle" style="fill:#fff">${esc(p)}</text><line class="ll" x1="${x(p)}" y1="30" x2="${x(p)}" y2="${H}"/>`);
+M.forEach((m,i)=>{const y=60+i*50,d=i*.9;s+=m.a==m.b?`<path class="arrow" style="animation-delay:${d}s" d="M${x(m.a)} ${y} h40 v22 h-40"/><text x="${x(m.a)+48}" y="${y+14}">${esc(m.l)}</text>`:`<line class="arrow" style="animation-delay:${d}s" x1="${x(m.a)}" y1="${y}" x2="${x(m.b)+(x(m.b)>x(m.a)?-4:4)}" y2="${y}"/><text x="${(x(m.a)+x(m.b))/2}" y="${y-6}" text-anchor="middle">${esc(m.l)}</text>`});
+return s+"</svg>"}
+const nav=$("#nav");nav.innerHTML=U.map((u,i)=>`<details ${i==0?"open":""}><summary>${u.n}: ${u.t}</summary>${u.topics.map((t,j)=>`<button class="t" data-u="${i}" data-t="${j}">${t.title}</button>`).join("")}</details>`).join("");
+nav.onclick=e=>{const b=e.target.closest(".t");if(b)show(+b.dataset.u,+b.dataset.t)};
+let timer,typ;
+function home(){clearInterval(timer);$("#view").innerHTML=`<section class="hero"><div><h1>Object Oriented System Design with C++</h1><p>Theory and practical together. Read the concept, watch it animate, then run the C++ code. Created by Vikas Maurya for the students of ABES Engineering College.</p><button class="go" onclick="show(0,0)">Start Unit I</button></div>
+<div class="stage" aria-hidden="true"><div class="box" id="b1"><b>Student</b><i>- name</i><i>+ study()</i></div><div class="msg">study()</div><div class="box" id="b2"><b>Teacher</b><i>- subject</i><i>+ teach()</i></div></div></section>
+<div class="units">${U.map((u,i)=>`<div class="u" tabindex="0" onclick="show(${i},0)" onkeydown="if(event.key=='Enter')show(${i},0)"><h3>${u.n}: ${u.t}</h3><p>${u.d}</p><p><b>${u.topics.length} topics</b></p></div>`).join("")}</div>`;
+document.querySelectorAll(".t.on").forEach(x=>x.classList.remove("on"))}
+function show(ui,ti){clearInterval(timer);clearInterval(typ);const u=U[ui],t=u.topics[ti],code=HDR+t.code;
+document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",+b.dataset.u==ui&&+b.dataset.t==ti));
+nav.querySelectorAll("details")[ui].open=true;location.hash=`${ui}-${ti}`;
+const prev=ti>0?[ui,ti-1]:ui>0?[ui-1,U[ui-1].topics.length-1]:null,next=ti<u.topics.length-1?[ui,ti+1]:ui<U.length-1?[ui+1,0]:null;
+$("#view").innerHTML=`<div class="crumb">${u.n}: ${u.t}</div><h2>${t.title}</h2>
+<div class="card"><h4>Theory</h4>${t.theory}</div>
+<div class="card"><h4>Animated flow</h4><div class="flow" id="flow">${t.flow.map((f,i)=>(i?'<span class="ar">&rarr;</span>':"")+`<span class="chip">${esc(f)}</span>`).join("")}</div><button class="ghost" style="margin-top:12px" id="rep">Replay</button></div>
+${t.seq?`<div class="card"><h4>Message diagram</h4><div id="sq">${seq(t.seq)}</div></div>`:""}
+<div class="card"><h4>Practical</h4><div class="bar"><button class="run" id="run">Run code</button><button class="ghost" id="cp">Copy code</button><span style="color:var(--mut);font-size:13px">Compile: g++ main.cpp -o main</span></div><pre>${hl(code)}</pre><pre class="out" id="out"><span class="p">Press "Run code" to see the output.</span></pre></div>
+<div class="nav"><button class="ghost" ${prev?"":"disabled"} id="pv">&larr; Previous</button><button class="go" ${next?"":"disabled"} id="nx">Next topic</button></div>`;
+const chips=[...document.querySelectorAll(".chip")];const play=()=>{clearInterval(timer);chips.forEach(c=>c.classList.remove("lit"));let i=0;timer=setInterval(()=>{if(i<chips.length)chips[i++].classList.add("lit");else clearInterval(timer)},650)};
+play();$("#rep").onclick=()=>{play();const q=$("#sq");if(q)q.innerHTML=seq(t.seq)};
+$("#run").onclick=()=>{clearInterval(typ);const o=$("#out"),txt=t.out;o.innerHTML='<span class="p">$ g++ main.cpp -o main && ./main</span>\n';let i=0;typ=setInterval(()=>{if(i<txt.length)o.append(txt[i++]);else clearInterval(typ)},28)};
+$("#cp").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText(code);e.target.textContent="Copied"};
+if(prev)$("#pv").onclick=()=>show(...prev);if(next)$("#nx").onclick=()=>show(...next);scrollTo(0,0)}
+const h=location.hash.slice(1).split("-").map(Number);h.length==2&&U[h[0]]&&U[h[0]].topics[h[1]]?show(h[0],h[1]):home();
+document.querySelector(".brand").onclick=home;
+</script></body></html>

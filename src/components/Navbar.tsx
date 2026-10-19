@@ -51,12 +51,17 @@ export function Navbar() {
       {/* Top row */}
       <div className="h-[72px] px-4 flex items-center gap-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center shrink-0" aria-label="TechVerse home">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="TechVerse — Learn, Build, Grow">
           <img
-            src="/techverse-logo.png"
-            alt="TechVerse — Learn, Build, Grow"
-            className="w-[112px] h-[72px] object-contain"
+            src="/techverse-mark.png"
+            alt=""
+            aria-hidden="true"
+            className="w-11 h-11 object-contain"
           />
+          <span className="flex flex-col leading-none">
+            <span className="font-bold tracking-tight text-text">TechVerse</span>
+            <span className="mt-1 hidden text-[9px] font-semibold tracking-[0.16em] text-muted sm:block">LEARN · BUILD · GROW</span>
+          </span>
         </Link>
 
         {/* Search */}

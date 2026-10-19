@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EJB, Node.js & MongoDB – Theory + Practical</title>
+<style>
+:root{--bg:#0f172a;--c:#1e293b;--tx:#e2e8f0;--mu:#94a3b8;--a:#38bdf8;--b:#f59e0b;--g:#4ade80}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx);display:flex}
+nav{position:sticky;top:0;height:100vh;width:270px;overflow:auto;background:#0b1220;padding:16px;flex:none}
+nav h1{font-size:17px;color:var(--a);margin:0 0 10px}nav h4{margin:14px 0 4px;color:var(--b);font-size:12px;letter-spacing:1px}
+nav a{display:block;color:var(--mu);text-decoration:none;font-size:13px;padding:5px 8px;border-radius:6px}nav a:hover,nav a.on{background:var(--c);color:#fff}
+main{flex:1;padding:24px;max-width:900px;min-width:0}
+section{background:var(--c);border-radius:14px;padding:20px;margin-bottom:22px;opacity:0;transform:translateY(24px);transition:.6s}
+section.in{opacity:1;transform:none}
+h2{margin:0 0 8px;color:var(--a);font-size:21px}h2 small{color:var(--b);font-size:12px;display:block}
+li{margin:5px 0;line-height:1.5}pre{background:#020617;border-left:3px solid var(--g);padding:12px;border-radius:8px;overflow:auto;font-size:13px;color:#bbf7d0}
+.demo{border:1px dashed #475569;border-radius:10px;padding:12px;margin-top:10px}.demo>b{color:var(--b);font-size:12px}
+button{background:var(--a);color:#001;border:0;padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:600;margin:4px 4px 4px 0}button:hover{filter:brightness(1.15)}
+input,select{background:#020617;color:var(--tx);border:1px solid #475569;padding:6px;border-radius:6px}
+.row{display:flex;justify-content:space-between;position:relative;margin:34px 0 14px}
+.n{background:#334155;padding:10px 6px;border-radius:8px;width:22%;text-align:center;font-size:13px;transition:.3s}.n.hot{background:var(--a);color:#001;transform:scale(1.08)}
+.dot{position:absolute;top:-22px;left:0;width:16px;height:16px;border-radius:50%;background:var(--b);transition:left .9s ease;box-shadow:0 0 12px var(--b)}
+.cap{min-height:22px;color:var(--g);font-size:14px}.chip{display:inline-block;background:#334155;padding:5px 10px;border-radius:20px;margin:3px;cursor:pointer;font-size:13px}.chip:hover,.chip.on{background:var(--b);color:#001}
+.log{font:13px monospace;color:#fde68a;white-space:pre-wrap}table{border-collapse:collapse;font-size:13px;margin:6px 0}td,th{border:1px solid #475569;padding:4px 10px}
+@media(max-width:800px){body{display:block}nav{position:static;height:auto;width:auto}}
+</style><script src="theme.js"></script></head><body>
+<nav><h1>EJB · Node · MongoDB</h1><div id="nav"></div></nav><main><p style="color:var(--mu)">Read the theory, study the code, then press the buttons in each <b style="color:var(--b)">Live Demo</b>.</p><div id="app"></div></main>
+<script>
+const F=(n,s,x)=>['flow',n,s,x];
+const T=[
+{g:'ENTERPRISE JAVA BEANS',t:'Creating a JavaBean',th:['A JavaBean is a reusable Java class that follows conventions: public no-arg constructor, private fields, public getters/setters, and Serializable.','Tools, JSP (<jsp:useBean>) and frameworks use these conventions to read and write data automatically.'],
+code:`public class Student implements java.io.Serializable {\n  private String name;\n  private int age;\n  public Student() {}\n  public String getName(){ return name; }\n  public void setName(String n){ name = n; }\n  public int getAge(){ return age; }\n  public void setAge(int a){ age = a; }\n}`,d:['bean']},
+{g:'ENTERPRISE JAVA BEANS',t:'JavaBeans Properties',th:['A property is a private field exposed through getX()/setX() (boolean uses isX()).','Types: simple, indexed (array), bound (notifies listeners via PropertyChangeSupport), constrained (listeners can veto the change).','Read-only property = getter only. Write-only = setter only.'],
+code:`private boolean active;   public boolean isActive(){ return active; }\nprivate String[] skills;  public String getSkills(int i){ return skills[i]; }\n// Bound property\nPropertyChangeSupport pcs = new PropertyChangeSupport(this);\npcs.firePropertyChange("age", oldAge, newAge);`,d:['bean']},
+{g:'ENTERPRISE JAVA BEANS',t:'Types of Beans',th:['JavaBean: simple data holder, runs in any JVM.','Enterprise Java Bean (EJB): server-side component managed by an application server (WildFly, GlassFish) giving transactions, security and pooling.','EJB types: Session (Stateful, Stateless, Singleton), Entity (persistent data, now JPA), Message-driven (async JMS).'],
+code:`@Stateless    public class Calc { }\n@Stateful     public class Cart { }\n@Singleton    public class Config { }\n@Entity       public class Book { }\n@MessageDriven public class OrderListener { }`,d:['chips',{'JavaBean':'Plain class, getters/setters. No container needed.','Stateless Session':'Business logic with NO memory between calls. Pooled and shared.','Stateful Session':'Remembers one client across calls (e.g. shopping cart).','Singleton Session':'ONE instance for whole application.','Entity':'Represents a database row (@Entity, JPA).','Message-driven':'Listens to a queue/topic; client never calls it directly.'}]},
+{g:'ENTERPRISE JAVA BEANS',t:'Stateful Session Bean',th:['Holds conversational state for ONE client; each client gets its own bean instance.','Lives until the client removes it (@Remove) or session times out.','Use for: shopping cart, multi-step wizard. Costs more memory.'],
+code:`@Stateful\npublic class Cart {\n  private List<String> items = new ArrayList<>();\n  public void add(String i){ items.add(i); }\n  public int count(){ return items.size(); }\n  @Remove public void checkout(){ }\n}`,d:['ejb']},
+{g:'ENTERPRISE JAVA BEANS',t:'Stateless Session Bean',th:['No client state. Any instance from a pool can serve any request, so it scales very well.','Container creates a small pool and reuses instances; instance variables must NOT be used to store client data.','Use for: calculations, lookups, services.'],
+code:`@Stateless\npublic class Calculator {\n  public int add(int a, int b){ return a + b; }\n}\n// Client\n@EJB Calculator calc;\nint r = calc.add(2, 3);`,d:['ejb']},
+{g:'ENTERPRISE JAVA BEANS',t:'Entity Bean',th:['Represents persistent data: one object = one table row.','Old EJB 2 entity beans are replaced by JPA @Entity classes managed by EntityManager.','Annotations: @Entity, @Id, @Table, @Column.'],
+code:`@Entity @Table(name="student")\npublic class Student {\n  @Id @GeneratedValue private int id;\n  @Column private String name;\n}\n@PersistenceContext EntityManager em;\nem.persist(new Student());`,d:F(['Java object','EntityManager','JDBC driver','DB table'],[[0,1,'em.persist(student)'],[1,2,'generates INSERT SQL'],[2,3,'row saved'],[3,0,'object now managed']])},
+{g:'NODE.JS',t:'Node.js Introduction',th:['Node.js runs JavaScript outside the browser using Chrome\'s V8 engine.','Single-threaded, event-driven and non-blocking I/O, so it handles many connections efficiently.','Used for APIs, real-time chat, streaming. npm gives 2M+ packages.'],
+code:`const http = require("http");\nhttp.createServer((req, res) => {\n  res.end("Hello Node!");\n}).listen(3000);`,d:F(['Many clients','Event loop','Thread pool/OS','Callbacks'],[[0,1,'requests arrive'],[1,2,'slow I/O handed off'],[1,0,'loop keeps serving others'],[2,3,'I/O finished'],[3,0,'callback sends response']])},
+{g:'NODE.JS',t:'Environment Setup',th:['Download the LTS installer from nodejs.org (includes npm). Check versions in terminal.','Write app.js, run with node app.js. Use VS Code as editor.'],
+code:`node -v\nnpm -v\nmkdir myapp && cd myapp\nnpm init -y\nnode app.js`,d:['cmd',{'node -v':'v20.11.0','npm -v':'10.2.4','npm init -y':'Wrote to package.json: { "name": "myapp", "version": "1.0.0" }','node app.js':'Server running at http://localhost:3000'}]},
+{g:'NODE.JS',t:'REPL Terminal',th:['REPL = Read, Eval, Print, Loop. Type node with no file to start it.','Useful for quick tests. Commands: .help, .break, .save file, .load file, _ (last result), Ctrl+C twice to exit.'],
+code:`$ node\n> 2 + 3\n5\n> [1,2,3].map(x => x * 2)\n[ 2, 4, 6 ]\n> _ \n[ 2, 4, 6 ]`,d:['repl']},
+{g:'NODE.JS',t:'NPM (Node Package Manager)',th:['npm installs and manages libraries. package.json lists dependencies; node_modules holds them.','-g installs globally; --save-dev for development-only tools.'],
+code:`npm install express\nnpm install -g nodemon\nnpm install --save-dev jest\nnpm uninstall express\nnpm update`,d:['cmd',{'npm install express':'added 64 packages. "express" added to package.json dependencies','npm install -g nodemon':'installed globally, run: nodemon app.js','npm list':'myapp@1.0.0 └── express@4.18.2','npm uninstall express':'removed 64 packages'}]},
+{g:'NODE.JS',t:'Callbacks Concept',th:['A callback is a function passed to another function and called when work finishes.','Node I/O is asynchronous: the program does not wait, so code after the call runs first.','Nested callbacks become "callback hell"; Promises/async-await fix that.'],
+code:`const fs = require("fs");\nconsole.log("Start");\nfs.readFile("a.txt", "utf8", (err, data) => {\n  if (err) return console.error(err);\n  console.log("Callback:", data);\n});\nconsole.log("End");`,d:['cb']},
+{g:'NODE.JS',t:'Events',th:['Node uses the events module: EventEmitter. on() registers a listener, emit() fires the event.','Many core objects (http server, streams) are EventEmitters.'],
+code:`const EventEmitter = require("events");\nconst e = new EventEmitter();\ne.on("login", user => console.log(user + " logged in"));\ne.emit("login", "Asha");`,d:['ev']},
+{g:'NODE.JS',t:'Packaging',th:['package.json describes the project: name, version, main file, scripts, dependencies.','Share via npm publish, or npm pack to create a .tgz. Use .gitignore/.npmignore to exclude node_modules.'],
+code:`{\n  "name": "myapp", "version": "1.0.0",\n  "main": "app.js",\n  "scripts": { "start": "node app.js" },\n  "dependencies": { "express": "^4.18.2" }\n}\nnpm pack\nnpm publish`,d:['cmd',{'npm start':'> node app.js  Server running...','npm pack':'myapp-1.0.0.tgz created','npm login':'Logged in on https://registry.npmjs.org/','npm publish':'+ myapp@1.0.0'}]},
+{g:'NODE.JS',t:'Express Framework',th:['Express is a minimal web framework: routing + middleware.','Middleware = functions (req,res,next) run in order for every request; call next() to continue.','Routes: app.get/post/put/delete(path, handler).'],
+code:`const express = require("express");\nconst app = express();\napp.use(express.json());\napp.use((req,res,next)=>{ console.log(req.method); next(); });\napp.get("/hello/:name", (req,res)=>res.send("Hi " + req.params.name));\napp.listen(3000);`,d:F(['Request','Middleware','Route handler','Response'],[[0,1,'GET /hello/Asha'],[1,2,'logger calls next()'],[2,3,'res.send("Hi Asha")'],[3,0,'sent to client']])},
+{g:'NODE.JS',t:'RESTful API',th:['REST maps HTTP methods to CRUD on resources: GET read, POST create, PUT update, DELETE remove.','Stateless, JSON data, status codes (200, 201, 404). Click a method to try it.'],
+code:`app.get("/students",  (q,r)=> r.json(list));\napp.post("/students", (q,r)=> { list.push(q.body); r.status(201).json(q.body); });\napp.put("/students/:id",    ...);\napp.delete("/students/:id", ...);`,d:['rest']},
+{g:'NODE.JS + MONGODB',t:'MongoDB: Create Database',th:['MongoDB is a NoSQL document database: data stored as JSON-like documents (BSON).','A database is created the moment you first store data in it.'],
+code:`// mongosh\nuse college\ndb\nshow dbs\n// Node driver\nconst { MongoClient } = require("mongodb");\nconst client = new MongoClient("mongodb://localhost:27017");\nconst db = client.db("college");`,d:['cmd',{'use college':'switched to db college','db':'college','show dbs':'admin 40KB  config 12KB  (college appears after first insert)'}]},
+{g:'NODE.JS + MONGODB',t:'Create Collection',th:['Collection = like a table, but schema-less. Created explicitly or automatically on first insert.'],
+code:`db.createCollection("students")\nshow collections\n// Node\nawait db.createCollection("students");`,d:['cmd',{'db.createCollection("students")':'{ ok: 1 }','show collections':'students','db.students.drop()':'true'}]},
+{g:'NODE.JS + MONGODB',t:'Insert',th:['insertOne(doc) and insertMany([docs]). MongoDB adds a unique _id automatically.'],
+code:`await db.collection("students").insertOne({ name:"Neha", marks:82 });\nawait db.collection("students").insertMany([{...},{...}]);`,d:['db',['insert']]},
+{g:'NODE.JS + MONGODB',t:'Query (find)',th:['find(filter, projection). Operators: $gt, $lt, $in, $and, $or. findOne returns first match.'],
+code:`db.students.find({ marks: { $gt: 70 } })\ndb.students.find({}, { name: 1, _id: 0 })\ndb.students.findOne({ name: "Ravi" })`,d:['db',['find']]},
+{g:'NODE.JS + MONGODB',t:'Update',th:['updateOne / updateMany with operators: $set, $inc, $unset. Without an operator, the doc would be replaced.'],
+code:`db.students.updateOne({ name: "Ravi" }, { $set: { marks: 90 } })\ndb.students.updateMany({}, { $inc: { marks: 5 } })`,d:['db',['update']]},
+{g:'NODE.JS + MONGODB',t:'Delete',th:['deleteOne(filter), deleteMany(filter). deleteMany({}) empties the collection.'],
+code:`db.students.deleteOne({ name: "Ravi" })\ndb.students.deleteMany({ marks: { $lt: 40 } })`,d:['db',['delete']]},
+{g:'NODE.JS + MONGODB',t:'Sort',th:['sort({field: 1}) ascending, -1 descending. Combine with limit() and skip() for pagination.'],
+code:`db.students.find().sort({ marks: -1 }).limit(3)`,d:['db',['sort']]},
+{g:'NODE.JS + MONGODB',t:'Join ($lookup)',th:['MongoDB has no JOIN keyword; use the aggregation stage $lookup to merge documents from another collection (left outer join).'],
+code:`db.students.aggregate([{\n  $lookup: {\n    from: "courses",\n    localField: "courseId",\n    foreignField: "_id",\n    as: "course"\n  }\n}])`,d:['join']}
+];
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const tbl=a=>a.length?'<table><tr>'+Object.keys(a[0]).map(k=>`<th>${k}</th>`).join('')+'</tr>'+a.map(r=>'<tr>'+Object.values(r).map(v=>`<td>${typeof v=='object'?JSON.stringify(v):v}</td>`).join('')+'</tr>').join('')+'</table>':'<i>(empty)</i>';
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+const D={
+flow(el,t){const[nodes,steps]=[t.d[1],t.d[2]];el.innerHTML=`<div class="row"><div class="dot"></div>${nodes.map(n=>`<div class="n">${n}</div>`).join('')}</div><div class="cap"></div><button>▶ Play</button>`;
+const ns=[...el.querySelectorAll('.n')],dot=el.querySelector('.dot'),cap=el.querySelector('.cap');const cx=i=>ns[i].offsetLeft+ns[i].offsetWidth/2-8;dot.style.left=cx(0)+'px';
+el.querySelector('button').onclick=async()=>{for(const[a,b,l]of steps){ns.forEach(n=>n.classList.remove('hot'));ns[a].classList.add('hot');dot.style.left=cx(a)+'px';cap.textContent=l;await sl(500);dot.style.left=cx(b)+'px';await sl(1100);ns.forEach(n=>n.classList.remove('hot'));ns[b].classList.add('hot')}}},
+bean(el){el.innerHTML=`name <input id=n value=Asha size=8> age <input id=a value=20 size=3> <button>Call setters, then getters</button><pre class=log></pre>`;
+el.querySelector('button').onclick=()=>{const n=el.querySelector('#n').value,a=el.querySelector('#a').value;el.querySelector('pre').textContent=`Student s = new Student();   // no-arg constructor\ns.setName("${n}");  s.setAge(${a});\ns.getName() → "${n}"\ns.getAge()  → ${a}\ns.name → ERROR: field is private (use the getter)`}},
+chips(el,t){const o=t.d[1];el.innerHTML=Object.keys(o).map(k=>`<span class=chip>${k}</span>`).join('')+'<div class=cap style="margin-top:8px"></div>';el.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{el.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');el.querySelector('.cap').textContent=o[c.textContent]})},
+ejb(el){let mode='Stateful',cart={A:0,B:0};el.innerHTML=`<select><option>Stateful</option><option>Stateless</option></select> <button data-c=A>Client A: add()</button><button data-c=B>Client B: add()</button><pre class=log>Pick a bean type, then call as different clients.</pre>`;
+const sel=el.querySelector('select'),lg=el.querySelector('pre');sel.onchange=()=>{mode=sel.value;cart={A:0,B:0};lg.textContent='Reset: '+mode};
+el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const c=b.dataset.c;if(mode=='Stateful'){cart[c]++;lg.textContent=`Client ${c} → its OWN Cart instance\nitems = ${cart[c]}\n(A=${cart.A}, B=${cart.B}: state kept per client)`}else{const id=1+Math.floor(Math.random()*3);lg.textContent=`Client ${c} → pooled instance #${id} (random)\nadd() done, nothing remembered.\nNext call may reach a different instance, so no client data stored.`}})},
+cmd(el,t){const o=t.d[1];el.innerHTML=Object.keys(o).map(k=>`<span class=chip>${esc(k)}</span>`).join('')+'<pre class=log>Click a command to run it.</pre>';el.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{el.querySelector('pre').textContent='$ '+c.textContent+'\n'+o[c.textContent]})},
+repl(el){el.innerHTML=`&gt; <input size=34 value="[1,2,3].map(x=>x*2)"> <button>Enter</button><pre class=log></pre>`;const i=el.querySelector('input'),p=el.querySelector('pre');
+const run=()=>{let r;try{r=JSON.stringify(new Function('return ('+i.value+')')())}catch(e){r='Uncaught '+e.name+': '+e.message}p.textContent+='> '+i.value+'\n'+r+'\n'};el.querySelector('button').onclick=run;i.onkeydown=e=>{if(e.key=='Enter')run()}},
+async cb(el){el.innerHTML=`<button>Run program</button><pre class=log></pre>`;const p=el.querySelector('pre');el.querySelector('button').onclick=async()=>{p.textContent='Start\n';await sl(400);p.textContent+='fs.readFile(...) called – Node does NOT wait\n';await sl(400);p.textContent+='End   ← prints BEFORE the file data\n';await sl(1500);p.textContent+='Callback: file contents ← runs when I/O finishes\n'}},
+ev(el){let L={};el.innerHTML=`<button data-e=login>emit("login")</button><button data-e=order>emit("order")</button><button data-e=x>emit("unknown")</button><pre class=log>Listeners: on("login"), on("order")</pre>`;
+const lg=el.querySelector('pre'),h={login:'listener → Asha logged in',order:'listener → order #101 placed'};el.querySelectorAll('button').forEach(b=>b.onclick=()=>{lg.textContent+='\n'+(h[b.dataset.e]||'no listener registered, nothing happens')})},
+rest(el){let L=[{id:1,name:'Asha'},{id:2,name:'Ravi'}],id=3;const m={GET:()=>['GET /students','200 OK',L],POST:()=>{L.push({id,name:'Neha'+id++});return['POST /students  {name:"Neha"}','201 Created',L[L.length-1]]},PUT:()=>{if(L[0])L[0].name='Updated';return['PUT /students/1  {name:"Updated"}','200 OK',L[0]||null]},DELETE:()=>{const d=L.shift();return['DELETE /students/'+(d?d.id:'?'),d?'200 OK':'404 Not Found',d||{}]}};
+el.innerHTML=Object.keys(m).map(k=>`<button>${k}</button>`).join('')+'<pre class=log></pre><div>DB now: <span id=s></span></div>';const s=()=>el.querySelector('#s').textContent=JSON.stringify(L);s();
+el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const[r,st,body]=m[b.textContent]();el.querySelector('pre').textContent=r+'\n→ '+st+'\n'+JSON.stringify(body);s()})},
+db(el,t){let S=[{name:'Asha',marks:78},{name:'Ravi',marks:65},{name:'Neha',marks:91}],c=1;const ops={insert:['db.students.insertOne({name:"Student'+'N",marks:rand})',()=>{S.push({name:'Student'+c++,marks:50+Math.floor(Math.random()*50)});return S}],find:['db.students.find({marks:{$gt:70}})',()=>S.filter(x=>x.marks>70)],update:['db.students.updateOne({}, {$inc:{marks:5}})',()=>{if(S[0])S[0].marks+=5;return S}],delete:['db.students.deleteOne({})  // removes first',()=>{S.shift();return S}],sort:['db.students.find().sort({marks:-1})',()=>[...S].sort((a,b)=>b.marks-a.marks)]};
+el.innerHTML=t.d[1].map(k=>`<button data-k=${k}>${k}</button>`).join('')+'<div class=cap></div><div id=r></div><b style="font-size:12px;color:var(--mu)">Collection now:</b><div id=c></div>';const show=()=>el.querySelector('#c').innerHTML=tbl(S);show();
+el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const[cm,f]=ops[b.dataset.k];const r=f();el.querySelector('.cap').textContent=cm;el.querySelector('#r').innerHTML='<b style="font-size:12px;color:var(--mu)">Result:</b>'+tbl(r);show()})},
+join(el){const st=[{name:'Asha',courseId:1},{name:'Ravi',courseId:2}],co=[{_id:1,title:'Web Tech'},{_id:2,title:'DBMS'}];
+el.innerHTML=`<b>students</b>${tbl(st)}<b>courses</b>${tbl(co)}<button>Run $lookup</button><div id=r></div>`;el.querySelector('button').onclick=()=>el.querySelector('#r').innerHTML=tbl(st.map(s=>({...s,course:co.filter(c=>c._id==s.courseId)})))}};
+const app=document.getElementById('app'),nav=document.getElementById('nav');let last='';
+T.forEach((t,i)=>{if(t.g!=last){nav.innerHTML+=`<h4>${t.g}</h4>`;last=t.g}nav.innerHTML+=`<a href="#t${i}">${i+1}. ${t.t}</a>`;
+const s=document.createElement('section');s.id='t'+i;s.innerHTML=`<h2><small>${t.g} · TOPIC ${i+1}</small>${t.t}</h2><b style="color:var(--b)">THEORY</b><ul>${t.th.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b style="color:var(--g)">PRACTICAL CODE</b><pre>${esc(t.code)}</pre><div class="demo"><b>▶ LIVE DEMO</b><div></div></div>`;
+app.appendChild(s);D[t.d[0]](s.querySelector('.demo div'),t)});
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+x.target.id))}}),{threshold:.15});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+</script></body></html>
