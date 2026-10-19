@@ -84,7 +84,7 @@ function Footer() {
             <li><a href="/courses" className="hover:text-green transition-colors">Courses</a></li>
             <li><a href="/arena" className="hover:text-green transition-colors">Code Arena</a></li>
             <li><a href="/live" className="hover:text-green transition-colors">Live Classes</a></li>
-            <li><a href="/notes" className="hover:text-green transition-colors">PDF Notes</a></li>
+            <li><a href="/subjects" className="hover:text-green transition-colors">Subjects</a></li>
           </ul>
         </div>
         <div>

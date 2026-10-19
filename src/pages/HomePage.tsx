@@ -5,6 +5,7 @@ import { liveClasses, testimonials } from '@/data/mockData';
 import { CourseCard, CourseCardSkeleton } from '@/components/CourseCard';
 import { SectionHead, ChBadge, DiffBadge } from '@/components/ui';
 import { useApp } from '@/context/AppContext';
+import { interactiveSubjects } from '@/data/interactiveSubjects';
 
 const companies = ['TCS', 'Infosys', 'Accenture', 'Wipro', 'Capgemini', 'HCL', 'Cognizant', 'Google', 'Amazon', 'Deloitte'];
 const allCompanies = ['TCS', 'Infosys', 'Accenture', 'Wipro', 'Capgemini', 'HCL', 'Cognizant', 'Google', 'Amazon', 'Deloitte', 'IBM', 'LTIMindtree', 'Zoho', 'Freshworks'];
@@ -141,7 +142,34 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 3 — Courses */}
+      {/* Section 3 — Subjects */}
+      <section className="max-w-7xl mx-auto px-4 pt-[72px]">
+        <SectionHead
+          title="Explore Subjects"
+          subtitle="Choose a subject to explore interactive lessons, practice, and study resources"
+          right={<Link to="/subjects" className="text-sm font-semibold text-green hover:underline">View all subjects →</Link>}
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {interactiveSubjects.map((subject) => (
+            <Link
+              key={subject.slug}
+              to={`/subjects/${subject.slug}`}
+              className="card-hover group flex items-center gap-4"
+            >
+              <span className="w-12 h-12 rounded-xl bg-green-light flex items-center justify-center text-2xl shrink-0" aria-hidden="true">
+                {subject.emoji}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-display font-bold text-text group-hover:text-green transition-colors">{subject.title}</span>
+                <span className="block text-xs text-muted mt-1">{subject.lessons}</span>
+              </span>
+              <span className="text-green font-semibold" aria-hidden="true">→</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 4 — Courses */}
       <section className="max-w-7xl mx-auto px-4 py-[72px]">
         <SectionHead
           title="Featured Courses"
@@ -166,7 +194,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 4 — Code Arena CTA */}
+      {/* Section 5 — Code Arena CTA */}
       <section className="bg-dark text-white py-[72px] px-4">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -219,7 +247,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 5 — Live Classes */}
+      {/* Section 6 — Live Classes */}
       <section className="bg-bg py-[72px] px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHead
@@ -270,7 +298,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 6 — Features Grid */}
+      {/* Section 7 — Features Grid */}
       <section className="bg-card py-[72px] px-4 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <SectionHead title="Everything you need" subtitle="One platform, all the tools" />
@@ -288,7 +316,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 7 — Latest YouTube Videos */}
+      {/* Section 8 — Latest YouTube Videos */}
       {ytVideos.length > 0 && (
         <section className="bg-bg py-[72px] px-4">
           <div className="max-w-7xl mx-auto">
@@ -324,7 +352,7 @@ export function HomePage() {
         </section>
       )}
 
-      {/* Section 8 — Two Channels */}
+      {/* Section 9 — Two Channels */}
       <section className="bg-card py-[72px] px-4 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <SectionHead title="Our YouTube Channels" subtitle="Two channels, one mission — your success" />
@@ -368,7 +396,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 8b — Our Websites */}
+      {/* Section 9b — Our Websites */}
       {externalSites.length > 0 && (
         <section className="bg-bg py-[72px] px-4">
           <div className="max-w-7xl mx-auto">
@@ -398,7 +426,7 @@ export function HomePage() {
         </section>
       )}
 
-      {/* Section 9 — Testimonials */}
+      {/* Section 10 — Testimonials */}
       <section className="bg-card py-[72px] px-4 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <SectionHead title="Student Success Stories" subtitle="Real students, real results" />
@@ -422,7 +450,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 10 — Placement Companies */}
+      {/* Section 11 — Placement Companies */}
       <section className="bg-bg py-12 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-xs text-faint uppercase tracking-wider mb-5">Our students get placed at</p>
@@ -440,7 +468,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Section 11 — Final CTA */}
+      {/* Section 12 — Final CTA */}
       <section className="bg-green py-[76px] px-4 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="font-display font-extrabold text-white mb-4" style={{ fontSize: 'clamp(28px, 4vw, 44px)' }}>

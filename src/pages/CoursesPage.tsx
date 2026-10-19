@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { fetchCourses, type DBCourse } from '@/lib/supabase';
 import { CourseCard, CourseCardSkeleton } from '@/components/CourseCard';
 import { EmptyState } from '@/components/ui';
+import { LearningRoadmap } from '@/components/LearningRoadmap';
 
 export function CoursesPage() {
   const [searchParams] = useSearchParams();
@@ -94,6 +95,7 @@ export function CoursesPage() {
             {sorted.map((course) => <CourseCard key={course.id} course={course} />)}
           </div>
         )}
+        <LearningRoadmap />
       </div>
     </div>
   );

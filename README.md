@@ -22,4 +22,4 @@ The project also needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` configur
 
 ## Interactive subjects
 
-The interactive lessons are served from `public/subjects/` and embedded in TechVerse at `/subjects/:slug`. The Notes page has separate **Subjects** and **Notes** sections, and the Notes navigation menu links to the subject catalog. Each lesson remains directly accessible as a static page; the database lessons read their bundled content and run practice in the browser.
+The interactive lessons are served from `public/subjects/` and embedded in TechVerse at `/subjects/:slug`. The **Subjects** page contains subject-wise practice sets, cheat sheets, study notes, and interactive lessons. The Subjects navigation menu links to each resource section, and the home page previews subjects above Featured Courses. Downloadable notes remain available at `/notes`. Each lesson remains directly accessible as a static page; the database lessons read their bundled content and run practice in the browser.

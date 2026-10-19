@@ -734,11 +734,12 @@ export const navDropdowns: Record<string, { emoji: string; label: string; to?: s
     { emoji: '🏆', label: 'Leaderboard', to: '/arena?tab=leaderboard' },
     { emoji: '⚡', label: 'Daily Contest', to: '/arena' },
   ],
-  Notes: [
-    { emoji: '🧪', label: 'Subjects', to: '/subjects' },
-    { emoji: '📄', label: 'Chapter-wise PDFs', to: '/notes' },
-    { emoji: '📋', label: 'Cheat Sheets', to: '/notes' },
-    { emoji: '✏️', label: 'Practice Sets', to: '/notes' },
+  Subjects: [
+    { emoji: '📚', label: 'All Subjects', to: '/subjects' },
+    { emoji: '✏️', label: 'Practice Sets', to: '/subjects#practice-sets' },
+    { emoji: '📋', label: 'Cheat Sheets', to: '/subjects#cheat-sheets' },
+    { emoji: '📄', label: 'Subject Notes', to: '/subjects#subject-notes' },
+    { emoji: '🗺️', label: 'Learning Roadmap', to: '/subjects#learning-roadmap-heading' },
   ],
   Placement: [
     { emoji: '🏢', label: 'Company Prep', to: '/placement' },

@@ -8,7 +8,7 @@ const navItems = [
   { icon: '📚', label: 'Courses', to: '/courses', key: 'Courses' },
   { icon: '🔴', label: 'Live Classes', to: '/live', key: 'Live' },
   { icon: '💻', label: 'Code Arena', to: '/arena', key: 'Arena' },
-  { icon: '📄', label: 'Notes', to: '/notes', key: 'Notes' },
+  { icon: '🧪', label: 'Subjects', to: '/subjects', key: 'Subjects' },
   { icon: '🏢', label: 'Placement', to: '/placement', key: 'Placement' },
   { icon: '🏆', label: 'Certificates', to: '/certificates', key: 'Certificates' },
   { icon: '💼', label: 'Jobs', to: '/jobs', key: 'Jobs' },
